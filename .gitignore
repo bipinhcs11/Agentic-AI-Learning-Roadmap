@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+ai-env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+ai-env/
+env/
+ENV/
+
+# ChromaDB local storage
+chroma_db/
+*.db
+*.sqlite
+
+# Ollama models (too large for git)
+*.gguf
+*.bin
+
+# Environment variables
+.env
+.env.local
+*.env
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs
+*.log
+logs/
+
+# API keys (never commit these!)
+secrets.py
+config_local.py
