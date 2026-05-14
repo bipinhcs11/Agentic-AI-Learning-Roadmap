@@ -29,8 +29,8 @@ ollama --version   # verify
 ollama serve
 
 # In Tab 2 — pull models
-ollama pull gemma3:27b         # ~17GB — near GPT-4 quality
 ollama pull gemma3:4b          # ~3GB  — fast, for development
+ollama pull gemma3:27b         # ~17GB — near GPT-4 quality (optional, for high-quality tasks)
 ollama pull nomic-embed-text   # ~274MB — for RAG embeddings
 ```
 
@@ -82,7 +82,8 @@ SUCCESS: Gemma3 is working via Ollama API!
 |-------|----------|
 | macOS idle | ~6 GB |
 | + gemma3:4b loaded | ~9 GB |
-| + gemma3:27b loaded | ~24 GB |
+| + gemma3:4b loaded  | ~9 GB  |
+| + gemma3:27b loaded | ~24 GB | (optional)
 | + nomic-embed-text | +1 GB |
 
-**Tip:** Run `ollama stop gemma3:27b` to free RAM when not in use.
+**Tip:** Run `ollama stop gemma3:4b` to free RAM when not in use.

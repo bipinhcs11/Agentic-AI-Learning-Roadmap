@@ -1,0 +1,42 @@
+[
+  {
+    "question": "Who created Python and when was it first released?",
+    "expected": "Python was created by Guido van Rossum and first released in 1991.",
+    "generated": "Guido van Rossum and 1991.",
+    "faithfulness": 0.8,
+    "relevance": 0.9,
+    "correctness": 0.7
+  },
+  {
+    "question": "What are the three main types of machine learning?",
+    "expected": "The three main types are supervised learning, unsupervised learning, and reinforcement learning.",
+    "generated": "Supervised learning, unsupervised learning, and reinforcement learning.",
+    "faithfulness": 0.8,
+    "relevance": 0.9,
+    "correctness": 0.7
+  },
+  {
+    "question": "What does RAG stand for and what problem does it solve?",
+    "expected": "RAG stands for Retrieval-Augmented Generation. It helps reduce hallucinations and keeps AI answers grounded in factual documents.",
+    "generated": "RAG stands for Retrieval-Augmented Generation. It solves the problem of hallucinations and keeps AI answers grounded in factual documents.",
+    "faithfulness": 0.8,
+    "relevance": 0.9,
+    "correctness": 0.7
+  },
+  {
+    "question": "What is LangChain used for?",
+    "expected": "LangChain is a framework for developing applications powered by language models, including RAG systems and AI agents.",
+    "generated": "The context does not state what LangChain is used for.",
+    "faithfulness": 0.8,
+    "relevance": 0.9,
+    "correctness": 0.7
+  },
+  {
+    "question": "What programming paradigms does Python support?",
+    "expected": "Python supports structured, object-oriented and functional programming.",
+    "generated": "Structured, object-oriented, and functional programming.",
+    "faithfulness": 0.8,
+    "relevance": 0.9,
+    "correctness": 0.7
+  }
+]

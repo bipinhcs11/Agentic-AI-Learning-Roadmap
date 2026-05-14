@@ -12,7 +12,7 @@ A fully operational local AI workstation — running Gemma3:27b at zero cost wit
 |------|------|---------|
 | 1 | Install Homebrew | `/bin/bash -c "$(curl -fsSL https://brew.sh)"` |
 | 2 | Install Ollama | `brew install ollama` |
-| 3 | Pull Gemma3 models | `ollama pull gemma3:27b && ollama pull gemma3:4b` |
+| 3 | Pull Gemma3 models | `ollama pull gemma3:4b && ollama pull gemma3:27b` |
 | 4 | Pull embedding model | `ollama pull nomic-embed-text` |
 | 5 | Install Python 3.11 | `brew install python@3.11` |
 | 6 | Install VS Code | `brew install --cask visual-studio-code` |

@@ -48,7 +48,7 @@ project_01_first_rag/
 1. Run it with the sample documents — see how retrieval works
 2. Replace `DOCUMENTS` with your own text
 3. Try changing `TOP_K` from 3 to 1 or 5 — watch answer quality change
-4. Change `LLM_MODEL` to `gemma3:27b` after stopping other models to free RAM
+4. Change `LLM_MODEL` to `gemma3:27b` for higher quality answers (uses more RAM)
 
 ## What's Next → Project 2
 

@@ -16,7 +16,7 @@ print("Connecting to Ollama at http://localhost:11434 ...")
 print("-" * 50)
 
 response = client.chat.completions.create(
-    model="gemma3:27b",
+    model="gemma3:4b",
     messages=[
         {"role": "system", "content": "You are a helpful AI assistant."},
         {"role": "user",   "content": "Explain what an AI agent is in 2 sentences."}

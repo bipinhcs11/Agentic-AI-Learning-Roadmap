@@ -12,7 +12,7 @@ Prerequisites (already installed):
 
 Ollama models needed:
   ollama pull nomic-embed-text   (~274 MB — embedding model)
-  ollama pull gemma3:27b         (generation model)
+  ollama pull gemma3:4b          (generation model — RAM-safe for development)
 
 Run: python rag_from_scratch.py
 """
@@ -23,7 +23,7 @@ from openai import OpenAI
 
 # ── Configuration ───────────────────────────────────────────────
 OLLAMA_BASE_URL = "http://localhost:11434/v1"
-LLM_MODEL       = "gemma3:27b"
+LLM_MODEL       = "gemma3:4b"   # 4b saves RAM — switch to 27b only for final demos
 EMBED_MODEL     = "nomic-embed-text"  # tiny 274MB embedding model via Ollama
 CHUNK_SIZE      = 400
 CHUNK_OVERLAP   = 60
@@ -183,7 +183,7 @@ def rag(query: str, chunks: list, matrix: np.ndarray) -> str:
 if __name__ == "__main__":
     print("=" * 60)
     print("  Project 1 — First RAG System from Scratch")
-    print(f"  Embed: {EMBED_MODEL}  |  LLM: {LLM_MODEL}")
+    print(f"  Embed: {EMBED_MODEL}  |  LLM: {LLM_MODEL} (RAM-safe)")
     print("  No PyTorch. No ChromaDB. Pure Python + NumPy.")
     print("=" * 60 + "\n")
 

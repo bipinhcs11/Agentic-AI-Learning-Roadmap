@@ -1,6 +1,17 @@
-# Phase 4 — Build Your Own Agent Framework ⏳
+# Phase 4 — Build Your Own Agent Framework 🔄
 
-> **Goal:** Build something similar to Ollama / your own agent platform · Weeks 13–16 · Pending
+> **Goal:** Build something similar to Ollama / your own agent platform · Weeks 13–16 · IN PROGRESS
+
+## Projects
+
+| # | Project | Concept | Week | Status |
+|---|---------|---------|------|--------|
+| 01 | [Model Manager](project_01_model_manager/) | Ollama API, model control | 13 | ⏳ Ready |
+| 02 | [Inference Server](project_02_inference_server/) | FastAPI wrapper, streaming, logging | 13 | ⏳ Ready |
+| 03 | [OpenAI-Compatible API](project_03_openai_compatible_api/) | Drop-in OpenAI replacement | 14 | ⏳ Ready |
+| 04 | [Streamlit Web UI](project_04_streamlit_web_ui/) | Browser chat interface | 14 | ⏳ Ready |
+| 05 | [Custom Agent Framework](project_05_custom_agent_framework/) | Build your own mini LangChain | 15 | ⏳ Ready |
+| 06 | [Full Platform (Capstone)](project_06_full_platform/) | Everything combined | 16 | ⏳ Ready |
 
 ## Overview
 
@@ -21,4 +32,4 @@ The final phase — building a custom agent framework from scratch, understandin
 
 ## Status
 
-⏳ Starting after Phase 3 is complete.
+🔄 All 6 projects are set up — the final phase of your 16-week journey!
