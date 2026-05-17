@@ -32,7 +32,17 @@ sqlalchemy>=2.0.0             # database ORM (for memory/storage projects)
 tqdm>=4.65.0                  # progress bars for model downloads
 typer>=0.9.0                  # CLI tool builder
 
+# ── Phase 5 — Multi-Agent Systems ───────────────────────────
+langchain-openai>=1.0.0       # ChatOpenAI client for LangGraph nodes
+langgraph>=1.1.0              # graph-based multi-agent orchestration
+crewai>=1.14.0                # role-based multi-agent framework
+redis>=7.0.0                  # Python client for Redis Pub/Sub (Project 03)
+
 # ── Optional / Cloud Deployment (install when ready) ────────
 # modal                       # cloud deployment (needs modal.com account)
 # langsmith                   # LangChain observability (needs API key)
 # dspy-ai                     # prompt optimization framework
+# docker                      # Phase 6: containerization
+# boto3                       # Phase 6: AWS SDK
+# prometheus-client            # Phase 6: metrics
+# unsloth                     # Phase 6: fine-tuning on Apple Silicon
