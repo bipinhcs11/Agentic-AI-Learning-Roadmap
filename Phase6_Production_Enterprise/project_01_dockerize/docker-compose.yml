@@ -1,0 +1,95 @@
+# ═══════════════════════════════════════════════════════════════
+# docker-compose.yml — Full AI Platform Stack
+# Phase 6 · Production & Enterprise
+# ═══════════════════════════════════════════════════════════════
+#
+# SERVICES:
+#   api    → FastAPI inference server (port 8000)
+#   ui     → Streamlit chat interface (port 8501)
+#   nginx  → Reverse proxy, single entry point (port 80)
+#
+# HOW TO RUN:
+#   docker compose up --build          # first time (builds images)
+#   docker compose up                  # subsequent runs (uses cache)
+#   docker compose up -d               # detached (runs in background)
+#   docker compose down                # stop and remove containers
+#   docker compose logs -f api         # tail logs from api service
+#
+# WHAT PORTS TO USE:
+#   http://localhost      → UI (via nginx, recommended)
+#   http://localhost/api  → API (via nginx)
+#   http://localhost:8000 → API direct (bypass nginx, for debugging)
+#   http://localhost:8501 → UI direct  (bypass nginx, for debugging)
+#   http://localhost:8000/docs → FastAPI Swagger UI
+#
+# OLLAMA:
+#   Runs on your Mac HOST, not in Docker.
+#   host.docker.internal:11434 is how containers reach your Mac.
+#   Make sure: ollama serve  is running before docker compose up
+# ═══════════════════════════════════════════════════════════════
+
+services:
+
+  # ── FastAPI Inference API ───────────────────────────────────
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: ai-platform-api
+    ports:
+      - "8000:8000"         # expose for direct debugging
+    environment:
+      # host.docker.internal = your Mac host from inside Docker
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - DEFAULT_MODEL=gemma3:4b
+      - RATE_LIMIT_RPM=30
+      - APP_ENV=development
+    restart: unless-stopped   # auto-restart if it crashes
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - ai-platform
+
+  # ── Streamlit Chat UI ───────────────────────────────────────
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: ai-platform-ui
+    ports:
+      - "8501:8501"         # expose for direct debugging
+    environment:
+      # "api" = the service name above — Docker DNS resolves it
+      - API_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy   # wait for API to be ready
+    restart: unless-stopped
+    networks:
+      - ai-platform
+
+  # ── Nginx Reverse Proxy ─────────────────────────────────────
+  nginx:
+    image: nginx:alpine              # use official image, no build needed
+    container_name: ai-platform-nginx
+    ports:
+      - "80:80"             # main entry point — http://localhost
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro   # mount config read-only
+    depends_on:
+      - api
+      - ui
+    restart: unless-stopped
+    networks:
+      - ai-platform
+
+# ── Shared Network ──────────────────────────────────────────
+# All containers on this network can reach each other by name.
+# "api", "ui", "nginx" are all valid hostnames inside Docker.
+networks:
+  ai-platform:
+    driver: bridge
