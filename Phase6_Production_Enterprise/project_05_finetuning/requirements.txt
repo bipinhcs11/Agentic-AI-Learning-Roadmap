@@ -1,0 +1,21 @@
+# Phase 6 Project 05 — Fine-Tuning Requirements
+# Install via: bash install.sh  (handles correct order for Apple Silicon)
+
+# Core training stack
+torch>=2.1.0               # PyTorch — MPS backend for Apple Silicon
+transformers>=4.40.0       # HuggingFace model loading and training
+datasets>=2.18.0           # Dataset loading and processing
+peft>=0.10.0               # LoRA and adapter methods
+trl>=0.8.0                 # SFTTrainer for instruction fine-tuning
+accelerate>=0.28.0         # Device management (MPS/CUDA/CPU)
+
+# HuggingFace ecosystem
+huggingface_hub>=0.22.0    # Model downloading and token auth
+tokenizers>=0.19.0         # Fast tokenization
+
+# Export
+openai>=1.0.0              # For testing via Ollama API after deployment
+
+# Optional — install separately if available for your platform:
+# unsloth                  # 2x faster training (experimental Apple Silicon support)
+# bitsandbytes             # 4-bit quantization (CUDA only, not MPS)

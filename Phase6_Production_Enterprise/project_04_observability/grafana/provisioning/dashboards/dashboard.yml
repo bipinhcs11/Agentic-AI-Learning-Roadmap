@@ -1,0 +1,13 @@
+# Tells Grafana where to find dashboard JSON files to auto-load.
+
+apiVersion: 1
+
+providers:
+  - name: "AI Platform Dashboards"
+    orgId: 1
+    folder: "AI Platform"
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/dashboards
