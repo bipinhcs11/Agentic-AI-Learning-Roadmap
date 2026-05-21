@@ -1,0 +1,80 @@
+# ═══════════════════════════════════════════════════════════════
+# docker-compose.yml — AI Platform + Full Monitoring Stack
+# Phase 6 · Project 04 Observability
+# ═══════════════════════════════════════════════════════════════
+#
+# SERVICES:
+#   api        → FastAPI with Prometheus metrics  :8000
+#   prometheus → Scrapes /metrics every 15s       :9090
+#   grafana    → Dashboards from Prometheus data  :3000
+#
+# ACCESS:
+#   API:        http://localhost:8000/docs
+#   Metrics:    http://localhost:8000/metrics
+#   Prometheus: http://localhost:9090
+#   Grafana:    http://localhost:3000  (admin / admin123)
+# ═══════════════════════════════════════════════════════════════
+
+services:
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: ai-monitored-api
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - DEFAULT_MODEL=gemma3:4b
+      - APP_ENV=production
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ai-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ai-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:

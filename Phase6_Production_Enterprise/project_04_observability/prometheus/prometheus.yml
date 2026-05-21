@@ -1,0 +1,29 @@
+# ═══════════════════════════════════════════════════════════════
+# Prometheus Configuration
+# Phase 6 · Project 04 Observability
+# ═══════════════════════════════════════════════════════════════
+#
+# Prometheus works by PULLING metrics from targets on a schedule.
+# Every scrape_interval seconds it calls /metrics on each target.
+# This is opposite to most monitoring (push) — Prometheus pulls.
+#
+# scrape_interval: how often to collect metrics (15s is standard)
+# evaluation_interval: how often to evaluate alerting rules
+# ═══════════════════════════════════════════════════════════════
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # ── Our AI Platform API ─────────────────────────────────────
+  - job_name: "ai-platform-api"
+    static_configs:
+      - targets: ["api:8000"]   # "api" = container name in Docker network
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # ── Prometheus self-monitoring ───────────────────────────────
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

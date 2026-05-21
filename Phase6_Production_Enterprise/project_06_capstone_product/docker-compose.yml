@@ -1,0 +1,74 @@
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  DocuMind — Docker Compose                                               ║
+# ║  Services:  nginx (80) → backend (8000) + frontend (8501)               ║
+# ║  Volumes:   ./data/documents  (uploaded files, survives restarts)        ║
+# ║             ./data/db         (SQLite database)                          ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+version: "3.9"
+
+services:
+
+  # ── FastAPI backend ─────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: documind-backend
+    restart: unless-stopped
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-documind-change-me-in-production}
+      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
+      - LLM_MODEL=${LLM_MODEL:-gemma3:4b}
+      - DB_PATH=/app/db/documind.db
+      - DOCUMENTS_DIR=/app/documents
+    volumes:
+      - ./data/documents:/app/documents
+      - ./data/db:/app/db
+    # Expose for direct dev access; in production only nginx talks to backend
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      # Allows container to reach Ollama running on the host machine
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+  # ── Streamlit frontend ──────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: documind-frontend
+    restart: unless-stopped
+    environment:
+      # Frontend calls the backend via nginx so URLs stay host-agnostic
+      - API_URL=${API_URL:-http://backend:8000}
+    ports:
+      - "8501:8501"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # ── Nginx reverse proxy ─────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: documind-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  # Named volume aliases for clarity — actual bind-mounts defined per-service
+  documents:
+  db:

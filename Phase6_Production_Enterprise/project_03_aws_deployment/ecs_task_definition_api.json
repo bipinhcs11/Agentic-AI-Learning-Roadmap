@@ -1,0 +1,123 @@
+{
+  "_comment_what": "ECS Task Definition — Raw JSON format for learning",
+  "_comment_why": "Terraform generates this automatically from main.tf, but seeing the raw JSON helps you understand what ECS actually receives. You can also register task definitions directly with: aws ecs register-task-definition --cli-input-json file://ecs_task_definition_api.json",
+  "_comment_note": "Replace ACCOUNT_ID and REGION placeholders before using directly",
+
+  "family": "ai-platform-api",
+
+  "_comment_family": "Family is the base name. ECS appends revision numbers (:1, :2, :3). Each 'terraform apply' with a changed task definition creates a new revision. Old revisions are kept (you can roll back).",
+
+  "networkMode": "awsvpc",
+
+  "_comment_networkMode": "awsvpc gives each task its own ENI (Elastic Network Interface) with a private IP. Required for Fargate. Alternatives: bridge (EC2 only, shared host network), host (EC2 only, uses host IP directly).",
+
+  "requiresCompatibilities": ["FARGATE"],
+
+  "cpu": "512",
+  "_comment_cpu": "CPU units, where 1024 = 1 vCPU. 512 = 0.5 vCPU. Valid Fargate CPU values: 256, 512, 1024, 2048, 4096. Billing: ~$0.04048 per vCPU per hour in us-east-1 (on-demand).",
+
+  "memory": "1024",
+  "_comment_memory": "Memory in MB. 1024 = 1 GB. Valid memory ranges depend on CPU: at 512 CPU, valid memory is 1024-4096 MB (must be in 1024 increments). Billing: ~$0.004445 per GB per hour.",
+
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ai-platform-ecs-execution-role",
+  "_comment_executionRoleArn": "IAM role assumed by the ECS AGENT (not your code) to pull images from ECR and write logs to CloudWatch. This role needs AmazonECSTaskExecutionRolePolicy attached.",
+
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ai-platform-ecs-task-role",
+  "_comment_taskRoleArn": "IAM role assumed by YOUR APPLICATION CODE inside the container. Use this to grant S3, DynamoDB, Secrets Manager access etc. Keep it minimal — least privilege principle.",
+
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "_comment_name": "Container name. Must match what you reference in the ECS service's load_balancer block. Also used in CloudWatch log stream names.",
+
+      "image": "ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/ai-platform-api:latest",
+      "_comment_image": "Full ECR URI. ECS pulls this using the executionRoleArn. Use a specific tag (e.g., :abc1234 git commit hash) in production instead of :latest for immutability and easy rollbacks.",
+
+      "essential": true,
+      "_comment_essential": "If essential=true and this container stops, the entire task stops. For multi-container tasks (sidecars), set essential=false on helper containers.",
+
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp",
+          "_comment": "containerPort = port your app listens on. hostPort = port on the ENI (must equal containerPort in awsvpc mode). The ALB target group forwards to this port."
+        }
+      ],
+
+      "environment": [
+        {
+          "name": "CLOUD_MODE",
+          "value": "true",
+          "_comment": "Tells FastAPI it's running on AWS. The app checks this to avoid trying to connect to local Ollama. See: api/cloud_mode.py"
+        },
+        {
+          "name": "HOST",
+          "value": "0.0.0.0",
+          "_comment": "FastAPI/uvicorn must bind to 0.0.0.0 (all network interfaces), NOT 127.0.0.1 (only localhost). If you bind to 127.0.0.1, the ALB health checks fail because ALB comes from an external IP."
+        },
+        {
+          "name": "PORT",
+          "value": "8000"
+        },
+        {
+          "name": "LOG_LEVEL",
+          "value": "info"
+        }
+      ],
+
+      "_comment_secrets": "For real secrets (API keys, passwords), use 'secrets' array instead of 'environment'. Secrets are fetched from AWS Secrets Manager or Parameter Store at task launch and injected as env vars. Never put actual secrets in environment.",
+      "secrets": [],
+
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "_comment_logDriver": "awslogs streams container stdout/stderr to CloudWatch. The ECS agent handles this transparently. Your app just writes to stdout (print() / logging module) and it shows up in CloudWatch.",
+        "options": {
+          "awslogs-group": "/ecs/ai-platform/api",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "api",
+          "_comment": "Log stream names: api/api/<task-id>. View with: aws logs tail /ecs/ai-platform/api --follow"
+        }
+      },
+
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"],
+        "_comment_command": "CMD-SHELL runs the command in a shell. The || exit 1 ensures non-zero exit code on failure, which ECS treats as unhealthy. Requires curl in the image.",
+        "interval": 30,
+        "_comment_interval": "Seconds between health check attempts.",
+        "timeout": 5,
+        "_comment_timeout": "Seconds to wait for the health check to respond.",
+        "retries": 3,
+        "_comment_retries": "Consecutive failures before marking container unhealthy.",
+        "startPeriod": 60,
+        "_comment_startPeriod": "Grace period after container start. Health check failures during this window don't count. Set to app startup time + buffer."
+      },
+
+      "mountPoints": [],
+      "_comment_mountPoints": "For persistent storage, mount an EFS (Elastic File System) volume here. Fargate has no persistent local disk — all writes to the container filesystem are lost when the task stops. For this app (stateless API), no mounts needed.",
+
+      "volumesFrom": [],
+
+      "ulimits": [
+        {
+          "name": "nofile",
+          "softLimit": 65536,
+          "hardLimit": 65536,
+          "_comment": "nofile = max open file descriptors. Default is 1024 which is too low for a busy API server. 65536 is a safe production value."
+        }
+      ],
+
+      "stopTimeout": 30,
+      "_comment_stopTimeout": "Seconds ECS waits for the container to exit gracefully after sending SIGTERM before sending SIGKILL. Matches the ALB deregistration_delay so in-flight requests complete before forced kill."
+    }
+  ],
+
+  "volumes": [],
+  "_comment_volumes": "Named volumes for EFS mounts. Empty for stateless containers.",
+
+  "tags": [
+    {"key": "Project",     "value": "ai-platform"},
+    {"key": "Environment", "value": "dev"},
+    {"key": "ManagedBy",   "value": "Terraform"}
+  ]
+}

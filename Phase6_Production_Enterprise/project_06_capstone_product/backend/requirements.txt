@@ -1,0 +1,15 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+sqlalchemy==2.0.36
+pypdf==5.1.0
+numpy==1.26.4
+httpx==0.27.2
+requests==2.32.3
+pydantic==2.10.3
+python-dotenv==1.0.1
+python-multipart==0.0.20
+langchain-openai==0.2.14
+langgraph==0.2.60
+langchain-core==0.3.28
