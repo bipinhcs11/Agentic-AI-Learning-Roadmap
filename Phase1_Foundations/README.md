@@ -18,14 +18,14 @@ A fully operational local AI workstation — running Gemma3:27b at zero cost wit
 | 6 | Install VS Code | `brew install --cask visual-studio-code` |
 | 7 | Create virtual env | `python3.11 -m venv ai-env` |
 | 8 | Install AI libraries | `pip install -r requirements.txt` |
-| 9 | Verify full stack | `python Phase1_Foundation/test_gemma3.py` |
+| 9 | Verify full stack | `python Phase1_Foundations/test_gemma3.py` |
 
 ## 🧪 Test Your Setup
 
 ```bash
 # Make sure ollama serve is running in another tab, then:
 source ai-env/bin/activate
-python Phase1_Foundation/test_gemma3.py
+python Phase1_Foundations/test_gemma3.py
 ```
 
 Expected output:

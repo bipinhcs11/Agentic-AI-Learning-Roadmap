@@ -36,7 +36,7 @@ A complete hands-on journey from running your first local AI model to shipping a
 - OpenAI-compatible local API client
 - Verified full stack with gemma3:4b
 
-📁 `Phase1_Foundation/`
+📁 `Phase1_Foundations/`
 
 ---
 
@@ -58,7 +58,7 @@ A complete hands-on journey from running your first local AI model to shipping a
 
 **Stack:** nomic-embed-text, ChromaDB, numpy cosine similarity
 
-📁 `Phase2_RAG_Projects/`
+📁 `Phase2_RAG_Systems/`
 
 ---
 
@@ -187,7 +187,7 @@ ollama pull gemma3:4b
 ollama serve
 
 # Run any project
-python Phase2_RAG_Projects/project_01_first_rag/rag_from_scratch.py
+python Phase2_RAG_Systems/project_01_first_rag/rag_from_scratch.py
 ```
 
 ## Run the Capstone Product (DocuMind)
@@ -213,8 +213,8 @@ All projects run locally on:
 ## Repository Structure
 
 ```
-├── Phase1_Foundation/             # setup + first model (docs/, test_gemma3.py)
-├── Phase2_RAG_Projects/           # 10 RAG projects (+ guide)
+├── Phase1_Foundations/             # setup + first model (docs/, test_gemma3.py)
+├── Phase2_RAG_Systems/           # 10 RAG projects (+ guide)
 ├── Phase3_Agentic_Stack/          # 6 agent projects (+ guide)
 ├── Phase4_Agent_Framework/        # 6 framework projects (+ guide)
 ├── Phase5_Multi_Agent_Systems/    # 6 multi-agent projects
