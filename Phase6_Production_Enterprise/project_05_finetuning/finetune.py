@@ -183,13 +183,13 @@ def load_model_standard():
         bnb_4bit_compute_dtype=torch.float16,
     )
 
-    # MPS doesn't support bitsandbytes or fp16 training — use float32 to
-    # avoid gradient overflow → NaN loss when training without mixed precision.
+    # bfloat16: half the memory of float32, numerically stable (no NaN like fp16),
+    # and natively supported on Apple Silicon MPS for training.
     if DEVICE == "mps":
         model = AutoModelForCausalLM.from_pretrained(
             BASE_MODEL,
             token=HF_TOKEN,
-            torch_dtype=torch.float32,
+            torch_dtype=torch.bfloat16,
             device_map="mps",
             trust_remote_code=True,
         )
@@ -234,7 +234,7 @@ def load_model_unsloth():
     return model, tokenizer
 
 
-def tokenize_dataset(dataset: Dataset, tokenizer, max_length: int = 1024):
+def tokenize_dataset(dataset: Dataset, tokenizer, max_length: int = 256):
     """Tokenize the formatted text examples."""
     def tokenize(examples):
         out = tokenizer(
@@ -300,7 +300,7 @@ def train(model, tokenizer, train_dataset, eval_dataset):
                 **{k: v for k, v in training_args.to_dict().items()
                    if k in SFTConfig.__dataclass_fields__},
                 dataset_text_field="text",
-                max_length=1024,
+                max_length=256,
             ),
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
