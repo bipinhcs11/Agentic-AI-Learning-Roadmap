@@ -1,0 +1,131 @@
+<svg viewBox="0 0 820 780" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, -apple-system, 'Segoe UI', sans-serif">
+  <title>Phase 5 — Multi-Agent Systems</title>
+  <desc>Editorial-style diagram of the six multi-agent coordination patterns built in Phase 5 of the Agentic AI Learning Roadmap.</desc>
+
+  <defs>
+    <!-- Subtle paper texture mood with a single warm accent -->
+    <style>
+      .serif    { font-family: 'Charter', 'Iowan Old Style', 'Georgia', 'Times New Roman', serif; }
+      .mono     { font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; }
+      .eyebrow  { letter-spacing: 2.4px; text-transform: uppercase; }
+    </style>
+    <marker id="tick" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <circle cx="3" cy="3" r="2" fill="#c96442"/>
+    </marker>
+  </defs>
+
+  <!-- ── PAPER ── -->
+  <rect width="820" height="780" fill="#f5f0e6"/>
+  <rect x="36" y="36" width="748" height="708" fill="#faf7f0" stroke="#e6dcc8" stroke-width="1"/>
+
+  <!-- ── MASTHEAD ── -->
+  <text x="64" y="86" class="eyebrow" font-size="10" fill="#9b8a6a">Agentic AI Learning Roadmap · Phase 5 of 8</text>
+
+  <text x="64" y="128" class="serif" font-size="36" font-weight="500" fill="#1f1d1a">Multi-Agent Systems</text>
+  <text x="64" y="154" class="serif" font-style="italic" font-size="16" fill="#6b6356">Six coordination patterns. One Mac Mini. No cloud.</text>
+
+  <line x1="64" y1="178" x2="756" y2="178" stroke="#d9cdb3" stroke-width="0.75"/>
+
+  <!-- ── PREMISE PARAGRAPH ── -->
+  <text x="64" y="208" font-size="12.5" fill="#3d3833">This phase is where AI stops behaving like a chatbot and starts behaving like a team —</text>
+  <text x="64" y="226" font-size="12.5" fill="#3d3833">specialists handing work to each other through shared state, with a human in the loop when judgment matters.</text>
+
+  <!-- ── BUILDING BLOCKS STRIP ── -->
+  <text x="64" y="266" class="eyebrow" font-size="9.5" fill="#9b8a6a">The building blocks</text>
+
+  <g transform="translate(64, 280)">
+    <!-- Four refined cells separated only by thin vertical rules -->
+    <text x="0"   y="22" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">Supervisor</text>
+    <text x="0"   y="42" font-size="11" fill="#6b6356">Decides who works next.</text>
+    <text x="0"   y="57" font-size="11" fill="#6b6356">Routes, never executes.</text>
+
+    <line x1="170" y1="6" x2="170" y2="68" stroke="#e6dcc8" stroke-width="0.75"/>
+
+    <text x="186" y="22" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">Workers</text>
+    <text x="186" y="42" font-size="11" fill="#6b6356">Single-job specialists.</text>
+    <text x="186" y="57" font-size="11" fill="#6b6356">Read state, write state.</text>
+
+    <line x1="356" y1="6" x2="356" y2="68" stroke="#e6dcc8" stroke-width="0.75"/>
+
+    <text x="372" y="22" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">Shared state</text>
+    <text x="372" y="42" font-size="11" fill="#6b6356">The team whiteboard —</text>
+    <text x="372" y="57" font-size="11" fill="#6b6356">a LangGraph StateGraph.</text>
+
+    <line x1="542" y1="6" x2="542" y2="68" stroke="#e6dcc8" stroke-width="0.75"/>
+
+    <text x="558" y="22" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">Human gate</text>
+    <text x="558" y="42" font-size="11" fill="#6b6356">Pause for approval.</text>
+    <text x="558" y="57" font-size="11" fill="#6b6356">Production-grade safety.</text>
+  </g>
+
+  <line x1="64" y1="370" x2="756" y2="370" stroke="#d9cdb3" stroke-width="0.75"/>
+
+  <!-- ── THE SIX PROJECTS ── -->
+  <text x="64" y="398" class="eyebrow" font-size="9.5" fill="#9b8a6a">The six projects</text>
+
+  <!-- Project 01 -->
+  <g transform="translate(64, 412)">
+    <text x="0" y="18" class="serif" font-size="13" font-weight="600" fill="#c96442">01</text>
+    <text x="30" y="18" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">Supervisor-Worker</text>
+    <text x="0"  y="40" font-size="11" fill="#6b6356">A central supervisor reads state and routes work between</text>
+    <text x="0"  y="55" font-size="11" fill="#6b6356">researcher, summariser, and formatter agents until done.</text>
+    <text x="0"  y="76" class="mono" font-size="10" fill="#8a7a5c">LangGraph · ChatOpenAI → Ollama</text>
+  </g>
+
+  <!-- Project 02 -->
+  <g transform="translate(404, 412)">
+    <text x="0" y="18" class="serif" font-size="13" font-weight="600" fill="#c96442">02</text>
+    <text x="30" y="18" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">CrewAI Research Crew</text>
+    <text x="0"  y="40" font-size="11" fill="#6b6356">Role-based agents with personas and tools — researcher,</text>
+    <text x="0"  y="55" font-size="11" fill="#6b6356">analyst, writer — collaborating on a competitive report.</text>
+    <text x="0"  y="76" class="mono" font-size="10" fill="#8a7a5c">CrewAI · Ollama</text>
+  </g>
+
+  <line x1="64" y1="498" x2="756" y2="498" stroke="#eee4ce" stroke-width="0.5"/>
+
+  <!-- Project 03 -->
+  <g transform="translate(64, 514)">
+    <text x="0" y="18" class="serif" font-size="13" font-weight="600" fill="#c96442">03</text>
+    <text x="30" y="18" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">Agent Communication Bus</text>
+    <text x="0"  y="40" font-size="11" fill="#6b6356">Event-driven pub/sub. Agents publish to topics; subscribers</text>
+    <text x="0"  y="55" font-size="11" fill="#6b6356">react asynchronously. Fully decoupled — no direct calls.</text>
+    <text x="0"  y="76" class="mono" font-size="10" fill="#8a7a5c">asyncio · Redis (optional)</text>
+  </g>
+
+  <!-- Project 04 -->
+  <g transform="translate(404, 514)">
+    <text x="0" y="18" class="serif" font-size="13" font-weight="600" fill="#c96442">04</text>
+    <text x="30" y="18" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">Code Generation Pipeline</text>
+    <text x="0"  y="40" font-size="11" fill="#6b6356">Planner → Coder → Reviewer → Tester. Runs real tests in a</text>
+    <text x="0"  y="55" font-size="11" fill="#6b6356">subprocess sandbox; loops until the suite passes.</text>
+    <text x="0"  y="76" class="mono" font-size="10" fill="#8a7a5c">LangGraph · subprocess</text>
+  </g>
+
+  <line x1="64" y1="600" x2="756" y2="600" stroke="#eee4ce" stroke-width="0.5"/>
+
+  <!-- Project 05 -->
+  <g transform="translate(64, 616)">
+    <text x="0" y="18" class="serif" font-size="13" font-weight="600" fill="#c96442">05</text>
+    <text x="30" y="18" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">Multi-Agent RAG</text>
+    <text x="0"  y="40" font-size="11" fill="#6b6356">A router classifies each query and picks the right specialist</text>
+    <text x="0"  y="55" font-size="11" fill="#6b6356">retriever — technical, business, or general — each with its own index.</text>
+    <text x="0"  y="76" class="mono" font-size="10" fill="#8a7a5c">LangGraph · nomic-embed-text</text>
+  </g>
+
+  <!-- Project 06 — Capstone, set slightly apart -->
+  <g transform="translate(404, 616)">
+    <text x="0" y="18" class="serif" font-size="13" font-weight="600" fill="#c96442">06</text>
+    <text x="30" y="18" class="serif" font-size="15" font-weight="500" fill="#1f1d1a">Autonomous Research</text>
+    <text x="200" y="18" class="serif" font-style="italic" font-size="11" fill="#9b8a6a">— capstone</text>
+    <text x="0"  y="40" font-size="11" fill="#6b6356">Planner → human gate → researcher → synthesiser → human</text>
+    <text x="0"  y="55" font-size="11" fill="#6b6356">gate → writer → critic loop. All five patterns, in one pipeline.</text>
+    <text x="0"  y="76" class="mono" font-size="10" fill="#8a7a5c">LangGraph · two human checkpoints · critic scoring</text>
+  </g>
+
+  <line x1="64" y1="708" x2="756" y2="708" stroke="#d9cdb3" stroke-width="0.75"/>
+
+  <!-- ── FOOTER PULL-QUOTE + REPO ── -->
+  <text x="64"  y="732" class="serif" font-style="italic" font-size="13" fill="#3d3833">“Frameworks stop feeling magical once you see them as state machines with prompts.”</text>
+  <text x="64"  y="754" class="mono" font-size="10" fill="#8a7a5c">github.com/bipinhcs11/Agentic-AI-Learning-Roadmap  ·  Phase 6 next: Production &amp; Enterprise</text>
+
+</svg>

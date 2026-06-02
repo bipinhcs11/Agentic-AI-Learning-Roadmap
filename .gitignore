@@ -63,3 +63,4 @@ terraform.tfvars
 # API keys (never commit these!)
 secrets.py
 config_local.py
+LinkedIn_Post_*.md
