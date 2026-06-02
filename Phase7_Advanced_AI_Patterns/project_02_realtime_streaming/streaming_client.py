@@ -39,7 +39,10 @@ except ImportError:
 # ─────────────────────────────────────────────────────────────────────────────────
 # CONFIGURATION
 # ─────────────────────────────────────────────────────────────────────────────────
-SERVER_WS_URL = "ws://localhost:8000/ws/chat"
+# Use 127.0.0.1 (not "localhost"): on macOS "localhost" resolves to IPv6 ::1
+# first, but the server binds IPv4 (0.0.0.0) — the mismatch yields a failed
+# handshake (403 / connection refused). Forcing IPv4 keeps client + server aligned.
+SERVER_WS_URL = "ws://127.0.0.1:8000/ws/chat"
 
 # Demo prompts — chosen to show different streaming characteristics:
 # Short answer (fast), medium answer, long answer (you can see streaming clearly)
