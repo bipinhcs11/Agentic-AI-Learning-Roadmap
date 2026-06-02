@@ -35,6 +35,11 @@ bash install.sh
 # Login to HuggingFace (required to download Gemma3)
 huggingface-cli login
 # Paste your token from: huggingface.co/settings/tokens
+ hf update          # update to 1.17.0 first
+  hf auth login      # then login
+
+  It will prompt for your Hugging Face token — get one from https://huggingface.co/settings/tokens (read access is
+  enough for downloading models).
 ```
 
 ## Run

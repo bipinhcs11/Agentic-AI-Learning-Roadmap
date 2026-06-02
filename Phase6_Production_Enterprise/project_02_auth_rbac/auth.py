@@ -42,7 +42,9 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 # safe for local development.
 # ─────────────────────────────────────────────────────────────
 
-SECRET_KEY     = os.getenv("SECRET_KEY", "dev-secret-change-in-production")
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-change-in-production")
+if os.getenv("APP_ENV", "development") == "production" and SECRET_KEY == "dev-secret-change-in-production":
+    raise RuntimeError("SECRET_KEY must be set to a secure value in production")
 ALGORITHM      = "HS256"
 TOKEN_EXPIRE_H = 24          # JWT lifetime in hours
 

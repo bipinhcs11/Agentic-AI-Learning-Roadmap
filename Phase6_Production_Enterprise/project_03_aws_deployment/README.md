@@ -7,43 +7,20 @@ ECS Fargate, an Application Load Balancer, and Terraform for infrastructure as c
 
 ## Architecture
 
-```
-                         ┌──────────────────────────────────────────────┐
-                         │                  AWS Cloud                    │
-                         │              (us-east-1 region)               │
-                         │                                               │
-  Internet               │    ┌─────────────────────────────────────┐   │
-     │                   │    │              VPC (10.0.0.0/16)       │   │
-     │                   │    │                                      │   │
-     ▼                   │    │  Subnet AZ-1        Subnet AZ-2      │   │
-┌─────────┐              │    │  (10.0.1.0/24)      (10.0.2.0/24)   │   │
-│  User   │──── HTTP ───►│    │       │                  │           │   │
-│ Browser │    port 80   │    │  ┌────▼──────────────────▼─────┐    │   │
-└─────────┘              │    │  │  Application Load Balancer   │    │   │
-                         │    │  │    (internet-facing ALB)     │    │   │
-                         │    │  └──────┬──────────────┬────────┘    │   │
-                         │    │         │              │              │   │
-                         │    │    /api/*         /* (default)       │   │
-                         │    │         │              │              │   │
-                         │    │    ┌────▼────┐   ┌────▼────┐        │   │
-                         │    │    │  ECS    │   │  ECS    │        │   │
-                         │    │    │  Task   │   │  Task   │        │   │
-                         │    │    │ FastAPI │   │Streamlit│        │   │
-                         │    │    │ :8000   │   │ :8501   │        │   │
-                         │    │    │0.5 vCPU │   │0.25vCPU │        │   │
-                         │    │    │  1 GB   │   │  0.5 GB │        │   │
-                         │    │    └────┬────┘   └─────────┘        │   │
-                         │    │         │                            │   │
-                         │    │    CLOUD_MODE=true                  │   │
-                         │    │    (Ollama not available)           │   │
-                         │    │                                      │   │
-                         │    └──────────────────────────────────────┘   │
-                         │                                               │
-                         │    ECR (Docker Registry)  CloudWatch Logs     │
-                         │    ai-platform-api:latest  /ecs/ai-platform/  │
-                         │    ai-platform-ui:latest                      │
-                         └──────────────────────────────────────────────┘
-```
+![AWS ECS Fargate Architecture](architecture.png)
+
+> Diagram generated from the Terraform configuration using official AWS service logos.
+> Regenerate with: `python generate_diagram.py`
+
+| Component | Config | Detail |
+|---|---|---|
+| VPC | 10.0.0.0/16 | 2 public subnets across AZ-1a and AZ-1b |
+| ALB | internet-facing, port 80 | Routes `/api/*` → FastAPI, `/*` → Streamlit |
+| ECS FastAPI | 0.5 vCPU · 1 GB | `CLOUD_MODE=true` — Ollama not available in AWS |
+| ECS Streamlit | 0.25 vCPU · 0.5 GB | Streamlit UI container |
+| ECR | 2 repositories | `ai-platform-api:latest`, `ai-platform-ui:latest` |
+| CloudWatch | Log groups | `/ecs/ai-platform/api`, `/ecs/ai-platform/ui` |
+| IAM | 2 roles | Execution role (ECR pull, CW logs) + Task role |
 
 **Key differences from local Docker Compose:**
 
@@ -76,10 +53,18 @@ Before running the deployment, verify each item:
   - `CloudWatchLogsFullAccess`
 - [ ] **Docker Desktop** installed and running: `docker info`
 - [ ] **Terraform >= 1.5** installed: `terraform version`
+  ```bash
+  # Install via Homebrew (Mac):
+  brew tap hashicorp/tap
+  brew install hashicorp/tap/terraform
+
+  # Verify:
+  terraform version   # should show >= 1.5
+  ```
 - [ ] **Python 3** installed: `python3 --version`
-- [ ] **Phase 6 Project 01** exists at `../project_01_docker_setup/` with:
-  - `Dockerfile.api` — FastAPI container
-  - `Dockerfile.ui` — Streamlit container
+- [ ] **Phase 6 Project 01** exists at `../project_01_dockerize/` with:
+  - `api/Dockerfile` — FastAPI container
+  - `ui/Dockerfile` — Streamlit container
 
 **Check your AWS identity:**
 ```bash

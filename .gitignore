@@ -46,6 +46,19 @@ Thumbs.db
 # Logs
 *.log
 logs/
+*.jsonl
+
+# Fine-tuning outputs (large binary files)
+lora_adapter/
+*/lora_adapter/
+*.safetensors
+
+# Terraform generated files
+terraform.tfvars
+.ecr_env
+**/.terraform/
+*.tfstate
+*.tfstate.backup
 
 # API keys (never commit these!)
 secrets.py
