@@ -1,0 +1,86 @@
+version: "3.9"
+
+# WHY named networks? Services communicate by container name (e.g., "backend:8000")
+# within the same network. Without a custom network, containers can't reach each other.
+networks:
+  askmydocs_net:
+    driver: bridge
+
+# WHY named volumes? Data persists across container restarts.
+# Without a named volume, the SQLite database would be destroyed on container stop.
+volumes:
+  db_data:     # Persistent SQLite database storage
+  upload_data: # Persistent uploaded files (in production: use S3 instead)
+
+services:
+  # ─── FastAPI Backend ───────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: askmydocs_backend
+    restart: unless-stopped
+    environment:
+      # WHY use env vars here and not .env file? docker-compose.yml is version-controlled.
+      # Sensitive values (SECRET_KEY, DB passwords) should use Docker secrets or
+      # an external secrets manager (AWS SSM, HashiCorp Vault) in production.
+      - SECRET_KEY=${SECRET_KEY:-askmydocs-prod-secret-CHANGE-ME}
+      - DATABASE_URL=sqlite:////data/askmydocs.db
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
+      - AI_MODEL=${AI_MODEL:-gemma3:4b}
+      - SUPER_ADMIN_TOKEN=${SUPER_ADMIN_TOKEN:-superadmin-prod-token-CHANGE-ME}
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET:-slack-prod-secret}
+    volumes:
+      - db_data:/data                # Persistent database
+      - upload_data:/app/uploads     # Persistent file uploads
+    ports:
+      - "8000:8000"                  # Expose for direct API access + API docs
+    networks:
+      - askmydocs_net
+    # WHY host.docker.internal? Ollama runs on the host machine, not in Docker.
+    # This hostname resolves to the host machine's IP from within a container.
+    # On Linux: add --add-host=host.docker.internal:host-gateway to docker run
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ─── Streamlit Frontend ────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: askmydocs_frontend
+    restart: unless-stopped
+    environment:
+      # Frontend connects to backend through nginx (public URL) in production,
+      # but directly to backend container for internal Docker networking
+      - API_BASE_URL=http://backend:8000
+      - SUPER_ADMIN_TOKEN=${SUPER_ADMIN_TOKEN:-superadmin-prod-token-CHANGE-ME}
+    ports:
+      - "8501:8501"                  # Expose for direct Streamlit access
+    networks:
+      - askmydocs_net
+    depends_on:
+      backend:
+        condition: service_healthy   # Don't start until backend is healthy
+
+  # ─── Nginx Reverse Proxy ───────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine         # Alpine = small (5MB vs 140MB for full nginx)
+    container_name: askmydocs_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"                      # HTTP traffic
+      - "443:443"                    # HTTPS (requires SSL cert setup)
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # :ro = read-only mount
+    networks:
+      - askmydocs_net
+    depends_on:
+      - backend
+      - frontend
