@@ -46,7 +46,25 @@ Thumbs.db
 # Logs
 *.log
 logs/
+*.jsonl
+
+# Fine-tuning outputs (large binary files)
+lora_adapter/
+*/lora_adapter/
+*.safetensors
+
+# Terraform generated files
+terraform.tfvars
+.ecr_env
+**/.terraform/
+*.tfstate
+*.tfstate.backup
 
 # API keys (never commit these!)
 secrets.py
 config_local.py
+LinkedIn_Post_*.md
+agentic_ai_phase5_diagram.*
+
+# Personal LinkedIn content drafts (not part of the roadmap)
+documents/linkedin/

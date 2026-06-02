@@ -183,12 +183,13 @@ def load_model_standard():
         bnb_4bit_compute_dtype=torch.float16,
     )
 
-    # MPS doesn't support bitsandbytes — load in float16 instead
+    # MPS doesn't support bitsandbytes or fp16 training — use float32 to
+    # avoid gradient overflow → NaN loss when training without mixed precision.
     if DEVICE == "mps":
         model = AutoModelForCausalLM.from_pretrained(
             BASE_MODEL,
             token=HF_TOKEN,
-            torch_dtype=torch.float16,
+            torch_dtype=torch.float32,
             device_map="mps",
             trust_remote_code=True,
         )
@@ -218,10 +219,12 @@ def load_model_unsloth():
         load_in_4bit=True,
         token=HF_TOKEN,
     )
+    # MLX (Apple Silicon) uses different internal layer names than CUDA.
+    # "all-linear" lets Unsloth auto-discover them instead of hardcoding names.
     model = FastLanguageModel.get_peft_model(
         model,
         r=LORA_CONFIG.r,
-        target_modules=LORA_CONFIG.target_modules,
+        target_modules="all-linear",
         lora_alpha=LORA_CONFIG.lora_alpha,
         lora_dropout=LORA_CONFIG.lora_dropout,
         bias="none",
@@ -234,22 +237,29 @@ def load_model_unsloth():
 def tokenize_dataset(dataset: Dataset, tokenizer, max_length: int = 1024):
     """Tokenize the formatted text examples."""
     def tokenize(examples):
-        return tokenizer(
+        out = tokenizer(
             examples["text"],
             truncation=True,
             max_length=max_length,
             padding=False,
         )
+        # labels must equal input_ids for causal LM loss; the data collator
+        # will replace padding positions with -100 automatically.
+        out["labels"] = [ids.copy() for ids in out["input_ids"]]
+        # Gemma3 requires token_type_ids during training to separate text/image
+        # tokens. For text-only fine-tuning all tokens are type 0.
+        out["token_type_ids"] = [[0] * len(ids) for ids in out["input_ids"]]
+        return out
     return dataset.map(tokenize, batched=True, remove_columns=["text"])
 
 
 def train(model, tokenizer, train_dataset, eval_dataset):
     """Run fine-tuning with SFTTrainer or standard Trainer."""
+    from transformers import Trainer
     try:
         from trl import SFTTrainer, SFTConfig
         use_sft = True
     except ImportError:
-        from transformers import Trainer
         use_sft = False
 
     training_args = TrainingArguments(
@@ -258,7 +268,7 @@ def train(model, tokenizer, train_dataset, eval_dataset):
         per_device_train_batch_size=2,
         per_device_eval_batch_size=2,
         gradient_accumulation_steps=4,   # effective batch = 2 × 4 = 8
-        learning_rate=2e-4,
+        learning_rate=5e-5,
         warmup_steps=10,
         logging_steps=10,                # print loss every 10 steps
         eval_strategy="epoch",
@@ -280,14 +290,17 @@ def train(model, tokenizer, train_dataset, eval_dataset):
     print(f"  Output:     {OUTPUT_DIR}")
     print(f"  Estimated time: 30-60 min on M4 (be patient)\n")
 
-    if use_sft:
+    # On MPS, always use standard Trainer with pre-tokenized data so that
+    # token_type_ids (required by Gemma3) are included in every batch.
+    if use_sft and DEVICE != "mps":
         trainer = SFTTrainer(
             model=model,
+            processing_class=tokenizer,
             args=SFTConfig(
                 **{k: v for k, v in training_args.to_dict().items()
                    if k in SFTConfig.__dataclass_fields__},
                 dataset_text_field="text",
-                max_seq_length=1024,
+                max_length=1024,
             ),
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
@@ -300,7 +313,9 @@ def train(model, tokenizer, train_dataset, eval_dataset):
             args=training_args,
             train_dataset=tokenized_train,
             eval_dataset=tokenized_eval,
-            data_collator=DataCollatorForSeq2Seq(tokenizer, pad_to_multiple_of=8),
+            data_collator=DataCollatorForSeq2Seq(
+                tokenizer, pad_to_multiple_of=8, label_pad_token_id=-100
+            ),
         )
 
     start = time.time()
@@ -358,7 +373,9 @@ def main():
     print(f"  Eval:  {len(eval_ds)} examples")
 
     # Load model
-    if UNSLOTH_AVAILABLE:
+    # Unsloth on Apple Silicon uses MLX (not PyTorch), which is incompatible
+    # with HuggingFace SFTTrainer/Trainer. Use the standard MPS path instead.
+    if UNSLOTH_AVAILABLE and DEVICE != "mps":
         model, tokenizer = load_model_unsloth()
     else:
         model, tokenizer = load_model_standard()
