@@ -348,13 +348,13 @@ def _build_graph() -> Any:
     g = StateGraph(PipelineState)
 
     g.add_node("retrieve", retrieve_node)
-    g.add_node("answer", answer_node)
+    g.add_node("generate", answer_node)
     g.add_node("cite", citation_node)
     g.add_node("quality", quality_node)
 
     g.set_entry_point("retrieve")
-    g.add_edge("retrieve", "answer")
-    g.add_edge("answer", "cite")
+    g.add_edge("retrieve", "generate")
+    g.add_edge("generate", "cite")
     g.add_edge("cite", "quality")
     g.add_edge("quality", END)
 

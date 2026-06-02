@@ -48,6 +48,7 @@ def check_prerequisites():
     convert_paths = [
         Path("llama.cpp/convert_hf_to_gguf.py"),
         Path(os.path.expanduser("~/llama.cpp/convert_hf_to_gguf.py")),
+        Path("/Users/bipinpradhan/llama.cpp/convert_hf_to_gguf.py"),
     ]
     for p in convert_paths:
         if p.exists():
@@ -85,8 +86,8 @@ def export_with_unsloth():
         print(f"[DONE] GGUF saved to {output_path}")
         return output_path
 
-    except ImportError:
-        print("[WARN] Unsloth not available for export.")
+    except Exception as e:
+        print(f"[WARN] Unsloth export failed ({e.__class__.__name__}), falling back to transformers merge.")
         return None
 
 
@@ -106,12 +107,24 @@ def export_with_transformers_merge():
     print(f"[MERGE] Loading base model: {BASE_MODEL}...")
     tokenizer = AutoTokenizer.from_pretrained(LORA_ADAPTER_DIR, token=HF_TOKEN)
 
-    base_model = AutoModelForCausalLM.from_pretrained(
-        BASE_MODEL,
-        torch_dtype=torch.float16,
-        device_map="cpu",   # merge on CPU to avoid MPS memory issues
-        token=HF_TOKEN,
-    )
+    # Load as Gemma3ForCausalLM (text-only) so llama.cpp can convert it.
+    # AutoModelForCausalLM on gemma-3-4b-it loads Gemma3ForConditionalGeneration
+    # (VLM) which has a double model.model. tensor prefix llama.cpp can't map.
+    try:
+        from transformers import Gemma3ForCausalLM
+        base_model = Gemma3ForCausalLM.from_pretrained(
+            BASE_MODEL,
+            torch_dtype=torch.float16,
+            device_map="cpu",
+            token=HF_TOKEN,
+        )
+    except ImportError:
+        base_model = AutoModelForCausalLM.from_pretrained(
+            BASE_MODEL,
+            torch_dtype=torch.float16,
+            device_map="cpu",
+            token=HF_TOKEN,
+        )
 
     print(f"[MERGE] Loading and merging LoRA adapter...")
     model = PeftModel.from_pretrained(base_model, LORA_ADAPTER_DIR)
@@ -131,7 +144,7 @@ def export_with_transformers_merge():
             sys.executable, convert_script,
             merged_dir,
             "--outfile", output_path,
-            "--outtype", "q4_k_m",
+            "--outtype", "q8_0",
         ], capture_output=True, text=True)
 
         if result.returncode == 0:

@@ -1,8 +1,8 @@
-# Ollama Modelfile — AI Coding Assistant (Fine-Tuned Gemma3:4b)
-# This is a template — ollama_deploy.py writes the real one with correct path
-
 FROM ./exported/gemma3-4b-finetuned.gguf
 
+# System prompt — defines the assistant's persona
+# Fine-tuning taught the model HOW to respond.
+# The system prompt teaches it WHO it is in this deployment.
 SYSTEM """You are an expert Python and AI coding assistant. You help developers write better code by:
 - Providing specific, runnable code examples (not pseudocode)
 - Explaining WHY something works, not just what to do
@@ -14,6 +14,7 @@ When you see an error message, diagnose the root cause.
 When asked to write code, include error handling.
 When explaining a concept, use a minimal working example."""
 
+# Model parameters
 PARAMETER temperature 0.3
 PARAMETER top_p 0.9
 PARAMETER repeat_penalty 1.1
