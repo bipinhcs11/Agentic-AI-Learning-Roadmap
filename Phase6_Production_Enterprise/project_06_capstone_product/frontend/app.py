@@ -48,6 +48,7 @@ def _init_state() -> None:
         "username": None,
         "chat_history": [],      # list of {role: "user"|"assistant", content, citations, quality}
         "auth_error": None,
+        "last_upload_sig": None,  # (name, size) of the last file already uploaded — guards the upload loop
     }
     for key, val in defaults.items():
         if key not in st.session_state:
@@ -200,23 +201,29 @@ def render_sidebar() -> List[Dict[str, Any]]:
             type=["pdf", "txt", "md"],
             label_visibility="collapsed",
         )
-        if uploaded:
-            with st.spinner(f"Processing {uploaded.name}…"):
-                try:
-                    resp = requests.post(
-                        f"{API_URL}/documents/upload",
-                        headers=_headers(),
-                        files={"file": (uploaded.name, uploaded.getvalue(), uploaded.type)},
-                        timeout=120,
-                    )
-                    if resp.status_code == 200:
-                        st.success(f"Uploaded **{uploaded.name}**")
-                        st.rerun()
-                    else:
-                        detail = resp.json().get("detail", "Upload failed")
-                        st.error(detail)
-                except requests.RequestException as exc:
-                    st.error(f"Upload error: {exc}")
+        # st.file_uploader RETAINS its file across reruns, so a naive upload + st.rerun()
+        # re-fires every rerun and uploads the same file forever. Guard on a (name, size)
+        # signature so each distinct file is sent exactly once.
+        if uploaded is not None:
+            upload_sig = (uploaded.name, uploaded.size)
+            if upload_sig != st.session_state.last_upload_sig:
+                st.session_state.last_upload_sig = upload_sig
+                with st.spinner(f"Processing {uploaded.name}…"):
+                    try:
+                        resp = requests.post(
+                            f"{API_URL}/documents/upload",
+                            headers=_headers(),
+                            files={"file": (uploaded.name, uploaded.getvalue(), uploaded.type)},
+                            timeout=120,
+                        )
+                        if resp.status_code == 200:
+                            st.success(f"Uploaded **{uploaded.name}**")
+                            st.rerun()
+                        else:
+                            detail = resp.json().get("detail", "Upload failed")
+                            st.error(detail)
+                    except requests.RequestException as exc:
+                        st.error(f"Upload error: {exc}")
 
     return docs
 

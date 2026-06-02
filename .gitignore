@@ -65,3 +65,6 @@ secrets.py
 config_local.py
 LinkedIn_Post_*.md
 agentic_ai_phase5_diagram.*
+
+# Personal LinkedIn content drafts (not part of the roadmap)
+documents/linkedin/
