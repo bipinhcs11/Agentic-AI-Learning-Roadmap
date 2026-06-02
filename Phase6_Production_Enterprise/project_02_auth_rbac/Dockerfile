@@ -62,11 +62,12 @@ USER appuser
 
 # ── Environment defaults ──────────────────────────────────────
 # Override any of these in docker run -e or docker-compose.yml
+# SECRET_KEY is intentionally omitted — pass it at runtime:
+#   docker run -e SECRET_KEY=$(openssl rand -hex 32) ...
 ENV OLLAMA_URL=http://host.docker.internal:11434
 ENV DEFAULT_MODEL=gemma3:4b
 ENV RATE_LIMIT_RPM=30
 ENV APP_ENV=production
-ENV SECRET_KEY=dev-secret-change-in-production
 ENV DB_PATH=/data/auth.db
 
 EXPOSE 8000

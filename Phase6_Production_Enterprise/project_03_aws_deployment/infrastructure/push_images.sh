@@ -74,7 +74,7 @@ UI_IMAGE="${UI_REPO_URI:-${ECR_REGISTRY}/ai-platform-ui}:latest"
 
 # Path to the Phase 6 Project 01 Docker setup where our
 # Dockerfiles and application code live.
-DOCKER_PROJECT_DIR="${DOCKER_PROJECT_DIR:-${PROJECT_DIR}/../project_01_docker_setup}"
+DOCKER_PROJECT_DIR="${DOCKER_PROJECT_DIR:-${PROJECT_DIR}/../project_01_dockerize}"
 
 echo -e "${CYAN}  ECR Registry: ${ECR_REGISTRY}${NC}"
 echo -e "${CYAN}  API Image:    ${API_IMAGE}${NC}"
@@ -144,10 +144,10 @@ echo -e "${CYAN}  Subsequent builds use layer cache and are faster.${NC}"
 
 docker buildx build \
     --platform linux/amd64 \
-    --file "${DOCKER_PROJECT_DIR}/Dockerfile.api" \
+    --file "${DOCKER_PROJECT_DIR}/api/Dockerfile" \
     --tag "${API_IMAGE}" \
     --load \
-    "${DOCKER_PROJECT_DIR}"
+    "${DOCKER_PROJECT_DIR}/api"
 
 # --load: saves the built image into the local Docker image store
 # so we can push it. Without --load, buildx discards the image
@@ -160,10 +160,10 @@ echo -e "${YELLOW}[4/5] Building UI image for linux/amd64...${NC}"
 
 docker buildx build \
     --platform linux/amd64 \
-    --file "${DOCKER_PROJECT_DIR}/Dockerfile.ui" \
+    --file "${DOCKER_PROJECT_DIR}/ui/Dockerfile" \
     --tag "${UI_IMAGE}" \
     --load \
-    "${DOCKER_PROJECT_DIR}"
+    "${DOCKER_PROJECT_DIR}/ui"
 
 echo -e "${GREEN}  ✓ UI image built: ${UI_IMAGE}${NC}"
 
