@@ -1,7 +1,7 @@
 # Agentic AI Learning Roadmap — Project Context
 
 ## What This Is
-A 6-phase, 30-week hands-on AI learning roadmap built on Mac Mini M4. All models run locally via Ollama. No cloud GPU required.
+An 8-phase, 44-week hands-on AI learning roadmap built on Mac Mini M4. All models run locally via Ollama. No cloud GPU required. The roadmap began with a viral "10 RAG Projects" LinkedIn post (now Phase 2) and grew into the full 8-phase path.
 
 ## Environment
 - **Python venv:** `~/Documents/my-ai-project/ai-env`
@@ -29,6 +29,8 @@ A 6-phase, 30-week hands-on AI learning roadmap built on Mac Mini M4. All models
 - Phase 4 Agent Framework: ✅ Complete (6 projects)
 - Phase 5 Multi-Agent Systems: ✅ Complete (6 projects)
 - Phase 6 Production & Enterprise: ✅ Complete (6 projects)
+- Phase 7 Advanced AI Patterns: ✅ Complete (6 projects)
+- Phase 8 Integrations & Shipping: ✅ Complete (6 projects)
 
 ## Installed Packages (Phase 5+)
 - langchain-openai, langgraph, crewai, redis
@@ -36,6 +38,6 @@ A 6-phase, 30-week hands-on AI learning roadmap built on Mac Mini M4. All models
 - python-jose[cryptography], passlib[bcrypt]
 
 ## Git Branches
-- main: all phases merged
-- phase5-multi-agent-systems: Phase 5 feature branch
-- phase6-production-enterprise: Phase 6 feature branch
+- main: all 8 phases merged
+- Feature branches per phase (phase5… through phase8…) merged via PR
+- Tag `v1.0`: pre-restructure snapshot of the full 8-phase roadmap
