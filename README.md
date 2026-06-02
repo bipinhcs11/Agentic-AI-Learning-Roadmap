@@ -2,7 +2,9 @@
 
 A complete hands-on journey from running your first local AI model to shipping a production AI SaaS product — built entirely on a Mac Mini M4.
 
-**30 weeks | 6 phases | 40+ projects | 100% local-first**
+**44 weeks | 8 phases | 45+ projects | 100% local-first**
+
+> **Origin:** This roadmap started with a viral LinkedIn post — *"Build these 10 RAG projects if you want to be taken seriously as an AI engineer."* Those 10 projects became **Phase 2**, and the journey grew from there into a full 8-phase path: foundations → RAG → agents → frameworks → multi-agent → production → advanced patterns → shipping.
 
 ---
 
@@ -21,6 +23,7 @@ A complete hands-on journey from running your first local AI model to shipping a
 | IaC | Terraform |
 | Monitoring | Prometheus + Grafana |
 | Fine-Tuning | LoRA + Unsloth + GGUF |
+| Integrations | Slack, GitHub, Stripe, Email |
 
 ---
 
@@ -33,29 +36,29 @@ A complete hands-on journey from running your first local AI model to shipping a
 - OpenAI-compatible local API client
 - Verified full stack with gemma3:4b
 
-📁 `Phase1_Foundation/`
+📁 `Phase1_Foundations/`
 
 ---
 
 ### Phase 2 — RAG Projects (Weeks 3-6) ✅
-**Goal:** Build 10 hands-on Retrieval-Augmented Generation projects
+**Goal:** Build the 10 hands-on Retrieval-Augmented Generation projects from the original LinkedIn post
 
 | # | Project |
 |---|---------|
-| 01 | First RAG pipeline |
-| 02 | IBM-style RAG |
-| 03 | GraphRAG |
-| 04 | Multi-document RAG |
-| 05 | Agentic RAG |
-| 06 | LangChain RAG |
-| 07 | Document analysis |
-| 08 | Multimodal RAG |
-| 09 | Research agent |
-| 10 | Real-time assistant |
+| 01 | First RAG pipeline (build from scratch) |
+| 02 | IBM-style RAG (production patterns) |
+| 03 | GraphRAG (knowledge graph) |
+| 04 | Multi-document RAG (vector database) |
+| 05 | Agentic RAG (autonomous agents) |
+| 06 | LangChain RAG (production ready) |
+| 07 | Document analysis (LLM + PDF) |
+| 08 | Multimodal RAG (text + images) |
+| 09 | AI research agent (automated analysis) |
+| 10 | Real-time assistant (live RAG pipeline) |
 
 **Stack:** nomic-embed-text, ChromaDB, numpy cosine similarity
 
-📁 `Phase2_RAG_Projects/`
+📁 `Phase2_RAG_Systems/`
 
 ---
 
@@ -131,6 +134,42 @@ A complete hands-on journey from running your first local AI model to shipping a
 
 ---
 
+### Phase 7 — Advanced AI Patterns (Weeks 31-36) ✅
+**Goal:** Go beyond basic agents into cutting-edge production patterns
+
+| # | Project |
+|---|---------|
+| 01 | GraphRAG (knowledge graph + relationship traversal) |
+| 02 | Real-time streaming (WebSocket token streaming) |
+| 03 | Long-term memory (persistent vector memory) |
+| 04 | Mixture of Agents (query routing to specialists) |
+| 05 | Self-improving agent (Reflexion loop) |
+| 06 | AI safety & red-teaming (guardrails + adversarial tests) |
+
+**Stack:** networkx, FastAPI WebSockets, SQLite, LangGraph
+
+📁 `Phase7_Advanced_AI_Patterns/`
+
+---
+
+### Phase 8 — Integrations & Shipping (Weeks 37-44) ✅
+**Goal:** Take local-AI into real-world integrations and ship a SaaS
+
+| # | Project |
+|---|---------|
+| 01 | Slack bot (Socket Mode) |
+| 02 | GitHub review bot (PR webhook → AI review) |
+| 03 | Email agent (classify, prioritize, draft) |
+| 04 | Multi-tenant SaaS (FastAPI + JWT + quotas) |
+| 05 | Billing & metering (token usage + invoices + Stripe) |
+| 06 | Capstone launch (dockerized RAG SaaS) |
+
+**Stack:** slack-bolt, FastAPI, SQLAlchemy, Stripe, Docker
+
+📁 `Phase8_Integrations_Shipping/`
+
+---
+
 ## Quick Start
 
 ```bash
@@ -148,7 +187,7 @@ ollama pull gemma3:4b
 ollama serve
 
 # Run any project
-python Phase2_RAG_Projects/project_01_first_rag/rag_pipeline.py
+python Phase2_RAG_Systems/project_01_first_rag/rag_from_scratch.py
 ```
 
 ## Run the Capstone Product (DocuMind)
@@ -174,12 +213,16 @@ All projects run locally on:
 ## Repository Structure
 
 ```
-├── Phase1_Foundation/
-├── Phase2_RAG_Projects/          # 10 RAG projects
-├── Phase3_Agentic_Stack/         # 6 agent projects
-├── Phase4_Agent_Framework/       # 6 framework projects
-├── Phase5_Multi_Agent_Systems/   # 6 multi-agent projects
-├── Phase6_Production_Enterprise/ # 6 production projects
-├── requirements.txt              # all dependencies
+├── Phase1_Foundations/             # setup + first model (docs/, test_gemma3.py)
+├── Phase2_RAG_Systems/           # 10 RAG projects (+ guide)
+├── Phase3_Agentic_Stack/          # 6 agent projects (+ guide)
+├── Phase4_Agent_Framework/        # 6 framework projects (+ guide)
+├── Phase5_Multi_Agent_Systems/    # 6 multi-agent projects
+├── Phase6_Production_Enterprise/  # 6 production projects
+├── Phase7_Advanced_AI_Patterns/   # 6 advanced-pattern projects
+├── Phase8_Integrations_Shipping/  # 6 integration / shipping projects
+├── scripts/                       # setup & install helper scripts
+├── requirements.txt               # shared dependencies
+├── CLAUDE.md                      # project context
 └── README.md
 ```

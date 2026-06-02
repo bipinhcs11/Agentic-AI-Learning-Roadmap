@@ -63,7 +63,7 @@ pip list | grep -E 'openai|langchain|fastapi'   # verify
 
 ### 8. Verify Full Stack
 ```bash
-python Phase1_Foundation/test_gemma3.py
+python Phase1_Foundations/test_gemma3.py
 # Expected: SUCCESS: Gemma3 is working via Ollama API!
 ```
 
