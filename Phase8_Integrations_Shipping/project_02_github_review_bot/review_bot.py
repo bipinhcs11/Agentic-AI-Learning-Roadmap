@@ -57,12 +57,24 @@ GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
 
 # Skip review for files that aren't source code (images, lock files, docs, etc.)
 # This saves time and avoids unhelpful "review" of generated files.
+# NOTE: these are matched as filename *suffixes*, not just the last extension —
+# os.path.splitext() only returns the final component, so ".min.js" would never
+# match (it returns ".js").  We use str.endswith() against the whole filename so
+# multi-part suffixes like ".min.js"/".min.css" work correctly.
 SKIP_EXTENSIONS = {
     ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico",          # Images
     ".lock", ".sum",                                            # Lock files
     ".min.js", ".min.css",                                     # Minified assets
     ".pb", ".onnx", ".h5",                                     # Model files
     ".pdf", ".docx", ".xlsx",                                  # Documents
+}
+
+# Generated lock files we skip by exact basename — ".json" is too broad to add
+# to SKIP_EXTENSIONS (it would skip every legitimate JSON source file), so we
+# match these well-known generated manifests explicitly.
+SKIP_BASENAMES = {
+    "package-lock.json", "yarn.lock", "pnpm-lock.yaml",
+    "poetry.lock", "composer.lock",
 }
 
 # Maximum number of files to review per PR.
@@ -159,9 +171,13 @@ def _parse_diff_into_files(full_diff: str) -> dict[str, str]:
 
 
 def _should_skip_file(filename: str) -> bool:
-    """Return True for files we don't want to review (binaries, lock files, etc.)."""
-    _, ext = os.path.splitext(filename.lower())
-    return ext in SKIP_EXTENSIONS
+    # Match on the whole filename suffix (not just the last extension) so
+    # multi-part suffixes like ".min.js"/".min.css" are honoured, then fall
+    # back to exact-basename matching for lock files like package-lock.json.
+    name = filename.lower()
+    if any(name.endswith(ext) for ext in SKIP_EXTENSIONS):
+        return True
+    return os.path.basename(name) in SKIP_BASENAMES
 
 
 def _prioritize_files(files: list[dict[str, Any]]) -> list[dict[str, Any]]:

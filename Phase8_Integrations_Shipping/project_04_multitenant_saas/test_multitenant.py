@@ -16,7 +16,6 @@
 
 from __future__ import annotations
 
-import time
 from typing import Optional
 
 import httpx
@@ -254,11 +253,21 @@ def run_tests() -> None:
         _fail("Block Alice from admin", f"Got {resp.status_code} — should be 403!")
 
     # Unauthenticated request is blocked
+    # WHY accept 401 OR 403: HTTPBearer(auto_error=True) returns 401 ("Not
+    # authenticated") for a MISSING/malformed Authorization header on modern
+    # FastAPI/Starlette — 401 is the semantically correct code for absent creds.
+    # Older FastAPI returned 403 here; we accept both so the suite is
+    # version-agnostic. (The /admin/tenants check above stays a hard 403 because
+    # that is an explicit HTTPException(403) in require_super_admin, not the
+    # bearer scheme.)
     resp = get("/tenants/me")
-    if resp.status_code == 403:
-        _pass("Unauthenticated requests blocked", "Correctly returned 403")
+    if resp.status_code in (401, 403):
+        _pass("Unauthenticated requests blocked", f"Correctly returned {resp.status_code}")
     else:
-        _fail("Block unauthenticated requests", f"Got {resp.status_code} — should be 403!")
+        _fail(
+            "Block unauthenticated requests",
+            f"Got {resp.status_code} — should be 401 or 403!",
+        )
 
     # ─── Test 4: AI Chat with Quota Enforcement ───────────────────────────────
     _section("TEST 4: AI Chat & Quota Enforcement")

@@ -30,12 +30,13 @@ An 8-phase, 44-week hands-on AI learning roadmap built on Mac Mini M4. All model
 - Phase 5 Multi-Agent Systems: ✅ Complete (6 projects)
 - Phase 6 Production & Enterprise: ✅ Complete (6 projects)
 - Phase 7 Advanced AI Patterns: ✅ Complete (6 projects)
-- Phase 8 Integrations & Shipping: ✅ Complete (6 projects)
+- Phase 8 Integrations & Shipping: ✅ Complete (6 projects) — all fix+verified vs live Ollama 2026-06-08; needs-creds paths (Slack/GitHub/Stripe/Gmail) untested by design
 
 ## Installed Packages (Phase 5+)
 - langchain-openai, langgraph, crewai, redis
 - prometheus-client, prometheus-fastapi-instrumentator
 - python-jose[cryptography], passlib[bcrypt]
+- Phase 8: slack_bolt, PyGithub, fastapi, uvicorn, stripe (sim), pypdf (capstone PDF support)
 
 ## Git Branches
 - main: all 8 phases merged

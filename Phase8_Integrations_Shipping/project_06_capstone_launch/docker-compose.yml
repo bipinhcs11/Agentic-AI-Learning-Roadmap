@@ -43,7 +43,11 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      # WHY python urllib, not curl? The backend image is python:3.11-slim, which
+      # ships no curl. A curl-based check would always fail, marking the container
+      # unhealthy and (via depends_on: service_healthy) blocking the frontend.
+      # This mirrors the Dockerfile's own HEALTHCHECK so both agree.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 30s
       timeout: 10s
       retries: 3

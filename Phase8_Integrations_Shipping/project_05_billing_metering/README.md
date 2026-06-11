@@ -13,7 +13,8 @@ AI APIs charge by **token** — not by request or time. This is because:
 - A 10,000-word document costs ~13,000 tokens
 - Charging per-request would massively under-price large requests
 
-One **token** ≈ 4 characters ≈ 0.75 words. "Hello, world!" = 4 tokens.
+One **token** ≈ 4 characters ≈ 0.75 words. Our `estimate_tokens` rule
+(word_count × 1.3, rounded) maps "Hello, world!" (2 words) → 3 tokens.
 
 ### The Billing Pipeline
 

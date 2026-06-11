@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 import os
+import re
 import textwrap
 from typing import Any
 
@@ -69,17 +70,24 @@ def _to_slack_md(text: str) -> str:
             continue
 
         if not in_code_block:
-            # Convert **bold** → *bold* (Slack style)
-            # We do two passes because Python's re would be overkill for a
-            # learning project — simple string replace is easier to follow.
-            line = line.replace("**", "*")
-            # Convert *italic* (CommonMark) → _italic_ (Slack)
-            # Only when a single asterisk is present (not double).
-            # Heuristic: after the ** → * substitution above, lone * pairs
-            # that remain are italics.  We replace them with underscores.
-            # This is intentionally simple — a full parser isn't needed here.
-            import re
-            line = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"_\1_", line)
+            # ORDER MATTERS. CommonMark uses **bold** and *italic*; Slack uses
+            # *bold* and _italic_.  If we naively did line.replace("**","*")
+            # first, the just-created single-* bold would then be caught by the
+            # italic regex and downgraded to _italic_ — destroying every bold
+            # span the model emitted (and our system prompt tells it to use bold).
+            #
+            # So we protect bold BEFORE touching italics:
+            #   1. Stash **bold** spans behind a NUL placeholder.
+            #   2. Convert the remaining lone-* italics to _italics_.  We require
+            #      the opening * to be followed by a non-space and the closing *
+            #      to be preceded by a non-space, so a list-marker "* " bullet is
+            #      never mistaken for an emphasis marker.
+            #   3. Restore the bold spans as Slack single-* bold.
+            line = re.sub(r"\*\*(.+?)\*\*", lambda m: "\x00" + m.group(1) + "\x00", line)
+            line = re.sub(
+                r"(?<!\*)\*(?!\*)(?!\s)(.+?)(?<!\s)(?<!\*)\*(?!\*)", r"_\1_", line
+            )
+            line = line.replace("\x00", "*")
 
         result.append(line)
 
