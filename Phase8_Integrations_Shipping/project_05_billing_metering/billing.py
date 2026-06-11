@@ -194,7 +194,10 @@ class PricingEngine:
         if not text:
             return 0
         word_count = len(text.split())
-        return max(1, int(word_count * 1.3))
+        # WHY round() not int(): int() truncates 2.6 → 2, which both
+        # under-counts and contradicts the documented 0.75-words-per-token
+        # rule. round() gives 2.6 → 3, matching the docstring/README examples.
+        return max(1, round(word_count * 1.3))
 
     def get_model_pricing(self, model: str) -> dict[str, float]:
         """Get pricing info for a model."""

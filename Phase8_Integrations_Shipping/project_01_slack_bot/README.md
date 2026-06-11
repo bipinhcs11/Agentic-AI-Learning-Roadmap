@@ -73,12 +73,19 @@ See [setup_guide.md](setup_guide.md) for the complete step-by-step guide, includ
 
 **Quick start (after setup):**
 ```bash
+# Activate the project virtualenv first so deps land in the right interpreter
+source ~/Documents/my-ai-project/ai-env/bin/activate
+
 cp .env.example .env
 # Fill in SLACK_BOT_TOKEN and SLACK_APP_TOKEN
 
 pip install -r requirements.txt
 python bot.py
 ```
+
+> Requires a running Ollama (`ollama serve`) with the `gemma3:4b` model pulled,
+> plus a Slack app with a Bot Token (`xoxb-…`) and an App-Level Token (`xapp-…`)
+> for Socket Mode. See setup_guide.md for how to obtain both tokens.
 
 ---
 

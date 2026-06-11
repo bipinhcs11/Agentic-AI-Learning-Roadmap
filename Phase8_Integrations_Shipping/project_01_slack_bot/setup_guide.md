@@ -117,6 +117,9 @@ DEFAULT_MODEL=gemma3:4b
 ## Step 8 — Run the Bot
 
 ```bash
+# Activate the project virtualenv so deps install into the right interpreter
+source ~/Documents/my-ai-project/ai-env/bin/activate
+
 pip install -r requirements.txt
 python bot.py
 ```

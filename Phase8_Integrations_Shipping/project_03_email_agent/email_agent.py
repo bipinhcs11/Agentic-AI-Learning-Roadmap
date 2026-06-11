@@ -30,7 +30,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
-import random
 
 from openai import OpenAI
 
@@ -722,13 +721,13 @@ class EmailClassifier:
     CLASSIFICATION_PROMPT = """You are an expert email classifier for a B2B SaaS company.
 
 Analyze the email below and return a JSON object with EXACTLY these fields:
-{
+{{
   "category": "<one of: support|sales|spam|newsletter|urgent|meeting|other>",
   "priority": "<one of: high|medium|low>",
   "sentiment": "<one of: positive|neutral|negative|mixed>",
   "requires_reply": <true|false>,
   "reason": "<one sentence explaining your classification>"
-}
+}}
 
 Category definitions:
 - support: Technical questions, bug reports, API issues, how-to questions
@@ -761,13 +760,16 @@ Return ONLY the JSON object. No other text."""
         """
         body_preview = email.body[:800]  # Limit to avoid context overflow
 
-        prompt = self.CLASSIFICATION_PROMPT.format(
-            from_addr=email.from_addr,
-            subject=email.subject,
-            body=body_preview,
-        )
-
         try:
+            # WHY inside the try: prompt construction (.format) can itself raise —
+            # keeping it here means any formatting error falls back gracefully
+            # instead of crashing the whole inbox sweep.
+            prompt = self.CLASSIFICATION_PROMPT.format(
+                from_addr=email.from_addr,
+                subject=email.subject,
+                body=body_preview,
+            )
+
             response = client.chat.completions.create(
                 model=MODEL,
                 messages=[{"role": "user", "content": prompt}],
@@ -793,7 +795,7 @@ Return ONLY the JSON object. No other text."""
                 reason=data.get("reason", "No reason provided"),
             )
 
-        except (json.JSONDecodeError, KeyError, Exception) as e:
+        except Exception as e:  # Broad catch: Ollama/JSON/format errors all fall back
             # Fallback classification if LLM fails — better than crashing
             print(f"  Warning: Classification error for email {email.id}: {e}")
             return Classification(

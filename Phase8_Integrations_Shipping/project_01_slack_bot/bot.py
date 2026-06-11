@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import time
 from collections import defaultdict
 from typing import Any
@@ -65,6 +66,12 @@ app = App(
     signing_secret=os.getenv("SLACK_SIGNING_SECRET", "unused_in_socket_mode"),
     process_before_response=True,
 )
+
+# Resolve our own bot user id ONCE at startup. The bot's user id is static, so
+# calling auth.test on every incoming channel message (as we used to) just burns
+# a Slack API round-trip and rate-limit budget per message. We cache it here and
+# use the public app.client (not the private app._client).
+BOT_USER_ID: str = app.client.auth_test()["user_id"]
 
 # ── Rate Limiting ─────────────────────────────────────────────────────────────
 # A simple in-memory rate limiter: map user_id → last_request_timestamp.
@@ -136,15 +143,13 @@ def handle_message(message: dict[str, Any], client: Any, say: Any) -> None:
 
     # Only respond in DMs (channel starts with "D") or when explicitly mentioned
     channel_type: str = message.get("channel_type", "")
-    if channel_type != "im" and f"<@{app._client.auth_test()['user_id']}>" not in text:
+    if channel_type != "im" and f"<@{BOT_USER_ID}>" not in text:
         # Not a DM and not a mention — skip (app_mention handler covers mentions)
         return
 
     if not _check_rate_limit(user_id):
-        say(
-            text=f"_Slow down! I can only handle one request every {RATE_LIMIT_SECONDS} seconds per user._",
-            channel=channel,
-        )
+        # say() is already bound to this event's channel, so no channel= kwarg.
+        say(text=f"_Slow down! I can only handle one request every {RATE_LIMIT_SECONDS} seconds per user._")
         return
 
     log.info("DM from %s: %s", user_id, text[:80])
@@ -174,18 +179,15 @@ def handle_mention(event: dict[str, Any], client: Any, say: Any) -> None:
     raw_text: str = event.get("text", "")
 
     # Remove the @mention token (e.g., "<@U12345>") from the text
-    import re
     clean_text = re.sub(r"<@[A-Z0-9]+>", "", raw_text).strip()
 
     if not clean_text:
-        say(text="Hey! Ask me anything — I'm here to help. :wave:", channel=channel)
+        # say() is already scoped to the event's channel — no channel= kwarg.
+        say(text="Hey! Ask me anything — I'm here to help. :wave:")
         return
 
     if not _check_rate_limit(user_id):
-        say(
-            text=f"_Please wait {RATE_LIMIT_SECONDS}s between requests._",
-            channel=channel,
-        )
+        say(text=f"_Please wait {RATE_LIMIT_SECONDS}s between requests._")
         return
 
     log.info("Mention from %s: %s", user_id, clean_text[:80])
