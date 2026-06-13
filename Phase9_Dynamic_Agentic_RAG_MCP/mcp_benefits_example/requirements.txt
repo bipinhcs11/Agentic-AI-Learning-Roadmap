@@ -1,0 +1,7 @@
+# Phase 9 · MCP Benefits Example — dependencies (all RAM-safe, no PyTorch)
+openai>=1.30.0                 # Ollama via OpenAI-compatible client (chat + embeddings)
+numpy>=1.26.0                  # cosine similarity vector store
+mcp>=1.2.0                     # Model Context Protocol SDK (FastMCP server)
+langchain-mcp-adapters>=0.1.0  # bridge MCP tools → LangChain/LangGraph
+langgraph>=0.2.0               # the dynamic router graph
+langchain-openai>=0.1.0        # ChatOpenAI pointed at Ollama (qwen2.5:3b)

@@ -24,6 +24,9 @@ chroma_db/
 *.gguf
 *.bin
 
+# RAG vector index artifacts (regenerate with ingest.py)
+*.npz
+
 # Environment variables
 .env
 .env.local

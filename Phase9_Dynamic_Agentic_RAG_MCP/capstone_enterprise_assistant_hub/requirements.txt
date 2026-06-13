@@ -1,0 +1,10 @@
+# Phase 9 capstone core dependencies
+openai>=1.0.0
+numpy>=1.24.0
+fastapi>=0.100.0
+uvicorn>=0.23.0
+httpx>=0.24.0
+pytest>=7.0.0
+
+# Optional provider SDK. Imported only when AI_PROVIDER=bedrock|sagemaker.
+boto3>=1.34.0

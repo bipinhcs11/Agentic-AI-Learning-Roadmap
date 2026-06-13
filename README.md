@@ -2,9 +2,9 @@
 
 A complete hands-on journey from running your first local AI model to shipping a production AI SaaS product — built entirely on a Mac Mini M4.
 
-**44 weeks | 8 phases | 45+ projects | 100% local-first**
+**48+ weeks | 9 phases | 48+ projects | 100% local-first**
 
-> **Origin:** This roadmap started with a viral LinkedIn post — *"Build these 10 RAG projects if you want to be taken seriously as an AI engineer."* Those 10 projects became **Phase 2**, and the journey grew from there into a full 8-phase path: foundations → RAG → agents → frameworks → multi-agent → production → advanced patterns → shipping.
+> **Origin:** This roadmap started with a viral LinkedIn post — *"Build these 10 RAG projects if you want to be taken seriously as an AI engineer."* Those 10 projects became **Phase 2**, and the journey grew from there into a full 9-phase path: foundations → RAG → agents → frameworks → multi-agent → production → advanced patterns → shipping → dynamic MCP enterprise systems.
 
 ---
 
@@ -24,6 +24,7 @@ A complete hands-on journey from running your first local AI model to shipping a
 | Monitoring | Prometheus + Grafana |
 | Fine-Tuning | LoRA + Unsloth + GGUF |
 | Integrations | Slack, GitHub, Stripe, Email |
+| MCP | Model Context Protocol tools, resources, prompts |
 
 ---
 
@@ -170,6 +171,21 @@ A complete hands-on journey from running your first local AI model to shipping a
 
 ---
 
+### Phase 9 — Dynamic Agentic RAG + MCP (Weeks 45+) 🔄
+**Goal:** Learn MCP as its own enterprise integration pattern, then combine it with RAG and dynamic LLM provider routing
+
+| # | Module |
+|---|--------|
+| 01 | MCP Benefits Assistant — mock 401(k) + HSA tools/resources |
+| 02 | MCP + RAG Enterprise Integration — structured tools + document retrieval |
+| 03 | Enterprise Assistant Hub capstone — MCP gateway + RAG + AWS provider abstraction |
+
+**Stack:** MCP Python SDK, FastMCP, local mock data, Ollama, NumPy, future Bedrock/SageMaker adapters
+
+📁 `Phase9_Dynamic_Agentic_RAG_MCP/`
+
+---
+
 ## Quick Start
 
 ```bash
@@ -221,6 +237,7 @@ All projects run locally on:
 ├── Phase6_Production_Enterprise/  # 6 production projects
 ├── Phase7_Advanced_AI_Patterns/   # 6 advanced-pattern projects
 ├── Phase8_Integrations_Shipping/  # 6 integration / shipping projects
+├── Phase9_Dynamic_Agentic_RAG_MCP/ # MCP benefits, MCP+RAG, enterprise capstone
 ├── scripts/                       # setup & install helper scripts
 ├── requirements.txt               # shared dependencies
 ├── CLAUDE.md                      # project context
