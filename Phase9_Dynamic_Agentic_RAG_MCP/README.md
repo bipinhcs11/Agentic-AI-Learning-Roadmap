@@ -12,7 +12,7 @@ capstone.
 | 01 | MCP Benefits Assistant | Local MCP server for mock 401(k) + HSA tools/resources | Built |
 | 02 | MCP + RAG Enterprise Integration | Structured MCP tools plus document-grounded RAG | Built |
 | 03 | Enterprise Assistant Hub Capstone | Multi-tenant MCP gateway + RAG + AWS provider abstraction | Built |
-| 04 | Java MCP Benefits Assistant | Plain Java version of Module 01 for side-by-side comparison | In progress |
+| 04 | Java MCP Benefits Assistant | Plain Java version of Module 01 for side-by-side comparison | Built |
 | 05 | Spring Boot MCP + RAG Benefits Microservice | Spring WebMVC + MCP Streamable HTTP + lightweight RAG | Built |
 
 ## Progression

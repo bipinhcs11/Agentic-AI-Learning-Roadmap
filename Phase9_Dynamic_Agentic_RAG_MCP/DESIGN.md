@@ -102,12 +102,14 @@ Skipped by design: Slack, observability, real AWS deploy, billing, and the full
 Phase 8 auth model. Those stay in Phase 8; this capstone focuses on the MCP/RAG
 enterprise integration boundary.
 
-## Module 04 — Java MCP Benefits Assistant  🔄 in progress
+## Module 04 — Java MCP Benefits Assistant  ✅ built
 
 `module_04_java_mcp_benefits_assistant/` is the plain Java companion to Module
 01. It should stay close to the Python module: same mock 401(k)/HSA domain, same
 tools/resources/prompts, and the same safety boundaries. The point is
-side-by-side comparison for Java developers, not a new product surface.
+side-by-side comparison for Java developers, not a new product surface. The demo
+client launches the Java server over stdio and exercises tools, resources, and
+prompts; a terminal transcript lives in `demo_recordings/`.
 
 ## Module 05 — Spring Boot MCP + RAG Benefits Microservice  ✅ built
 
