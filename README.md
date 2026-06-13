@@ -1,12 +1,43 @@
 # Agentic AI Learning Roadmap 🤖
 
-A complete hands-on journey from running your first local AI model to shipping a production AI SaaS product — built entirely on a Mac Mini M4.
+Local-first hands-on roadmap for learning Agentic AI, RAG, multi-agent systems,
+MCP, and production AI apps with Ollama, LangGraph, CrewAI, FastAPI, and AWS
+deployment patterns.
 
-**48+ weeks | 9 phases | 48+ projects | 100% local-first**
+**9 phases | 48+ projects | suggested 48+ week pace | 100% local-first**
 
 > **Origin:** This roadmap started with a viral LinkedIn post — *"Build these 10 RAG projects if you want to be taken seriously as an AI engineer."* Those 10 projects became **Phase 2**, and the journey grew from there into a full 9-phase path: foundations → RAG → agents → frameworks → multi-agent → production → advanced patterns → shipping → dynamic MCP enterprise systems.
 
+This repo is built for two audiences:
+
+- **Self-paced builders** who want to learn by running real projects locally.
+- **Community learners** who want a practical map from first local model to
+  production-style agentic systems.
+
+The week numbers are suggested pacing, not a rigid calendar. Move faster, slow
+down, or jump to the phase that matches what you are trying to build.
+
 ---
+
+## Start Here
+
+| If you are... | Start with | Why |
+|---|---|---|
+| New to local AI | `Phase1_Foundations/` | Get Ollama, Python, and the local OpenAI-compatible client working. |
+| Learning RAG | `Phase2_RAG_Systems/project_01_first_rag/` | Build the first retrieval pipeline from scratch before frameworks. |
+| Learning agents | `Phase3_Agentic_Stack/` | Move from tool calling to memory, scraping, and API agents. |
+| Learning production AI | `Phase6_Production_Enterprise/` | Docker, auth, observability, deployment, and capstone SaaS patterns. |
+| Learning MCP | `Phase9_Dynamic_Agentic_RAG_MCP/` | MCP tools, MCP + RAG routing, and the enterprise assistant hub capstone. |
+
+## Learning Paths
+
+You do not have to complete everything in order.
+
+- **Beginner path:** Phase 1 → Phase 2 Project 01 → Phase 3 Project 01
+- **RAG engineer path:** Phase 2 → Phase 3 Project 05 → Phase 7 Project 01
+- **Agent builder path:** Phase 3 → Phase 5 → Phase 7
+- **Production path:** Phase 6 → Phase 8 → Phase 9 capstone
+- **MCP path:** Phase 9 Module 01 → Module 02 → Enterprise Assistant Hub
 
 ## The Stack
 
@@ -205,6 +236,18 @@ ollama serve
 # Run any project
 python Phase2_RAG_Systems/project_01_first_rag/rag_from_scratch.py
 ```
+
+## Community
+
+This started as a personal learning roadmap, but it is open for people who want
+to follow along, reuse examples, or suggest improvements.
+
+- Star the repo if you are following the roadmap.
+- Open an [issue](https://github.com/bipinhcs11/Agentic-AI-Learning-Roadmap/issues)
+  if a setup step is unclear or a project breaks.
+- Use [GitHub Discussions](https://github.com/bipinhcs11/Agentic-AI-Learning-Roadmap/discussions)
+  for roadmap questions, project ideas, and learning notes.
+- See `CONTRIBUTING.md` for the contribution style.
 
 ## Run the Capstone Product (DocuMind)
 
