@@ -51,6 +51,9 @@ Thumbs.db
 logs/
 *.jsonl
 
+# Java / Maven build output
+**/target/
+
 # Fine-tuning outputs (large binary files)
 lora_adapter/
 */lora_adapter/

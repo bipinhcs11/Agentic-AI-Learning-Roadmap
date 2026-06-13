@@ -10,8 +10,10 @@ capstone.
 | # | Module | What You Build | Status |
 |---|---|---|---|
 | 01 | MCP Benefits Assistant | Local MCP server for mock 401(k) + HSA tools/resources | Built |
-| 02 | MCP + RAG Enterprise Integration | Structured MCP tools plus document-grounded RAG | Planned |
-| 03 | Enterprise Assistant Hub Capstone | Multi-tenant MCP gateway + RAG + AWS provider abstraction | Planned |
+| 02 | MCP + RAG Enterprise Integration | Structured MCP tools plus document-grounded RAG | Built |
+| 03 | Enterprise Assistant Hub Capstone | Multi-tenant MCP gateway + RAG + AWS provider abstraction | Built |
+| 04 | Java MCP Benefits Assistant | Plain Java version of Module 01 for side-by-side comparison | In progress |
+| 05 | Spring Boot MCP + RAG Benefits Microservice | Spring WebMVC + MCP Streamable HTTP + lightweight RAG | Built |
 
 ## Progression
 
@@ -21,6 +23,8 @@ Module 01: Learn MCP with mock 401(k)/HSA tools and resources
 Module 02: Add RAG over benefits and policy documents
     ↓
 Capstone: Turn MCP + RAG into an enterprise assistant platform
+    ↓
+Java/Spring variants: show the same ideas for enterprise Java teams
 ```
 
 ## Why Start With Benefits?
@@ -40,4 +44,4 @@ tax, legal, or investment advice.
 
 `mcp_benefits_example/` is an earlier MCP+RAG prototype that uses a retrieval
 tool over local 401(k)/HSA markdown reference docs. Keep it as a reference for
-Module 02 while Module 01 remains intentionally MCP-only.
+the later MCP + RAG modules while Module 01 remains intentionally MCP-only.

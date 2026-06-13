@@ -10,6 +10,7 @@ The learning sequence is intentionally staged:
 Pure MCP
   -> MCP + RAG
   -> Enterprise capstone
+  -> Java/Spring Boot variants for enterprise teams
 ```
 
 ## Module 01 — MCP Benefits Assistant  ✅ built
@@ -100,6 +101,30 @@ patterns:
 Skipped by design: Slack, observability, real AWS deploy, billing, and the full
 Phase 8 auth model. Those stay in Phase 8; this capstone focuses on the MCP/RAG
 enterprise integration boundary.
+
+## Module 04 — Java MCP Benefits Assistant  🔄 in progress
+
+`module_04_java_mcp_benefits_assistant/` is the plain Java companion to Module
+01. It should stay close to the Python module: same mock 401(k)/HSA domain, same
+tools/resources/prompts, and the same safety boundaries. The point is
+side-by-side comparison for Java developers, not a new product surface.
+
+## Module 05 — Spring Boot MCP + RAG Benefits Microservice  ✅ built
+
+`module_05_springboot_mcp_benefits_assistant/` shows the same MCP + RAG pattern
+in a Spring Boot WebMVC microservice shape:
+
+- Spring AI MCP server annotations
+- Streamable HTTP MCP endpoint at `/mcp`
+- REST inspection endpoints under `/api/benefits`
+- mock benefits account tools
+- lightweight in-memory RAG over bundled markdown reference summaries
+- regression test for ranking the 2026 employee 401(k) limit above the combined
+  employee plus employer cap
+
+This still belongs in Phase 9. A future Phase 10 should wait until the Java and
+Spring variants are stable enough to justify a broader theme such as polyglot
+production agents, Kubernetes deployment, or enterprise governance.
 
 ## Related Phase 8 Upgrade Spec
 

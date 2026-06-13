@@ -210,8 +210,10 @@ You do not have to complete everything in order.
 | 01 | MCP Benefits Assistant — mock 401(k) + HSA tools/resources |
 | 02 | MCP + RAG Enterprise Integration — structured tools + document retrieval |
 | 03 | Enterprise Assistant Hub capstone — MCP gateway + RAG + AWS provider abstraction |
+| 04 | Java MCP Benefits Assistant — plain Java companion to Module 01 |
+| 05 | Spring Boot MCP + RAG Benefits Microservice — Streamable HTTP MCP + REST |
 
-**Stack:** MCP Python SDK, FastMCP, local mock data, Ollama, NumPy, future Bedrock/SageMaker adapters
+**Stack:** MCP Python SDK, FastMCP, Spring AI MCP, Java, Spring Boot, local mock data, Ollama, NumPy, Bedrock/SageMaker adapters
 
 📁 `Phase9_Dynamic_Agentic_RAG_MCP/`
 
