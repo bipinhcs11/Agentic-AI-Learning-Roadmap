@@ -7,6 +7,8 @@ SageMaker, Bedrock, or the Phase 8 capstone. The idea originally started as a
 possible `Phase8_Integrations_Shipping/project_07_mcp_benefits_assistant`, but
 the cleaner roadmap home is Phase 9 because MCP deserves its own learning track.
 
+![Animated MCP request flow for Module 01](assets/mcp_flow_module01.gif)
+
 ## Goal
 
 Create a local MCP server that exposes tools and resources over stdio so Claude
@@ -56,6 +58,7 @@ This gives you a realistic enterprise use case without needing real accounts.
 | `benefits_mcp_server.py` | Python MCP server with mock tools, resources, and one prompt |
 | `demo_client.py` | Simple MCP client that launches the server over stdio and calls tools |
 | `requirements.txt` | Minimal MCP dependency list |
+| `assets/mcp_flow_module01.gif` | Animated walkthrough of a Module 01 MCP request flow |
 
 ## MCP Tools
 
