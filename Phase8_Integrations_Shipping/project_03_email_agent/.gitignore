@@ -1,0 +1,6 @@
+
+# Gmail OAuth secrets — never commit
+credentials.json
+token.json
+emails.db
+__pycache__/
