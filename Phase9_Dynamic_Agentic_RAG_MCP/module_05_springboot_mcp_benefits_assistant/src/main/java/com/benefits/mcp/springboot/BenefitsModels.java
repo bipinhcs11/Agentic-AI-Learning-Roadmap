@@ -77,4 +77,24 @@ public final class BenefitsModels {
 
     public record MatchRequest(Double salary, Double employeeContributionPercent) {
     }
+
+    public record AgentQuestionRequest(String question) {
+    }
+
+    public record AgentToolTrace(
+            String name,
+            String target,
+            Map<String, Object> arguments,
+            String status) {
+    }
+
+    public record AgentDemoResponse(
+            String route,
+            String routeLabel,
+            String backend,
+            String answer,
+            List<AgentToolTrace> toolCalls,
+            List<SearchHit> retrievedDocuments,
+            List<String> citations) {
+    }
 }

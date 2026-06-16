@@ -44,6 +44,8 @@ documents used) to `audit_log.jsonl` — a small preview of the capstone's audit
 | `benefits_mcp_server.py` | one MCP server: **mock** account tools + **RAG** tools (`search_benefits_docs`, `list_sources`) |
 | `demo_client.py` | raw MCP client (no LLM) — shows the mechanics |
 | `agent.py` | `qwen2.5:3b` explicit LangGraph router + audit log — the dynamic MCP+RAG flow |
+| `demo_api.py` | browser-friendly recording API for the shared Agent Playground UI |
+| `demo_agent_core.py` | deterministic demo router used by the recording API |
 
 ## Prerequisites
 
@@ -68,6 +70,26 @@ python agent.py "Am I getting the full employer match on my 401(k)?"      # mcp_
 python agent.py "What is the 2026 HSA family contribution limit?"         # rag_only
 python agent.py "I contribute 6%. Am I maxing the match, and what's the 2026 401k limit?"  # mcp+rag
 ```
+
+## Record With The Shared Agent Playground
+
+For LinkedIn/video recording, use the shared browser UI instead of relying only
+on terminal output:
+
+```bash
+python demo_api.py
+```
+
+Then open:
+
+```text
+http://localhost:8090/
+```
+
+The Python demo API returns the same response shape as the Spring Boot Module 05
+API: route, tool calls, retrieved documents, citations, and final answer. It is
+deterministic so the recording does not require a live LLM call, while the main
+`agent.py` file remains the real dynamic LangGraph/Ollama flow.
 
 ## Citations & safety
 

@@ -2,6 +2,7 @@ package com.benefits.mcp.springboot;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.benefits.mcp.springboot.BenefitsModels.AgentDemoResponse;
+import com.benefits.mcp.springboot.BenefitsModels.AgentQuestionRequest;
 import com.benefits.mcp.springboot.BenefitsModels.DocumentExcerpt;
 import com.benefits.mcp.springboot.BenefitsModels.DocumentSummary;
 import com.benefits.mcp.springboot.BenefitsModels.EmployeeProfile;
@@ -21,15 +24,26 @@ import com.benefits.mcp.springboot.BenefitsModels.SearchHit;
 import com.benefits.mcp.springboot.BenefitsModels.SourceCatalog;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/benefits")
 public class BenefitsRestController {
 
     private final BenefitsDataService benefitsData;
     private final RagDocumentService ragDocuments;
+    private final BenefitsDemoAgentService demoAgent;
 
-    public BenefitsRestController(BenefitsDataService benefitsData, RagDocumentService ragDocuments) {
+    public BenefitsRestController(
+            BenefitsDataService benefitsData,
+            RagDocumentService ragDocuments,
+            BenefitsDemoAgentService demoAgent) {
         this.benefitsData = benefitsData;
         this.ragDocuments = ragDocuments;
+        this.demoAgent = demoAgent;
+    }
+
+    @PostMapping("/agent/ask")
+    public AgentDemoResponse askAgent(@RequestBody(required = false) AgentQuestionRequest request) {
+        return demoAgent.answer(request == null ? null : request.question());
     }
 
     @GetMapping("/profile")

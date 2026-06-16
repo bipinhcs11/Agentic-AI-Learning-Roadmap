@@ -13,7 +13,7 @@ capstone.
 | 02 | MCP + RAG Enterprise Integration | Structured MCP tools plus document-grounded RAG | Built |
 | 03 | Enterprise Assistant Hub Capstone | Multi-tenant MCP gateway + RAG + AWS provider abstraction | Built |
 | 04 | Java MCP Benefits Assistant | Plain Java version of Module 01 for side-by-side comparison | Built |
-| 05 | Spring Boot MCP + RAG Benefits Microservice | Spring WebMVC + MCP Streamable HTTP + lightweight RAG | Built |
+| 05 | Spring Boot MCP + RAG Benefits Microservice | Spring WebMVC + MCP Streamable HTTP + lightweight RAG + demo UI | Built |
 
 ## Progression
 
@@ -26,6 +26,13 @@ Capstone: Turn MCP + RAG into an enterprise assistant platform
     ↓
 Java/Spring variants: show the same ideas for enterprise Java teams
 ```
+
+For LinkedIn/video demos, treat Modules 04 and 05 as one JVM story: Module 04
+proves MCP is language-agnostic with the plain Java SDK, and Module 05 becomes
+the main JVM recording surface with the Spring Boot Agent Playground UI. Module
+02 also exposes a Python demo API on port `8090`, so the same Agent Playground
+visual style can be used for both the Python MCP + RAG post and the Spring Boot
+post.
 
 ## Why Start With Benefits?
 

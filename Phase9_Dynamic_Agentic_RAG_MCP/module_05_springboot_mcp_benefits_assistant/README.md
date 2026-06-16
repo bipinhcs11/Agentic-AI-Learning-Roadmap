@@ -8,6 +8,7 @@ looks in an enterprise Java/Spring Boot shape:
 - Streamable HTTP MCP endpoint
 - REST endpoints for developer inspection
 - lightweight in-memory RAG over bundled markdown reference summaries
+- recording-friendly Agent Playground UI for LinkedIn/video demos
 
 All data is fictional. This is educational only and is not financial, tax,
 legal, or investment advice.
@@ -32,6 +33,11 @@ MCP client or agent
 Developer/browser/curl
   -> REST endpoints (/api/benefits/*)
       -> same mock account + RAG services
+
+Browser demo
+  -> Agent Playground (/)
+      -> deterministic demo router (/api/benefits/agent/ask)
+          -> MCP-style account tools + RAG retrieval trace
 ```
 
 ## What You Build
@@ -45,6 +51,7 @@ Developer/browser/curl
 | MCP prompt | 1 safe benefits question `@McpPrompt` |
 | RAG | Heading-anchored markdown chunks + lexical/topic/intent rerank |
 | REST | `/api/benefits/*` endpoints over the same service layer |
+| UI | Static Agent Playground served by Spring Boot at `/` |
 
 This module follows the Spring AI MCP server starter and annotation model from
 the official Spring AI docs:
@@ -82,12 +89,31 @@ mvn spring-boot:run
 
 Default port: `8085`
 
+Open the recording UI:
+
+```text
+http://localhost:8085/
+```
+
+The UI includes a backend switcher:
+
+| Backend | API |
+|---|---|
+| Python MCP + RAG | `http://localhost:8090/api/benefits/agent/ask` |
+| Spring Boot MCP + RAG | `http://localhost:8085/api/benefits/agent/ask` |
+
+Start Module 02's `python demo_api.py` if you want the same screen to call the
+Python backend during recording.
+
 ```bash
 curl "http://localhost:8085/api/benefits/profile"
 curl "http://localhost:8085/api/benefits/rag/search?query=2026%20HSA%20family%20limit"
 curl -X POST "http://localhost:8085/api/benefits/401k/match" \
   -H "Content-Type: application/json" \
   -d '{"salary":120000,"employeeContributionPercent":6}'
+curl -X POST "http://localhost:8085/api/benefits/agent/ask" \
+  -H "Content-Type: application/json" \
+  -d '{"question":"I contribute 6% to my 401(k). Am I getting the full match, and what is the 2026 employee limit?"}'
 ```
 
 The MCP Streamable HTTP endpoint is:
@@ -126,6 +152,25 @@ Claude Desktop-style stdio learning, keep using Module 01/04.
 | `GET /api/benefits/documents` | Document catalog |
 | `GET /api/benefits/documents/excerpt?documentId=...` | Document excerpt |
 | `GET /api/benefits/sources` | Source URL catalog |
+| `POST /api/benefits/agent/ask` | Recording-friendly route, tool trace, RAG hits, answer, and citations |
+
+## Record The UI Demo
+
+Use this module as the main Module 04 + 05 LinkedIn/video story:
+
+```text
+Plain Java proves MCP is language-agnostic.
+Spring Boot shows how the same idea becomes a microservice.
+```
+
+Recommended capture flow:
+
+1. Open `http://localhost:8085/`.
+2. Select the Spring Boot backend for Module 05 or the Python backend for Module 02.
+3. Run the default MCP + RAG prompt.
+4. Show the route badge, tool calls, retrieved documents, and final answer.
+5. Cut briefly to the debug panel or an MCP inspector pointed at `http://localhost:8085/mcp`.
+6. Return to the UI and switch between the MCP, RAG, and Direct sample prompts.
 
 ## Learning Notes
 
