@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: springboot-mcp-benefits-assistant
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: springboot-benefits-mcp-rag
+        version: 1.0.0
+        type: SYNC
+        protocol: STREAMABLE
+        instructions: >
+          Mock educational benefits assistant. Use tools for fictional account
+          data and RAG tools/resources for 401(k)/HSA reference summaries.
+          This is not financial, tax, legal, or investment advice.
+        annotation-scanner:
+          enabled: true
+        capabilities:
+          tool: true
+          resource: true
+          prompt: true
+          completion: false
+        streamable-http:
+          mcp-endpoint: /mcp
+
+server:
+  port: 8085
+
+logging:
+  level:
+    root: INFO
+    org.springframework.ai.mcp: INFO

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phase 9 Agent Playground</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar" aria-label="Demo status">
+      <div>
+        <p class="eyebrow">Phase 9</p>
+        <h1>Agent Playground</h1>
+      </div>
+      <div class="status-strip">
+        <span id="backend-status" class="status-pill is-live">Spring Boot active</span>
+        <span id="transport-status" class="status-pill">/mcp</span>
+        <span id="api-status" class="status-pill">/api/benefits</span>
+      </div>
+    </header>
+
+    <section class="backend-arc" aria-label="Phase 9 module arc">
+      <div class="arc-node" data-arc="python-mcp">
+        <span class="arc-kicker">01</span>
+        <strong>Python MCP</strong>
+        <small>Primer</small>
+      </div>
+      <div class="arc-line"></div>
+      <div class="arc-node" data-arc="python">
+        <span class="arc-kicker">02</span>
+        <strong>Python MCP + RAG</strong>
+        <small>Dynamic router</small>
+      </div>
+      <div class="arc-line"></div>
+      <div class="arc-node is-current" data-arc="spring">
+        <span class="arc-kicker">05</span>
+        <strong>Spring Boot</strong>
+        <small>Microservice</small>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel compose-panel" aria-label="Question composer">
+        <div class="backend-picker" aria-label="Backend selector">
+          <p class="eyebrow">Backend</p>
+          <div class="backend-options">
+            <button type="button" data-backend="python">Python MCP + RAG</button>
+            <button type="button" data-backend="spring">Spring Boot</button>
+          </div>
+        </div>
+
+        <div class="panel-heading">
+          <p class="eyebrow">Prompt</p>
+          <span id="latency" class="latency">Ready</span>
+        </div>
+        <form id="ask-form">
+          <label class="sr-only" for="question">Question</label>
+          <textarea id="question" name="question" rows="7" spellcheck="true">I contribute 6% to my 401(k). Am I getting the full match, and what is the 2026 employee limit?</textarea>
+          <button class="run-button" type="submit">
+            <span class="run-icon" aria-hidden="true"></span>
+            <span>Run</span>
+          </button>
+        </form>
+
+        <div class="examples" aria-label="Example prompts">
+          <button type="button" data-question="Am I getting the full 401(k) match?">MCP</button>
+          <button type="button" data-question="What is the 2026 HSA family contribution limit?">RAG</button>
+          <button type="button" data-question="I contribute 6% to my 401(k). Am I getting the full match, and what is the 2026 employee limit?">MCP + RAG</button>
+          <button type="button" data-question="What can this benefits assistant do?">Direct</button>
+        </div>
+
+        <div class="debug-panel" aria-label="MCP debug cutaway">
+          <div>
+            <p class="eyebrow">Debug Cutaway</p>
+            <h2>MCP inspector shot</h2>
+          </div>
+          <dl>
+            <div>
+              <dt>Transport</dt>
+              <dd id="debug-transport">Streamable HTTP</dd>
+            </div>
+            <div>
+              <dt>Endpoint</dt>
+              <dd><code id="debug-endpoint">http://localhost:8085/mcp</code></dd>
+            </div>
+            <div>
+              <dt>UI API</dt>
+              <dd><code id="debug-api">POST /api/benefits/agent/ask</code></dd>
+            </div>
+          </dl>
+        </div>
+      </aside>
+
+      <section class="results-grid" aria-label="Agent results">
+        <section class="panel route-panel">
+          <div>
+            <p class="eyebrow">Route</p>
+            <h2 id="route-label">MCP + RAG</h2>
+          </div>
+          <div id="route-badge" class="route-badge route-mcp-rag">mcp+rag</div>
+        </section>
+
+        <section class="panel answer-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Answer</p>
+              <h2>Final response</h2>
+            </div>
+            <span id="backend-label" class="backend-label">Spring Boot MCP + RAG microservice</span>
+          </div>
+          <p id="answer" class="answer-text">Waiting for the first run...</p>
+        </section>
+
+        <section class="panel trace-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Trace</p>
+              <h2>Tool calls</h2>
+            </div>
+            <span id="tool-count" class="count">0</span>
+          </div>
+          <div id="tool-list" class="stack-list"></div>
+        </section>
+
+        <section class="panel docs-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Retrieval</p>
+              <h2>Documents</h2>
+            </div>
+            <span id="doc-count" class="count">0</span>
+          </div>
+          <div id="doc-list" class="stack-list"></div>
+        </section>
+
+        <section class="panel citations-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Sources</p>
+              <h2>Citations</h2>
+            </div>
+            <span id="citation-count" class="count">0</span>
+          </div>
+          <div id="citation-list" class="citation-list"></div>
+        </section>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

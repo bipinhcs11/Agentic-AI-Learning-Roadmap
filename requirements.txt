@@ -46,3 +46,7 @@ redis>=7.0.0                  # Python client for Redis Pub/Sub (Project 03)
 # boto3                       # Phase 6: AWS SDK
 # prometheus-client            # Phase 6: metrics
 # unsloth                     # Phase 6: fine-tuning on Apple Silicon
+
+# ── Optional / Phase 9 MCP (install per module when ready) ───
+# mcp                         # Model Context Protocol server/client SDK
+# langchain-mcp-adapters      # bridge MCP tools into LangChain/LangGraph

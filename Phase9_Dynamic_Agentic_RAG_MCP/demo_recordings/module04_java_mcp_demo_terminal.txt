@@ -1,0 +1,159 @@
+$ cd Phase9_Dynamic_Agentic_RAG_MCP/module_04_java_mcp_benefits_assistant
+$ mvn clean package -q
+$ java -Dorg.slf4j.simpleLogger.logFile=System.err -cp target/benefits-mcp-java-1.0.0-jar-with-deps.jar com.benefits.mcp.DemoClient
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  Phase 9 · Module 04 | DemoClient.java                                     ║
+║  MCP client that launches BenefitsMcpServer over stdio.                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+▶ Server JAR: /Users/bipinpradhan/Documents/Agentic AI learning Roadmap/Phase9_Dynamic_Agentic_RAG_MCP/module_04_java_mcp_benefits_assistant/target/benefits-mcp-java-1.0.0-jar-with-deps.jar
+[pool-4-thread-1] INFO io.modelcontextprotocol.client.transport.StdioClientTransport - STDERR Message received: [BenefitsMcpServer] MCP server running on stdio. Waiting for client connection...
+[pool-1-thread-1] INFO io.modelcontextprotocol.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=LoggingCapabilities[], prompts=PromptCapabilities[listChanged=true], resources=ResourceCapabilities[subscribe=true, listChanged=false], tools=ToolCapabilities[listChanged=true]], Info: Implementation[name=mock-benefits-assistant, version=1.0.0] and Instructions null
+✔ Session initialized.
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ TOOLS (9)
+└──────────────────────────────────────────────────────────────────────────────
+  • get_employee_profile
+    Return the mock employee profile used by the benefits assistant. Use this when a question needs employee salary, age, filing status, or estimated tax-rate assumptions before calculating 401(k) or HSA outcomes.
+  • get_401k_summary
+    Return the mock employee's current 401(k) plan and contribution summary.
+  • calculate_401k_match
+    Estimate the annual employer 401(k) match for the mock plan.
+  • estimate_annual_401k_contribution
+    Estimate annual employee 401(k) contributions and remaining mock limit.
+  • get_hsa_summary
+    Return the mock employee's HSA coverage, election, balance, and plan summary.
+  • estimate_hsa_tax_savings
+    Estimate tax savings from a mock HSA contribution.
+  • list_plan_documents
+    List the mock plan documents available as MCP resources or keyword search.
+  • get_plan_document
+    Return the full text of a mock plan document by id. Use list_plan_documents first to see valid ids.
+  • search_plan_rules
+    Keyword-search the mock plan rules. This is intentionally not RAG. Module 02 replaces this with embeddings, retrieval, and citations.
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ RESOURCES (4)
+└──────────────────────────────────────────────────────────────────────────────
+  • benefits://hsa/plan-summary  —  Mock HSA Plan Summary
+  • benefits://documents/benefits-faq  —  Mock Benefits FAQ
+  • benefits://employee/profile  —  Mock Employee Profile
+  • benefits://401k/plan-summary  —  Mock 401(k) Plan Summary
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ PROMPTS (1)
+└──────────────────────────────────────────────────────────────────────────────
+  • benefits_question_prompt
+    Create a safe prompt for educational benefits questions.
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ CALL TOOL: get_employee_profile
+└──────────────────────────────────────────────────────────────────────────────
+  args = {}
+  {
+    "age" : 36,
+    "annual_salary" : 120000,
+    "benefits_year" : 2026,
+    "employee_id" : "EMP-1042",
+    "estimated_federal_tax_rate" : 0.24,
+    "estimated_state_tax_rate" : 0.05,
+    "filing_status" : "single",
+    "name" : "Jordan Lee"
+  }
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ CALL TOOL: calculate_401k_match
+└──────────────────────────────────────────────────────────────────────────────
+  args = {}
+  {
+    "educational_note" : "Mock estimate only. Confirm rules with the real plan document.",
+    "employee_contribution_percent" : 6.0,
+    "employer_match_percent" : 4.5,
+    "estimated_annual_employer_match" : 5400.0,
+    "formula" : "100% of the first 3% of pay, plus 50% of the next 3% of pay",
+    "full_match_reached" : true,
+    "salary" : 120000.0
+  }
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ CALL TOOL: estimate_annual_401k_contribution
+└──────────────────────────────────────────────────────────────────────────────
+  args = {employee_contribution_percent=10}
+  {
+    "educational_note" : "This uses mock plan assumptions, not official tax guidance.",
+    "employee_contribution_percent" : 10.0,
+    "estimated_annual_employee_contribution" : 12000.0,
+    "mock_employee_limit" : 24500,
+    "remaining_to_mock_limit" : 12500.0,
+    "salary" : 120000.0,
+    "would_exceed_mock_limit" : false
+  }
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ CALL TOOL: estimate_hsa_tax_savings
+└──────────────────────────────────────────────────────────────────────────────
+  args = {}
+  {
+    "annual_hsa_employee_contribution" : 4200.0,
+    "educational_note" : "Educational estimate only. Tax treatment depends on facts and law.",
+    "estimated_combined_income_tax_rate" : 0.29,
+    "estimated_fica_savings" : 321.3,
+    "estimated_income_tax_savings" : 1218.0,
+    "estimated_total_savings" : 1539.3,
+    "fica_note" : "FICA savings apply to HSA contributions made through payroll (Section 125 cafeteria plan), not direct deposits.",
+    "mock_family_limit" : 8750,
+    "within_mock_limit" : true
+  }
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ CALL TOOL: search_plan_rules
+└──────────────────────────────────────────────────────────────────────────────
+  args = {query=vesting employer match}
+  [ {
+    "document_id" : "401k_plan_summary",
+    "match_score" : 2,
+    "snippet" : "The Acme FutureBuilder 401(k) lets employees contribute a percentage of pay.\nThe mock employer match is 100% of the first 3% of pay plus 50% of the next\n3% of pay, for a maximum employer match of 4.5% of eligible pay. Employer\nmatching dollars vest 25% per year over four years."
+  } ]
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ CALL TOOL: get_plan_document
+└──────────────────────────────────────────────────────────────────────────────
+  args = {document_id=hsa_plan_summary}
+  {
+    "document_id" : "hsa_plan_summary",
+    "text" : "The Acme HDHP + HSA lets eligible employees contribute to a Health Savings\nAccount when enrolled in the qualifying high-deductible health plan. In this\nmock plan, Acme contributes $1,000 per year for family coverage. HSA funds roll\nover year to year and can be used for qualified medical expenses.",
+    "title" : "Hsa plan summary"
+  }
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ READ RESOURCE: benefits://employee/profile
+└──────────────────────────────────────────────────────────────────────────────
+  {
+    "age" : 36,
+    "annual_salary" : 120000,
+    "benefits_year" : 2026,
+    "employee_id" : "EMP-1042",
+    "estimated_federal_tax_rate" : 0.24,
+    "estimated_state_tax_rate" : 0.05,
+    "filing_status" : "single",
+    "name" : "Jordan Lee"
+  }
+
+┌──────────────────────────────────────────────────────────────────────────────
+│ READ RESOURCE: benefits://documents/benefits-faq
+└──────────────────────────────────────────────────────────────────────────────
+  Frequently asked mock benefits questions:
+  - 401(k) contribution changes can be made any payroll period.
+  - HSA election changes may require a qualifying life event unless made during
+    open enrollment.
+  - This training example does not provide financial, tax, legal, or investment
+    advice.
+
+
+══════════════════════════════════════════════════════════════════════════════
+  All demonstrations complete.
+══════════════════════════════════════════════════════════════════════════════
+[ForkJoinPool.commonPool-worker-1] WARN io.modelcontextprotocol.client.transport.StdioClientTransport - Process terminated with code 143
+▶ Client closed gracefully: true

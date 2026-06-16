@@ -24,6 +24,9 @@ chroma_db/
 *.gguf
 *.bin
 
+# RAG vector index artifacts (regenerate with ingest.py)
+*.npz
+
 # Environment variables
 .env
 .env.local
@@ -47,6 +50,9 @@ Thumbs.db
 *.log
 logs/
 *.jsonl
+
+# Java / Maven build output
+**/target/
 
 # Fine-tuning outputs (large binary files)
 lora_adapter/

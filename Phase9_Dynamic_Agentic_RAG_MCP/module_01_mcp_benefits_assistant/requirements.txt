@@ -1,0 +1,5 @@
+# Phase 9 · Module 01 — MCP Benefits Assistant dependencies
+# Install inside the roadmap venv:
+#   pip install -r requirements.txt
+
+mcp>=1.2.0

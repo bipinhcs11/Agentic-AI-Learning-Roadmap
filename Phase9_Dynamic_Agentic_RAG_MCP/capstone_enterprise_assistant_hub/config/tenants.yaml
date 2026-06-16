@@ -1,0 +1,35 @@
+tenants:
+  acme:
+    display_name: Acme Corporation
+    api_keys:
+      - dev-acme-key
+    corpus: docs/acme
+    allowed_tools:
+      - get_employee_profile
+      - get_401k_summary
+      - calculate_401k_match
+      - get_hsa_summary
+      - estimate_hsa_tax_savings
+      - search_benefits_docs
+      - list_sources
+      - search_tenant_docs
+      - list_documents
+      - get_document_excerpt
+      - usage_summary
+  globex:
+    display_name: Globex Corporation
+    api_keys:
+      - dev-globex-key
+    corpus: docs/globex
+    allowed_tools:
+      - search_tenant_docs
+      - list_documents
+      - get_document_excerpt
+      - usage_summary
+
+mcp_servers:
+  benefits:
+    command: __python__
+    args:
+      - ../module_02_mcp_rag_enterprise_integration/benefits_mcp_server.py
+    transport: stdio
