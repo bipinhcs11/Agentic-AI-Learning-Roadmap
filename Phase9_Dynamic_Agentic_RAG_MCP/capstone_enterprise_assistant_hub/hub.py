@@ -7,12 +7,13 @@
 ║  API: uvicorn hub:app --reload                                               ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
-from __future__ import annotations
 
 import argparse
 import json
 import os
 from typing import Optional
+
+from pydantic import BaseModel
 
 try:
     from .config import tenant_for_api_key
@@ -20,6 +21,10 @@ try:
 except ImportError:  # pragma: no cover
     from config import tenant_for_api_key
     from orchestrator import answer_question
+
+
+class ChatRequest(BaseModel):
+    question: str
 
 
 def _result_payload(result) -> dict:
@@ -38,10 +43,6 @@ def _result_payload(result) -> dict:
 
 def create_app():
     from fastapi import FastAPI, Header, HTTPException
-    from pydantic import BaseModel
-
-    class ChatRequest(BaseModel):
-        question: str
 
     app = FastAPI(
         title="Phase 9 Enterprise Assistant Hub",
@@ -53,14 +54,14 @@ def create_app():
         return {"status": "ok", "provider": os.getenv("AI_PROVIDER", "ollama")}
 
     @app.post("/chat")
-    def chat(request: ChatRequest, x_api_key: Optional[str] = Header(default=None)) -> dict:
+    def chat(body: ChatRequest, x_api_key: Optional[str] = Header(default=None)) -> dict:
         if not x_api_key:
             raise HTTPException(status_code=401, detail="Missing X-API-Key")
         try:
             tenant = tenant_for_api_key(x_api_key)
         except PermissionError:
             raise HTTPException(status_code=403, detail="Unknown API key")
-        return _result_payload(answer_question(request.question, tenant.tenant_id))
+        return _result_payload(answer_question(body.question, tenant.tenant_id))
 
     return app
 
