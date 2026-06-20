@@ -1,0 +1,26 @@
+name: Docs improvement
+description: Suggest a clearer README, guide, diagram, expected output, or troubleshooting note
+title: "[Docs]: "
+labels: ["documentation"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page or project README
+      placeholder: "docs/getting-started.md"
+    validations:
+      required: true
+  - type: textarea
+    id: confusing
+    attributes:
+      label: What is confusing or missing?
+      placeholder: "Tell us what was unclear."
+    validations:
+      required: true
+  - type: textarea
+    id: suggested
+    attributes:
+      label: Suggested improvement
+      placeholder: "Add expected output, clarify a command, include a diagram, etc."
+    validations:
+      required: false

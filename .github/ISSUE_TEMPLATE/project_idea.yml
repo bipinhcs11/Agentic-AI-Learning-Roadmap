@@ -1,0 +1,33 @@
+name: Project idea
+description: Suggest a new project, extension, or phase improvement
+title: "[Idea]: "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: phase
+    attributes:
+      label: Related phase
+      placeholder: "Phase7 Advanced AI Patterns"
+    validations:
+      required: false
+  - type: textarea
+    id: idea
+    attributes:
+      label: Idea
+      placeholder: "What should be added and why would it help learners?"
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Learning outcome
+      placeholder: "What should a developer be able to build after this?"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Suggested scope
+      placeholder: "Files, dependencies, local services, and expected runtime."
+    validations:
+      required: false
