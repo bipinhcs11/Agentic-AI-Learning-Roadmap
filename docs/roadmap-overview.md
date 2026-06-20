@@ -3,6 +3,8 @@
 The roadmap is paced as a 48+ week path, but the folders are meant to be useful
 out of order. Start with the project closest to the system you want to build.
 
+![Agentic AI Learning Roadmap](../assets/roadmap-overview.svg)
+
 ```mermaid
 flowchart LR
     P1["Phase 1<br/>Foundations"] --> P2["Phase 2<br/>RAG Systems"]

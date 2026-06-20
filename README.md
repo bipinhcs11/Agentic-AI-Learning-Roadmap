@@ -58,17 +58,7 @@ See [Getting Started](docs/getting-started.md) for the detailed version.
 
 ## Roadmap Overview
 
-```mermaid
-flowchart LR
-    P1["Phase 1<br/>Foundations"] --> P2["Phase 2<br/>RAG"]
-    P2 --> P3["Phase 3<br/>Agents"]
-    P3 --> P4["Phase 4<br/>Build An Agent Framework"]
-    P4 --> P5["Phase 5<br/>Multi-Agent Systems"]
-    P5 --> P6["Phase 6<br/>Production"]
-    P6 --> P7["Phase 7<br/>Advanced Patterns"]
-    P7 --> P8["Phase 8<br/>Integrations & Shipping"]
-    P8 --> P9["Phase 9<br/>MCP + Enterprise Hub"]
-```
+![Agentic AI Learning Roadmap](assets/roadmap-overview.svg)
 
 | Phase | Focus | Example outcome |
 |---|---|---|
