@@ -1,290 +1,169 @@
-# Agentic AI Learning Roadmap 🤖
+# Agentic AI Learning Roadmap
 
-Local-first hands-on roadmap for learning Agentic AI, RAG, multi-agent systems,
-MCP, and production AI apps with Ollama, LangGraph, CrewAI, FastAPI, and AWS
-deployment patterns.
+[![CI](https://github.com/bipinhcs11/Agentic-AI-Learning-Roadmap/actions/workflows/ci.yml/badge.svg)](https://github.com/bipinhcs11/Agentic-AI-Learning-Roadmap/actions/workflows/ci.yml)
+![License](https://img.shields.io/github/license/bipinhcs11/Agentic-AI-Learning-Roadmap)
+![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+![Local First](https://img.shields.io/badge/Local--First-Ollama-green)
+![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-purple)
+![Stars](https://img.shields.io/github/stars/bipinhcs11/Agentic-AI-Learning-Roadmap?style=social)
 
-**9 phases | 48+ projects | suggested 48+ week pace | 100% local-first**
+Build production-style Agentic AI systems locally, from your first RAG pipeline
+to MCP-powered enterprise assistants.
 
-> **Origin:** This roadmap started with a viral LinkedIn post — *"Build these 10 RAG projects if you want to be taken seriously as an AI engineer."* Those 10 projects became **Phase 2**, and the journey grew from there into a full 9-phase path: foundations → RAG → agents → frameworks → multi-agent → production → advanced patterns → shipping → dynamic MCP enterprise systems.
+- 48+ hands-on projects across 9 phases
+- Local-first with Ollama and RAM-aware examples
+- RAG, agents, multi-agent systems, MCP, FastAPI, Docker, AWS, and observability
+- Beginner-to-production path for Python, backend, and Java/Spring developers
+- Educational mock data only, with no external AI API required for the core path
 
-This repo is built for two audiences:
+> Best for developers who want to learn by shipping real AI systems, not just
+> reading theory.
 
-- **Self-paced builders** who want to learn by running real projects locally.
-- **Community learners** who want a practical map from first local model to
-  production-style agentic systems.
+## Try It In 30 Minutes
 
-The week numbers are suggested pacing, not a rigid calendar. Move faster, slow
-down, or jump to the phase that matches what you are trying to build.
+```bash
+git clone https://github.com/bipinhcs11/Agentic-AI-Learning-Roadmap.git
+cd Agentic-AI-Learning-Roadmap
 
----
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-## Start Here
+ollama pull gemma3:4b
+ollama pull nomic-embed-text
+ollama serve
+```
 
-| If you are... | Start with | Why |
+In another terminal:
+
+```bash
+cd Agentic-AI-Learning-Roadmap
+source .venv/bin/activate
+python Phase2_RAG_Systems/project_01_first_rag/rag_from_scratch.py
+```
+
+Expected shape of the output:
+
+```text
+Project 1 - First RAG System from Scratch
+Chunking documents...
+Embedding via Ollama (nomic-embed-text)...
+Query: What is RAG and why does it matter?
+Top match: Retrieval-Augmented Generation (RAG) enhances LLM responses...
+Answer:
+RAG matters because it retrieves relevant context before generating an answer...
+```
+
+See [Getting Started](docs/getting-started.md) for the detailed version.
+
+## Roadmap Overview
+
+![Agentic AI Learning Roadmap](assets/roadmap-overview.svg)
+
+| Phase | Focus | Example outcome |
 |---|---|---|
-| New to local AI | `Phase1_Foundations/` | Get Ollama, Python, and the local OpenAI-compatible client working. |
-| Learning RAG | `Phase2_RAG_Systems/project_01_first_rag/` | Build the first retrieval pipeline from scratch before frameworks. |
-| Learning agents | `Phase3_Agentic_Stack/` | Move from tool calling to memory, scraping, and API agents. |
-| Learning production AI | `Phase6_Production_Enterprise/` | Docker, auth, observability, deployment, and capstone SaaS patterns. |
-| Learning MCP | `Phase9_Dynamic_Agentic_RAG_MCP/` | MCP tools, MCP + RAG routing, and the enterprise assistant hub capstone. |
+| 1 | Foundations | Run local models through Ollama's OpenAI-compatible API |
+| 2 | RAG systems | Build retrieval pipelines from scratch, then with production patterns |
+| 3 | Agentic stack | Add tools, memory, scraping, evaluation, and API serving |
+| 4 | Agent framework | Build a mini framework with model management and web UI |
+| 5 | Multi-agent systems | Coordinate supervisor-worker, research crew, and review loops |
+| 6 | Production enterprise | Add Docker, auth, observability, deployment, and DocuMind |
+| 7 | Advanced AI patterns | Practice GraphRAG, streaming, memory, routing, and safety |
+| 8 | Integrations and shipping | Build Slack, GitHub, email, SaaS, billing, and launch flows |
+| 9 | Dynamic RAG + MCP | Combine MCP tools, tenant RAG, provider routing, Java, and Spring Boot |
 
-## Learning Paths
+Full detail: [Roadmap Overview](docs/roadmap-overview.md).
 
-You do not have to complete everything in order.
+## Choose Your Path
 
-- **Beginner path:** Phase 1 → Phase 2 Project 01 → Phase 3 Project 01
-- **RAG engineer path:** Phase 2 → Phase 3 Project 05 → Phase 7 Project 01
-- **Agent builder path:** Phase 3 → Phase 5 → Phase 7
-- **Production path:** Phase 6 → Phase 8 → Phase 9 capstone
-- **MCP path:** Phase 9 Module 01 → Module 02 → Enterprise Assistant Hub
+| I am a... | Start here | Outcome |
+|---|---|---|
+| Python developer new to AI | Phase 1 -> Phase 2 Project 01 | Run local models and build your first RAG system |
+| Backend engineer | Phase 3 -> Phase 6 | Build FastAPI agent services with auth, Docker, and monitoring |
+| RAG engineer | Phase 2 -> Phase 7 | Build GraphRAG, evaluations, document analysis, and retrieval routing |
+| Java/Spring developer | Phase 9 Modules 04-05 | Build MCP + RAG examples with Java and Spring Boot |
+| Startup builder | Phase 6 -> Phase 8 | Ship SaaS-style AI apps with integrations and metering |
+| Enterprise AI engineer | Phase 9 | Build an MCP gateway with tenant RAG and provider routing |
+
+More focused guides:
+[RAG Path](docs/rag-path.md),
+[Agent Path](docs/agent-path.md),
+[MCP Path](docs/mcp-path.md),
+[Production Path](docs/production-path.md).
+
+## Featured Builds
+
+| Build | Folder | Why it matters |
+|---|---|---|
+| First RAG from scratch | `Phase2_RAG_Systems/project_01_first_rag/` | Shows every moving part without framework magic |
+| Agent API server | `Phase3_Agentic_Stack/project_06_agent_api_server/` | Turns agent behavior into a service boundary |
+| DocuMind capstone | `Phase6_Production_Enterprise/project_06_capstone_product/` | Dockerized document intelligence SaaS with auth and citations |
+| GitHub review bot | `Phase8_Integrations_Shipping/project_02_github_review_bot/` | Practical integration pattern for developer workflows |
+| Enterprise Assistant Hub | `Phase9_Dynamic_Agentic_RAG_MCP/capstone_enterprise_assistant_hub/` | MCP gateway + tenant RAG + provider abstraction |
+
+See [Showcase](docs/showcase.md) for runnable demos.
+
+## Docs
+
+| Page | Use it for |
+|---|---|
+| [Getting Started](docs/getting-started.md) | First clone, virtualenv, Ollama, and the 30-minute quick win |
+| [Local AI Setup](docs/local-ai-setup.md) | Mac/local model setup and RAM-aware model choices |
+| [Roadmap Overview](docs/roadmap-overview.md) | Phase-by-phase map and completion outcomes |
+| [Troubleshooting](docs/troubleshooting.md) | Common Ollama, Python, Docker, and dependency issues |
+| [Showcase](docs/showcase.md) | Shareable demos and screenshots to capture |
 
 ## The Stack
 
 | Layer | Technology |
 |---|---|
-| Local AI | Ollama + Gemma3:4b / 27b |
+| Local AI | Ollama + Gemma3 / Qwen / nomic-embed-text |
 | Orchestration | LangGraph, CrewAI, LangChain |
-| Vector DB | ChromaDB → Qdrant → Pinecone |
+| Retrieval | NumPy, ChromaDB-style patterns, Qdrant/Pinecone concepts |
 | APIs | FastAPI + Uvicorn |
 | UI | Streamlit |
-| Multi-Agent | LangGraph StateGraph, CrewAI Crews |
 | Containers | Docker + Docker Compose |
 | Cloud | AWS ECS Fargate + ECR + ALB |
 | IaC | Terraform |
 | Monitoring | Prometheus + Grafana |
-| Fine-Tuning | LoRA + Unsloth + GGUF |
+| Fine-tuning | LoRA + Unsloth + GGUF |
 | Integrations | Slack, GitHub, Stripe, Email |
 | MCP | Model Context Protocol tools, resources, prompts |
 
----
+## Repository Structure
 
-## Phases
-
-### Phase 1 — Foundation (Weeks 1-2) ✅
-**Goal:** Get local AI running on Mac Mini M4
-
-- Installed Ollama, Python 3.11, VS Code
-- OpenAI-compatible local API client
-- Verified full stack with gemma3:4b
-
-📁 `Phase1_Foundations/`
-
----
-
-### Phase 2 — RAG Projects (Weeks 3-6) ✅
-**Goal:** Build the 10 hands-on Retrieval-Augmented Generation projects from the original LinkedIn post
-
-| # | Project |
-|---|---------|
-| 01 | First RAG pipeline (build from scratch) |
-| 02 | IBM-style RAG (production patterns) |
-| 03 | GraphRAG (knowledge graph) |
-| 04 | Multi-document RAG (vector database) |
-| 05 | Agentic RAG (autonomous agents) |
-| 06 | LangChain RAG (production ready) |
-| 07 | Document analysis (LLM + PDF) |
-| 08 | Multimodal RAG (text + images) |
-| 09 | AI research agent (automated analysis) |
-| 10 | Real-time assistant (live RAG pipeline) |
-
-**Stack:** nomic-embed-text, ChromaDB, numpy cosine similarity
-
-📁 `Phase2_RAG_Systems/`
-
----
-
-### Phase 3 — Full Agentic Stack (Weeks 7-12) ✅
-**Goal:** Master the complete agentic AI tech stack
-
-| # | Project |
-|---|---------|
-| 01 | Tool-calling agent (ReAct pattern) |
-| 02 | Memory agent (short + long term) |
-| 03 | Web scraping agent |
-| 04 | Multi-tool agent |
-| 05 | RAG evaluation (LLM-as-judge) |
-| 06 | Agent API server |
-
-**Stack:** FastAPI, mem0, BeautifulSoup, Ragas
-
-📁 `Phase3_Agentic_Stack/`
-
----
-
-### Phase 4 — Build Your Own Agent Framework (Weeks 13-16) ✅
-**Goal:** Build something similar to LangChain from scratch
-
-| # | Project |
-|---|---------|
-| 01 | Model manager |
-| 02 | Inference server (streaming + logging) |
-| 03 | OpenAI-compatible API |
-| 04 | Streamlit web UI |
-| 05 | Custom agent framework (mini LangChain) |
-| 06 | Full platform capstone |
-
-**Stack:** FastAPI, Streamlit, SQLite, Typer
-
-📁 `Phase4_Agent_Framework/`
-
----
-
-### Phase 5 — Multi-Agent Systems (Weeks 17-22) ✅
-**Goal:** Multiple specialized agents coordinating to solve complex tasks
-
-| # | Project |
-|---|---------|
-| 01 | Supervisor-Worker pattern (LangGraph) |
-| 02 | CrewAI Research Crew (Researcher → Analyst → Writer) |
-| 03 | Agent Communication Bus (asyncio pub/sub) |
-| 04 | Code Generation Pipeline (review-revise loop) |
-| 05 | Multi-Agent RAG with domain routing |
-| 06 | Autonomous Research Pipeline with human-in-the-loop |
-
-**Stack:** LangGraph, CrewAI, asyncio, Redis (optional)
-
-📁 `Phase5_Multi_Agent_Systems/`
-
----
-
-### Phase 6 — Production & Enterprise (Weeks 23-30) ✅
-**Goal:** Take everything and make it production-ready, observable, secure, and deployable
-
-| # | Project |
-|---|---------|
-| 01 | Dockerize Everything (API + UI + Nginx) |
-| 02 | Auth & RBAC (JWT + roles + API keys) |
-| 03 | AWS Deployment (ECS Fargate + Terraform) |
-| 04 | Observability (Prometheus + Grafana dashboards) |
-| 05 | Fine-Tuning Gemma3:4b on Apple Silicon M4 |
-| 06 | DocuMind — AI document intelligence SaaS (capstone) |
-
-**Stack:** Docker, Terraform, AWS ECS, Prometheus, Grafana, LoRA, Unsloth
-
-📁 `Phase6_Production_Enterprise/`
-
----
-
-### Phase 7 — Advanced AI Patterns (Weeks 31-36) ✅
-**Goal:** Go beyond basic agents into cutting-edge production patterns
-
-| # | Project |
-|---|---------|
-| 01 | GraphRAG (knowledge graph + relationship traversal) |
-| 02 | Real-time streaming (WebSocket token streaming) |
-| 03 | Long-term memory (persistent vector memory) |
-| 04 | Mixture of Agents (query routing to specialists) |
-| 05 | Self-improving agent (Reflexion loop) |
-| 06 | AI safety & red-teaming (guardrails + adversarial tests) |
-
-**Stack:** networkx, FastAPI WebSockets, SQLite, LangGraph
-
-📁 `Phase7_Advanced_AI_Patterns/`
-
----
-
-### Phase 8 — Integrations & Shipping (Weeks 37-44) ✅
-**Goal:** Take local-AI into real-world integrations and ship a SaaS
-
-| # | Project |
-|---|---------|
-| 01 | Slack bot (Socket Mode) |
-| 02 | GitHub review bot (PR webhook → AI review) |
-| 03 | Email agent (classify, prioritize, draft) |
-| 04 | Multi-tenant SaaS (FastAPI + JWT + quotas) |
-| 05 | Billing & metering (token usage + invoices + Stripe) |
-| 06 | Capstone launch (dockerized RAG SaaS) |
-
-**Stack:** slack-bolt, FastAPI, SQLAlchemy, Stripe, Docker
-
-📁 `Phase8_Integrations_Shipping/`
-
----
-
-### Phase 9 — Dynamic Agentic RAG + MCP (Weeks 45+) 🔄
-**Goal:** Learn MCP as its own enterprise integration pattern, then combine it with RAG and dynamic LLM provider routing
-
-| # | Module |
-|---|--------|
-| 01 | MCP Benefits Assistant — mock 401(k) + HSA tools/resources |
-| 02 | MCP + RAG Enterprise Integration — structured tools + document retrieval |
-| 03 | Enterprise Assistant Hub capstone — MCP gateway + RAG + AWS provider abstraction |
-| 04 | Java MCP Benefits Assistant — plain Java companion to Module 01 |
-| 05 | Spring Boot MCP + RAG Benefits Microservice — Streamable HTTP MCP + REST |
-
-**Stack:** MCP Python SDK, FastMCP, Spring AI MCP, Java, Spring Boot, local mock data, Ollama, NumPy, Bedrock/SageMaker adapters
-
-📁 `Phase9_Dynamic_Agentic_RAG_MCP/`
-
----
-
-## Quick Start
-
-```bash
-# Clone
-git clone https://github.com/bipinhcs11/Agentic-AI-Learning-Roadmap.git
-cd Agentic-AI-Learning-Roadmap
-
-# Setup Python environment
-python3 -m venv ai-env
-source ai-env/bin/activate
-pip install -r requirements.txt
-
-# Start Ollama
-ollama pull gemma3:4b
-ollama serve
-
-# Run any project
-python Phase2_RAG_Systems/project_01_first_rag/rag_from_scratch.py
+```text
+Phase1_Foundations/              # setup + first local model verification
+Phase2_RAG_Systems/              # 10 RAG projects
+Phase3_Agentic_Stack/            # 6 agent projects
+Phase4_Agent_Framework/          # 6 framework-building projects
+Phase5_Multi_Agent_Systems/      # 6 multi-agent projects
+Phase6_Production_Enterprise/    # 6 production projects including DocuMind
+Phase7_Advanced_AI_Patterns/     # 6 advanced-pattern projects
+Phase8_Integrations_Shipping/    # 6 integration and launch projects
+Phase9_Dynamic_Agentic_RAG_MCP/  # MCP, enterprise RAG, Java, Spring Boot
+docs/                            # shareable guides by path and topic
+scripts/                         # setup helper scripts
 ```
 
 ## Community
 
-This started as a personal learning roadmap, but it is open for people who want
-to follow along, reuse examples, or suggest improvements.
+This started as a personal learning roadmap and is now structured as a reusable
+open-source curriculum.
 
 - Star the repo if you are following the roadmap.
-- Open an [issue](https://github.com/bipinhcs11/Agentic-AI-Learning-Roadmap/issues)
-  if a setup step is unclear or a project breaks.
-- Use [GitHub Discussions](https://github.com/bipinhcs11/Agentic-AI-Learning-Roadmap/discussions)
-  for roadmap questions, project ideas, and learning notes.
-- See `CONTRIBUTING.md` for the contribution style.
+- Open an issue if a setup step is unclear or a project breaks.
+- Use GitHub Discussions for roadmap questions, project ideas, and learning notes.
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution style and good first contributions.
 
-## Run the Capstone Product (DocuMind)
+## Run The DocuMind Capstone
 
 ```bash
 cd Phase6_Production_Enterprise/project_06_capstone_product
 docker compose up --build
+
+# In a second terminal:
 python demo/seed_data.py
-# Open http://localhost  →  login: admin / admin123
 ```
 
----
-
-## Hardware
-
-All projects run locally on:
-- **Mac Mini M4** (16GB unified memory)
-- No cloud GPU required for any phase including fine-tuning
-- Ollama handles model serving natively on Apple Silicon
-
----
-
-## Repository Structure
-
-```
-├── Phase1_Foundations/             # setup + first model (docs/, test_gemma3.py)
-├── Phase2_RAG_Systems/           # 10 RAG projects (+ guide)
-├── Phase3_Agentic_Stack/          # 6 agent projects (+ guide)
-├── Phase4_Agent_Framework/        # 6 framework projects (+ guide)
-├── Phase5_Multi_Agent_Systems/    # 6 multi-agent projects
-├── Phase6_Production_Enterprise/  # 6 production projects
-├── Phase7_Advanced_AI_Patterns/   # 6 advanced-pattern projects
-├── Phase8_Integrations_Shipping/  # 6 integration / shipping projects
-├── Phase9_Dynamic_Agentic_RAG_MCP/ # MCP benefits, MCP+RAG, enterprise capstone
-├── scripts/                       # setup & install helper scripts
-├── requirements.txt               # shared dependencies
-├── CLAUDE.md                      # project context
-└── README.md
-```
+Open `http://localhost` and log in with `admin / admin123`.

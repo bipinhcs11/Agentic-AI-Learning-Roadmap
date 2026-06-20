@@ -1,0 +1,39 @@
+name: Setup help
+description: Ask for help with local setup, models, dependencies, or services
+title: "[Setup]: "
+labels: ["question", "help wanted"]
+body:
+  - type: input
+    id: project
+    attributes:
+      label: Project
+      placeholder: "Phase6 project_06_capstone_product"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where are you stuck?
+      options:
+        - Python environment
+        - Ollama / local model
+        - Docker / Docker Compose
+        - Cloud credentials
+        - Project command
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: commands
+    attributes:
+      label: Commands run
+      placeholder: "Paste the exact commands you ran."
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Error output
+      placeholder: "Paste the relevant error output."
+    validations:
+      required: true

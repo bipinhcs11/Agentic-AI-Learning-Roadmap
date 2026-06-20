@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="760" viewBox="0 0 1100 760" role="img" aria-labelledby="title desc">
+  <title id="title">Agentic AI Learning Roadmap</title>
+  <desc id="desc">Nine-phase local-first roadmap from foundations and RAG to production systems and MCP-powered enterprise assistants.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .panel { fill: #ffffff; stroke: #d8dee9; stroke-width: 1.5; }
+      .title { fill: #0f172a; font: 700 38px Arial, Helvetica, sans-serif; }
+      .subtitle { fill: #475569; font: 400 18px Arial, Helvetica, sans-serif; }
+      .pill { fill: #e0f2fe; stroke: #7dd3fc; stroke-width: 1; }
+      .pill-text { fill: #075985; font: 700 14px Arial, Helvetica, sans-serif; }
+      .stage-title { fill: #334155; font: 700 15px Arial, Helvetica, sans-serif; letter-spacing: .4px; }
+      .stage-box { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.25; }
+      .card { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.4; }
+      .card-top-a { fill: #2563eb; }
+      .card-top-b { fill: #047857; }
+      .card-top-c { fill: #7c3aed; }
+      .phase { fill: #ffffff; font: 700 13px Arial, Helvetica, sans-serif; }
+      .card-title { fill: #0f172a; font: 700 19px Arial, Helvetica, sans-serif; }
+      .card-copy { fill: #475569; font: 400 13.5px Arial, Helvetica, sans-serif; }
+      .connector { stroke: #94a3b8; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .checkpoint { fill: #f1f5f9; stroke: #cbd5e1; stroke-width: 1; }
+      .checkpoint-text { fill: #334155; font: 700 13px Arial, Helvetica, sans-serif; }
+    </style>
+    <marker id="arrowhead" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M 0 0 L 9 4.5 L 0 9 z" fill="#94a3b8"/>
+    </marker>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <rect class="bg" width="1100" height="760"/>
+  <rect class="panel" x="36" y="30" width="1028" height="700" rx="22" filter="url(#softShadow)"/>
+
+  <text class="title" x="72" y="86">Agentic AI Learning Roadmap</text>
+  <text class="subtitle" x="72" y="116">A local-first path from first model calls to MCP-powered enterprise assistants.</text>
+
+  <rect class="pill" x="72" y="142" width="150" height="32" rx="16"/>
+  <text class="pill-text" x="98" y="163">48+ projects</text>
+  <rect class="pill" x="236" y="142" width="120" height="32" rx="16"/>
+  <text class="pill-text" x="265" y="163">9 phases</text>
+  <rect class="pill" x="370" y="142" width="178" height="32" rx="16"/>
+  <text class="pill-text" x="394" y="163">Local-first Ollama</text>
+  <rect class="pill" x="562" y="142" width="184" height="32" rx="16"/>
+  <text class="pill-text" x="585" y="163">Python + Java/Spring</text>
+  <rect class="checkpoint" x="760" y="142" width="232" height="32" rx="16"/>
+  <text class="checkpoint-text" x="782" y="163">Beginner -> production path</text>
+
+  <g transform="translate(72 210)">
+    <rect class="stage-box" width="956" height="136" rx="18"/>
+    <text class="stage-title" x="24" y="34">1. LEARN THE CORE</text>
+    <path class="connector" d="M 294 82 H 326" marker-end="url(#arrowhead)"/>
+    <path class="connector" d="M 618 82 H 650" marker-end="url(#arrowhead)"/>
+
+    <g transform="translate(24 52)">
+      <rect class="card" width="270" height="64" rx="12"/>
+      <rect class="card-top-a" width="270" height="24" rx="12"/>
+      <path class="card-top-a" d="M0 12 H270 V24 H0 Z"/>
+      <text class="phase" x="16" y="17">PHASE 1</text>
+      <text class="card-title" x="16" y="47">Foundations</text>
+      <text class="card-copy" x="138" y="47">Ollama + Python setup</text>
+    </g>
+
+    <g transform="translate(348 52)">
+      <rect class="card" width="270" height="64" rx="12"/>
+      <rect class="card-top-a" width="270" height="24" rx="12"/>
+      <path class="card-top-a" d="M0 12 H270 V24 H0 Z"/>
+      <text class="phase" x="16" y="17">PHASE 2</text>
+      <text class="card-title" x="16" y="47">RAG Systems</text>
+      <text class="card-copy" x="151" y="47">retrieval + citations</text>
+    </g>
+
+    <g transform="translate(672 52)">
+      <rect class="card" width="260" height="64" rx="12"/>
+      <rect class="card-top-a" width="260" height="24" rx="12"/>
+      <path class="card-top-a" d="M0 12 H260 V24 H0 Z"/>
+      <text class="phase" x="16" y="17">PHASE 3</text>
+      <text class="card-title" x="16" y="47">Agents</text>
+      <text class="card-copy" x="92" y="47">tools + memory + APIs</text>
+    </g>
+  </g>
+
+  <path class="connector" d="M 1004 346 C 1038 378 1038 388 1004 420" marker-end="url(#arrowhead)"/>
+
+  <g transform="translate(72 420)">
+    <rect class="stage-box" width="956" height="136" rx="18"/>
+    <text class="stage-title" x="24" y="34">2. BUILD AGENT SYSTEMS</text>
+    <path class="connector" d="M 650 82 H 618" marker-end="url(#arrowhead)"/>
+    <path class="connector" d="M 326 82 H 294" marker-end="url(#arrowhead)"/>
+
+    <g transform="translate(672 52)">
+      <rect class="card" width="260" height="64" rx="12"/>
+      <rect class="card-top-b" width="260" height="24" rx="12"/>
+      <path class="card-top-b" d="M0 12 H260 V24 H0 Z"/>
+      <text class="phase" x="16" y="17">PHASE 4</text>
+      <text class="card-title" x="16" y="47">Framework</text>
+      <text class="card-copy" x="125" y="47">runtime + UI</text>
+    </g>
+
+    <g transform="translate(348 52)">
+      <rect class="card" width="270" height="64" rx="12"/>
+      <rect class="card-top-b" width="270" height="24" rx="12"/>
+      <path class="card-top-b" d="M0 12 H270 V24 H0 Z"/>
+      <text class="phase" x="16" y="17">PHASE 5</text>
+      <text class="card-title" x="16" y="47">Multi-Agent</text>
+      <text class="card-copy" x="151" y="47">crews + review loops</text>
+    </g>
+
+    <g transform="translate(24 52)">
+      <rect class="card" width="270" height="64" rx="12"/>
+      <rect class="card-top-b" width="270" height="24" rx="12"/>
+      <path class="card-top-b" d="M0 12 H270 V24 H0 Z"/>
+      <text class="phase" x="16" y="17">PHASE 6</text>
+      <text class="card-title" x="16" y="47">Production</text>
+      <text class="card-copy" x="134" y="47">Docker + auth + AWS</text>
+    </g>
+  </g>
+
+  <path class="connector" d="M 96 556 C 62 588 62 598 96 630" marker-end="url(#arrowhead)"/>
+
+  <g transform="translate(72 630)">
+    <rect class="stage-box" width="956" height="72" rx="18"/>
+    <text class="stage-title" x="24" y="44">3. SHIP ENTERPRISE APPS</text>
+    <path class="connector" d="M 460 36 H 502" marker-end="url(#arrowhead)"/>
+    <path class="connector" d="M 690 36 H 736" marker-end="url(#arrowhead)"/>
+
+    <g transform="translate(300 18)">
+      <rect class="card" width="160" height="36" rx="11"/>
+      <rect class="card-top-c" width="48" height="36" rx="11"/>
+      <text class="phase" x="11" y="23">P7</text>
+      <text class="card-title" x="62" y="24">Advanced</text>
+    </g>
+
+    <g transform="translate(512 18)">
+      <rect class="card" width="178" height="36" rx="11"/>
+      <rect class="card-top-c" width="48" height="36" rx="11"/>
+      <text class="phase" x="11" y="23">P8</text>
+      <text class="card-title" x="62" y="24">Shipping</text>
+    </g>
+
+    <g transform="translate(746 18)">
+      <rect class="card" width="190" height="36" rx="11"/>
+      <rect class="card-top-c" width="48" height="36" rx="11"/>
+      <text class="phase" x="11" y="23">P9</text>
+      <text class="card-title" x="62" y="24">MCP + Hub</text>
+    </g>
+  </g>
+</svg>
