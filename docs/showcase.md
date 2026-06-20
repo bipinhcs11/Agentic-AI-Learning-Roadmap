@@ -62,6 +62,7 @@ the root README:
 
 ```text
 assets/
+  roadmap-overview.svg
   documind-demo.gif
   phase9-mcp-demo.gif
   architecture-documind.png
