@@ -1,0 +1,33 @@
+name: Bug report
+description: Report a broken command, import, setup step, or project
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: input
+    id: phase
+    attributes:
+      label: Phase / Project
+      placeholder: "Phase2 project_01_first_rag"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      placeholder: "Describe the issue and paste the error message."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      placeholder: "Tell us what the README or command said should happen."
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "OS, Python version, Ollama version, model used"
+    validations:
+      required: true

@@ -13,6 +13,16 @@ builders.
 - Add comments where a beginner would otherwise get lost.
 - Suggest project ideas through GitHub Discussions before adding large modules.
 
+## Good First Contributions
+
+- Test one project on Linux or Windows and report setup differences.
+- Add expected output to a project README.
+- Add troubleshooting notes for common Ollama, Docker, or Python errors.
+- Improve beginner-facing comments in Phase 1, Phase 2, or Phase 3 projects.
+- Add missing tests for utility functions that do not require live services.
+- Create a Mermaid architecture diagram for one phase or capstone.
+- Verify a project README command from a fresh virtual environment.
+
 ## Before Opening A Pull Request
 
 1. Keep the existing folder structure unless there is a clear reason to change it.
@@ -27,12 +37,25 @@ builders.
 Use the project virtual environment when possible:
 
 ```bash
-source ~/Documents/my-ai-project/ai-env/bin/activate
-python -m pytest -q
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python -m pytest -q Phase9_Dynamic_Agentic_RAG_MCP/capstone_enterprise_assistant_hub/tests
 ```
 
-Some projects require local services such as Ollama, Redis, or Docker. If a check
-needs a service or credentials, mention that clearly in the pull request.
+Some project scripts are integration demos, not pytest suites. They may require
+local services such as Ollama, Redis, Docker, a running FastAPI server, or cloud
+credentials. If a check needs a service or credentials, mention that clearly in
+the pull request.
+
+## Pull Request Checklist
+
+- The change is limited to one project, doc area, or setup concern.
+- New or changed commands have been run locally when possible.
+- README instructions and expected output are updated for behavior changes.
+- Mock data remains fictional and safe for a public repository.
+- Any skipped checks or external service requirements are called out in the PR.
 
 ## Community Notes
 

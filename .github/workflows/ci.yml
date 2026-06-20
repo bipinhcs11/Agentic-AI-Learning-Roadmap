@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - phase9-capstone-hub
+
+jobs:
+  offline-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest numpy
+
+      - name: Syntax check Python files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          excluded = {".git", ".venv", "__pycache__"}
+          failures = []
+          for path in Path(".").rglob("*.py"):
+              if any(part in excluded for part in path.parts):
+                  continue
+              try:
+                  compile(path.read_text(encoding="utf-8"), str(path), "exec")
+              except SyntaxError as exc:
+                  failures.append(f"{path}:{exc.lineno}: {exc.msg}")
+
+          if failures:
+              print("\n".join(failures))
+              raise SystemExit(1)
+          PY
+
+      - name: Run offline Phase 9 tests
+        working-directory: Phase9_Dynamic_Agentic_RAG_MCP/capstone_enterprise_assistant_hub
+        run: python -m pytest -q tests
