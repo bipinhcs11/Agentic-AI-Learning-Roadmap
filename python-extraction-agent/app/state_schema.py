@@ -23,14 +23,17 @@ class ComplianceStep(str, Enum):
     compatibility with ADK's session state.
     
     State transitions:
-        INGESTED → EXTRACTED → COMPLIANCE_PENDING → COMPLIANCE_COMPLETE → APPROVED
-                                                                       → REVIEW_READY
-                                    → MANUAL_REVIEW (on timeout/failure)
+        INGESTED → EXTRACTED → COMPLIANCE_PENDING → COMPLIANCE_COMPLETE
+                                                   → RISK_SCORING_PENDING → RISK_SCORED → APPROVED
+                                                                                        → REVIEW_READY
+                                     → MANUAL_REVIEW (on timeout/failure at any A2A step)
     """
     INGESTED = "INGESTED"                    # Contract uploaded, awaiting extraction
     EXTRACTED = "EXTRACTED"                   # Fields extracted, ready for compliance check
     COMPLIANCE_PENDING = "COMPLIANCE_PENDING" # A2A task sent to Go agent, awaiting result
     COMPLIANCE_COMPLETE = "COMPLIANCE_COMPLETE" # Go agent returned compliance verdict
+    RISK_SCORING_PENDING = "RISK_SCORING_PENDING"  # A2A task sent to Java agent, awaiting result
+    RISK_SCORED = "RISK_SCORED"              # Java agent returned quantitative risk score
     MANUAL_REVIEW = "MANUAL_REVIEW"          # Timeout/error — routed for human review
     REVIEW_READY = "REVIEW_READY"            # Compliance failed — flagged for legal review
     APPROVED = "APPROVED"                    # Compliance passed — contract approved

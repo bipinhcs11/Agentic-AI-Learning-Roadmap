@@ -78,6 +78,10 @@ GO_AGENT_CARD_URL = os.environ.get(
     "GO_AGENT_CARD_URL",
     "http://localhost:8888/.well-known/agent.json",
 )
+JAVA_AGENT_CARD_URL = os.environ.get(
+    "JAVA_AGENT_CARD_URL",
+    "http://localhost:9999/.well-known/agent.json",
+)
 PROJECT_ROOT = Path(SANDBOX_DIR)
 SAMPLE_CONTRACTS_DIR = PROJECT_ROOT / "sample-contracts"
 
@@ -86,6 +90,12 @@ def _go_jsonrpc_url() -> str:
     if GO_AGENT_CARD_URL.endswith("/.well-known/agent.json"):
         return GO_AGENT_CARD_URL.removesuffix("/.well-known/agent.json")
     return GO_AGENT_CARD_URL.rstrip("/")
+
+
+def _java_jsonrpc_url() -> str:
+    if JAVA_AGENT_CARD_URL.endswith("/.well-known/agent.json"):
+        return JAVA_AGENT_CARD_URL.removesuffix("/.well-known/agent.json")
+    return JAVA_AGENT_CARD_URL.rstrip("/")
 
 
 def build_contract_handoff_data(case_id: str, details: dict, policy: dict | None) -> dict:
@@ -234,11 +244,114 @@ async def invoke_go_compliance_service(
 
     return {
         "agent_card": agent_card,
+        "source_agent": "python-extraction-agent",
+        "target_agent": "Security Compliance Validator",
         "request": payload,
         "response": response,
         "adk_request_message": request_message,
         "adk_response_task": response_task,
         "verdict": extract_verdict_from_go_response(response),
+    }
+
+
+async def invoke_java_risk_scoring_service(
+    case_id: str,
+    details: dict,
+    timeout: float = 10.0,
+) -> dict:
+    """Calls the Java Risk Scoring Engine through ADK RemoteA2aAgent and the A2A SDK."""
+    agent_card = await asyncio.to_thread(_http_json, "GET", JAVA_AGENT_CARD_URL, None, timeout)
+    request_data = {
+        "schema_version": "contract-risk-scoring.a2a.v1",
+        "case_id": case_id,
+        "contract": details,
+    }
+    payload = {
+        "jsonrpc": "2.0",
+        "id": f"risk-{case_id}",
+        "method": "SendMessage",
+        "params": {
+            "metadata": {"task_id": case_id},
+            "message": {
+                "messageId": f"risk-{case_id}-request",
+                "taskId": case_id,
+                "role": "ROLE_USER",
+                "parts": [{
+                    "data": request_data,
+                    "mediaType": "application/json"
+                }],
+            },
+        },
+    }
+
+    async def add_task_metadata(_ctx, a2a_message, parameters):
+        parameters.request_metadata = {"task_id": case_id}
+        return a2a_message, parameters
+
+    remote_agent = RemoteA2aAgent(
+        name="risk_scoring_agent",
+        agent_card=JAVA_AGENT_CARD_URL,
+        description="Computes quantitative financial risk scores via the Java Risk Scoring Engine.",
+        timeout=timeout,
+        config=A2aRemoteAgentConfig(
+            request_interceptors=[
+                RequestInterceptor(before_request=add_task_metadata)
+            ]
+        ),
+    )
+    session_service = InMemorySessionService()
+    adk_app_name = "contract_risk_scoring_remote_handoff"
+    await session_service.create_session(
+        app_name=adk_app_name,
+        user_id="live-cockpit",
+        session_id=f"risk-{case_id}",
+        state={},
+    )
+    runner = Runner(
+        app=ADKApp(name=adk_app_name, root_agent=remote_agent),
+        session_service=session_service,
+    )
+
+    response_task = None
+    request_message = None
+    error_message = None
+    try:
+        async for event in runner.run_async(
+            user_id="live-cockpit",
+            session_id=f"risk-{case_id}",
+            new_message=genai_types.Content(
+                role="user",
+                parts=[_a2a_data_part_as_genai_part(request_data)],
+            ),
+        ):
+            metadata = event.custom_metadata or {}
+            request_message = metadata.get("a2a:request", request_message)
+            response_task = metadata.get("a2a:response", response_task)
+            if event.error_message:
+                error_message = event.error_message
+    finally:
+        await remote_agent.cleanup()
+
+    if error_message:
+        raise RuntimeError(error_message)
+    if response_task is None:
+        raise RuntimeError("ADK RemoteA2aAgent returned no A2A task response from Java agent")
+
+    response = {
+        "jsonrpc": "2.0",
+        "id": payload["id"],
+        "result": response_task,
+    }
+
+    return {
+        "agent_card": agent_card,
+        "source_agent": "python-extraction-agent",
+        "target_agent": "Financial Risk Scoring Engine",
+        "request": payload,
+        "response": response,
+        "adk_request_message": request_message,
+        "adk_response_task": response_task,
+        "risk_score": extract_verdict_from_go_response(response),
     }
 
 
@@ -457,6 +570,7 @@ async def upload_contract_file(
 
     _event(case, "agent", "Extractor completed", f"{details['contractor_name']} fields extracted and risk classified as {risk['risk_tier']}.")
 
+    # --- Go Compliance Agent Handoff ---
     handoff = {
         "status": "prepared",
         "source_agent": "python-extraction-agent",
@@ -472,8 +586,23 @@ async def upload_contract_file(
         "request": build_go_message_payload(case.id, details, policy),
     }
 
+    # --- Java Risk Scoring Agent Handoff ---
+    java_handoff = {
+        "status": "prepared",
+        "source_agent": "python-extraction-agent",
+        "target_agent": "Financial Risk Scoring Engine",
+        "remote_agent": "google.adk.agents.RemoteA2aAgent(risk_scoring_agent)",
+        "agent_card_url": JAVA_AGENT_CARD_URL,
+        "jsonrpc_url": _java_jsonrpc_url(),
+        "method": "SendMessage",
+        "task_id": case.id,
+        "contract_details": details,
+    }
+
     if simulated_latency:
         await asyncio.sleep(simulated_latency)
+
+    risk_score_data = {}
 
     try:
         if simulated_server_state == "crashed":
@@ -497,6 +626,58 @@ async def upload_contract_file(
                 "verdict": verdict,
             }
         )
+
+        # --- Java Risk Scoring Agent (non-blocking, best-effort) ---
+        try:
+            java_result = await invoke_java_risk_scoring_service(
+                case_id=case.id,
+                details=details,
+                timeout=10.0,
+            )
+            risk_score_data = java_result.get("risk_score", {})
+            java_handoff.update(
+                {
+                    "status": "completed",
+                    "agent_card": java_result["agent_card"],
+                    "request": java_result["request"],
+                    "response": java_result["response"],
+                    "risk_score": risk_score_data,
+                }
+            )
+            trace_logs.extend(
+                [
+                    {
+                        "span": "GET /.well-known/agent.json",
+                        "service": "java-risk-scoring-agent",
+                        "duration_ms": 30,
+                        "status": "agent_card_discovered",
+                    },
+                    {
+                        "span": "ADK RemoteA2aAgent SendMessage",
+                        "service": "java-risk-scoring-agent",
+                        "duration_ms": 85,
+                        "status": "completed",
+                    },
+                    {
+                        "span": "java_compute_risk_score",
+                        "service": "java-risk-scoring-agent",
+                        "duration_ms": 12,
+                        "status": f"grade_{risk_score_data.get('risk_grade', 'unknown').lower()}",
+                    },
+                ]
+            )
+        except Exception as java_exc:
+            logger.warning(f"Java risk scoring failed for case {case.id}: {java_exc!s}")
+            java_handoff.update({"status": "failed", "error": str(java_exc)})
+            trace_logs.append(
+                {
+                    "span": "java_risk_scoring_fallback",
+                    "service": "java-risk-scoring-agent",
+                    "duration_ms": 200,
+                    "status": "skipped_non_critical",
+                }
+            )
+
         current_step = (
             ComplianceStep.APPROVED
             if verdict.get("passed", False)
@@ -558,7 +739,9 @@ async def upload_contract_file(
         "contract_details": details,
         "risk_assessment": risk,
         "compliance_verdict": verdict,
+        "risk_score": risk_score_data,
         "handoff": handoff,
+        "java_handoff": java_handoff,
         "pending_signals": [],
         "trace_logs": trace_logs,
         "completion_time": time.strftime("%Y-%m-%d %H:%M:%S %Z"),

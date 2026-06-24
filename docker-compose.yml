@@ -29,8 +29,12 @@ services:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
       # A2A: Point to the Go agent's Agent Card URL via Docker networking
       - GO_AGENT_CARD_URL=http://go-compliance-agent:8888/.well-known/agent.json
+      # A2A: Point to the Java risk scoring agent via Docker networking
+      - JAVA_AGENT_CARD_URL=http://java-risk-scoring-agent:9999/.well-known/agent.json
     depends_on:
       go-compliance-agent:
+        condition: service_started
+      java-risk-scoring-agent:
         condition: service_started
     networks:
       - pipeline-net
@@ -45,6 +49,19 @@ services:
     environment:
       - HOST=0.0.0.0
       - AGENT_URL=http://go-compliance-agent:8888
+    networks:
+      - pipeline-net
+
+  # Java Financial Risk Scoring Agent (A2A Server)
+  java-risk-scoring-agent:
+    build:
+      context: ./java-risk-scoring-agent
+      dockerfile: Dockerfile
+    ports:
+      - "9999:9999"
+    environment:
+      - HOST=0.0.0.0
+      - AGENT_URL=http://java-risk-scoring-agent:9999
     networks:
       - pipeline-net
 

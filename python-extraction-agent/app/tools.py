@@ -379,6 +379,9 @@ def classify_risk_level(tool_context: ToolContext) -> dict:
 def generate_summary_report(tool_context: ToolContext) -> dict:
     """Generates the final multi-agent compliance summary and HTML certificate.
     
+    Now includes quantitative risk scoring data from the Java Risk Scoring Engine
+    alongside the Go compliance verdict.
+    
     Writes safety report artifacts securely inside Sandbox target bounds.
     """
     state = tool_context.state
@@ -386,6 +389,7 @@ def generate_summary_report(tool_context: ToolContext) -> dict:
     details = state.get("contract_details", {})
     risk = state.get("risk_assessment", {})
     verdict = state.get("compliance_verdict", {})
+    risk_score_data = state.get("risk_score", {})
     
     if not details:
         return {"status": "error", "message": "No data extracted."}
@@ -404,6 +408,11 @@ def generate_summary_report(tool_context: ToolContext) -> dict:
         "risk_factors": risk.get("risk_factors", []),
         "passed": verdict.get("passed", False),
         "violations": verdict.get("violations", []),
+        # Java Risk Scoring Engine results
+        "risk_score": risk_score_data.get("risk_score", None),
+        "risk_grade": risk_score_data.get("risk_grade", None),
+        "risk_breakdown": risk_score_data.get("risk_breakdown", {}),
+        "recommendations": risk_score_data.get("recommendations", []),
         "timestamp": state.get("completion_time", "N/A"),
     }
     
@@ -413,3 +422,4 @@ def generate_summary_report(tool_context: ToolContext) -> dict:
         "message": f"Legal audit report compiled successfully for case {case_id}.",
         "report_profile": report_data,
     }
+
