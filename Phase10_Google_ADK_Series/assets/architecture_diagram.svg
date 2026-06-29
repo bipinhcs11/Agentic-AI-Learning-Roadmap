@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Phase 10 contract compliance system architecture</title>
+  <desc id="desc">Browser cockpit routed through Python extraction and orchestration, then handed off to Go compliance and Java risk scoring services over A2A.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#08111f"/>
+      <stop offset="100%" stop-color="#13253a"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#18344c"/>
+      <stop offset="100%" stop-color="#102433"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#020617" flood-opacity="0.35"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5eead4"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <text x="800" y="64" fill="#e2e8f0" font-size="34" font-family="Menlo, Monaco, monospace" text-anchor="middle">PHASE 10 GOOGLE ADK MULTI-AGENT CONTRACT COMPLIANCE</text>
+  <text x="800" y="102" fill="#94a3b8" font-size="18" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Python cockpit and orchestration + Go policy validation + Java risk scoring over A2A</text>
+
+  <rect x="430" y="140" rx="24" ry="24" width="740" height="150" fill="url(#panel)" stroke="#67e8f9" stroke-opacity="0.45" stroke-width="2" filter="url(#shadow)"/>
+  <text x="800" y="188" fill="#f8fafc" font-size="30" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Browser Cockpit</text>
+  <text x="800" y="220" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">/live-compliance/ UI + sample contract selection + artifact viewer</text>
+  <text x="800" y="252" fill="#7dd3fc" font-size="18" font-family="Menlo, Monaco, monospace" text-anchor="middle">POST /api/compliance/upload</text>
+
+  <rect x="95" y="390" rx="22" ry="22" width="410" height="250" fill="url(#panel)" stroke="#60a5fa" stroke-opacity="0.55" stroke-width="2" filter="url(#shadow)"/>
+  <text x="300" y="438" fill="#f8fafc" font-size="30" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Python Extraction Agent</text>
+  <text x="300" y="472" fill="#93c5fd" font-size="18" font-family="Menlo, Monaco, monospace" text-anchor="middle">FastAPI + ADK RemoteA2aAgent</text>
+  <text x="300" y="516" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Deterministic contract parsing</text>
+  <text x="300" y="548" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Case state, HTML artifacts, live event feed</text>
+  <text x="300" y="580" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Builds A2A SendMessage payloads for Go and Java</text>
+  <text x="300" y="618" fill="#7dd3fc" font-size="17" font-family="Menlo, Monaco, monospace" text-anchor="middle">Port 8000 (or custom local port)</text>
+
+  <rect x="595" y="390" rx="22" ry="22" width="410" height="250" fill="url(#panel)" stroke="#34d399" stroke-opacity="0.55" stroke-width="2" filter="url(#shadow)"/>
+  <text x="800" y="438" fill="#f8fafc" font-size="30" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Go Compliance Agent</text>
+  <text x="800" y="472" fill="#86efac" font-size="18" font-family="Menlo, Monaco, monospace" text-anchor="middle">A2A JSON-RPC policy gate</text>
+  <text x="800" y="516" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Checks value, liability, insurance, term length</text>
+  <text x="800" y="548" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Returns pass / review verdict with violations</text>
+  <text x="800" y="580" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Deterministic compliance certificate source</text>
+  <text x="800" y="618" fill="#86efac" font-size="17" font-family="Menlo, Monaco, monospace" text-anchor="middle">Port 8888 (or custom local port)</text>
+
+  <rect x="1095" y="390" rx="22" ry="22" width="410" height="250" fill="url(#panel)" stroke="#f59e0b" stroke-opacity="0.65" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1300" y="438" fill="#f8fafc" font-size="30" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">Java Risk Scoring Agent</text>
+  <text x="1300" y="472" fill="#fcd34d" font-size="18" font-family="Menlo, Monaco, monospace" text-anchor="middle">A2A quantitative risk scoring</text>
+  <text x="1300" y="516" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Computes 0-100 risk score and A-F grade</text>
+  <text x="1300" y="548" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Returns breakdown and mitigation recommendations</text>
+  <text x="1300" y="580" fill="#cbd5e1" font-size="20" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Runs after Go compliance handoff succeeds</text>
+  <text x="1300" y="618" fill="#fcd34d" font-size="17" font-family="Menlo, Monaco, monospace" text-anchor="middle">Port 9999 (or custom local port)</text>
+
+  <rect x="565" y="690" rx="18" ry="18" width="470" height="118" fill="#0f172a" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="2"/>
+  <text x="800" y="734" fill="#f8fafc" font-size="25" font-family="Arial, Helvetica, sans-serif" text-anchor="middle" font-weight="700">A2A Handoff Sequence</text>
+  <text x="800" y="768" fill="#cbd5e1" font-size="19" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Python -&gt; Go for policy verdict -&gt; Java for risk score</text>
+  <text x="800" y="796" fill="#94a3b8" font-size="17" font-family="Menlo, Monaco, monospace" text-anchor="middle">Agent Cards: /.well-known/agent.json on both remote services</text>
+
+  <path d="M 800 290 L 300 382" stroke="url(#accent)" stroke-width="7" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 800 290 L 800 382" stroke="url(#accent)" stroke-width="7" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 800 290 L 1300 382" stroke="url(#accent)" stroke-width="7" fill="none" marker-end="url(#arrow)"/>
+
+  <path d="M 505 515 L 587 515" stroke="#5eead4" stroke-width="8" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 1005 555 L 1087 555" stroke="#5eead4" stroke-width="8" fill="none" marker-end="url(#arrow)"/>
+
+  <path d="M 300 642 L 300 760 L 555 760" stroke="#38bdf8" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 800 642 L 800 680" stroke="#34d399" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 1300 642 L 1300 760 L 1045 760" stroke="#f59e0b" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+
+  <text x="546" y="500" fill="#99f6e4" font-size="16" font-family="Menlo, Monaco, monospace" text-anchor="middle">A2A SendMessage</text>
+  <text x="1046" y="540" fill="#fde68a" font-size="16" font-family="Menlo, Monaco, monospace" text-anchor="middle">A2A SendMessage</text>
+
+  <text x="300" y="846" fill="#94a3b8" font-size="18" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Sample contracts + uploads</text>
+  <text x="1300" y="846" fill="#94a3b8" font-size="18" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">Compliance verdict + risk score surfaced in UI</text>
+</svg>
