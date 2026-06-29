@@ -1,0 +1,35 @@
+# Java build output
+java-risk-scoring-agent/target/
+*.class
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Python artifacts
+python-extraction-agent/__pycache__/
+python-extraction-agent/**/__pycache__/
+python-extraction-agent/*.pyc
+*.pyc
+__pycache__/
+sessions.db
+python-extraction-agent/session_secret.txt
+python-extraction-agent/.venv/
+python-extraction-agent/.pytest_cache/
+python-extraction-agent/.adk/
+python-extraction-agent/sessions.db
+python-extraction-agent/uploads/
+uploads/
+local_artifacts/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local

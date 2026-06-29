@@ -1,0 +1,10 @@
+.adk/
+.pytest_cache/
+.ruff_cache/
+.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+sessions.db
+session_secret.txt
+uploads/

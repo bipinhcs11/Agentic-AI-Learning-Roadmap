@@ -1,0 +1,4 @@
+target/
+*.class
+.pytest_cache/
+.DS_Store
