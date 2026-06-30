@@ -59,6 +59,7 @@ After the scripted questions finish, the program enters interactive mode. Type
 | Build agent services | Jump to `Phase3_Agentic_Stack/` after Project 01 |
 | Learn production packaging | Go to `Phase6_Production_Enterprise/` |
 | Explore MCP | Go to `Phase9_Dynamic_Agentic_RAG_MCP/` |
+| Explore Google ADK | Go to `Phase10_Google_ADK_Series/` |
 
 ## Local Safety Notes
 

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="760" viewBox="0 0 1100 760" role="img" aria-labelledby="title desc">
   <title id="title">Agentic AI Learning Roadmap</title>
-  <desc id="desc">Nine-phase local-first roadmap from foundations and RAG to production systems and MCP-powered enterprise assistants.</desc>
+  <desc id="desc">Ten-phase local-first roadmap from foundations and RAG to production systems, MCP-powered enterprise assistants, and Google ADK agent teams.</desc>
   <defs>
     <style>
       .bg { fill: #f8fafc; }
@@ -34,12 +34,12 @@
   <rect class="panel" x="36" y="30" width="1028" height="700" rx="22" filter="url(#softShadow)"/>
 
   <text class="title" x="72" y="86">Agentic AI Learning Roadmap</text>
-  <text class="subtitle" x="72" y="116">A local-first path from first model calls to MCP-powered enterprise assistants.</text>
+  <text class="subtitle" x="72" y="116">A local-first path from first model calls to MCP-powered assistants and Google ADK agent teams.</text>
 
   <rect class="pill" x="72" y="142" width="150" height="32" rx="16"/>
-  <text class="pill-text" x="98" y="163">48+ projects</text>
+  <text class="pill-text" x="98" y="163">50+ projects</text>
   <rect class="pill" x="236" y="142" width="120" height="32" rx="16"/>
-  <text class="pill-text" x="265" y="163">9 phases</text>
+  <text class="pill-text" x="264" y="163">10 phases</text>
   <rect class="pill" x="370" y="142" width="178" height="32" rx="16"/>
   <text class="pill-text" x="394" y="163">Local-first Ollama</text>
   <rect class="pill" x="562" y="142" width="184" height="32" rx="16"/>
@@ -122,28 +122,36 @@
   <g transform="translate(72 630)">
     <rect class="stage-box" width="956" height="72" rx="18"/>
     <text class="stage-title" x="24" y="44">3. SHIP ENTERPRISE APPS</text>
-    <path class="connector" d="M 460 36 H 502" marker-end="url(#arrowhead)"/>
-    <path class="connector" d="M 690 36 H 736" marker-end="url(#arrowhead)"/>
+    <path class="connector" d="M 418 36 H 438" marker-end="url(#arrowhead)"/>
+    <path class="connector" d="M 583 36 H 603" marker-end="url(#arrowhead)"/>
+    <path class="connector" d="M 748 36 H 768" marker-end="url(#arrowhead)"/>
 
-    <g transform="translate(300 18)">
-      <rect class="card" width="160" height="36" rx="11"/>
+    <g transform="translate(260 18)">
+      <rect class="card" width="158" height="36" rx="11"/>
       <rect class="card-top-c" width="48" height="36" rx="11"/>
       <text class="phase" x="11" y="23">P7</text>
       <text class="card-title" x="62" y="24">Advanced</text>
     </g>
 
-    <g transform="translate(512 18)">
-      <rect class="card" width="178" height="36" rx="11"/>
+    <g transform="translate(438 18)">
+      <rect class="card" width="145" height="36" rx="11"/>
       <rect class="card-top-c" width="48" height="36" rx="11"/>
       <text class="phase" x="11" y="23">P8</text>
       <text class="card-title" x="62" y="24">Shipping</text>
     </g>
 
-    <g transform="translate(746 18)">
-      <rect class="card" width="190" height="36" rx="11"/>
+    <g transform="translate(603 18)">
+      <rect class="card" width="145" height="36" rx="11"/>
       <rect class="card-top-c" width="48" height="36" rx="11"/>
       <text class="phase" x="11" y="23">P9</text>
-      <text class="card-title" x="62" y="24">MCP + Hub</text>
+      <text class="card-title" x="62" y="24">MCP Hub</text>
+    </g>
+
+    <g transform="translate(768 18)">
+      <rect class="card" width="168" height="36" rx="11"/>
+      <rect class="card-top-c" width="48" height="36" rx="11"/>
+      <text class="phase" x="9" y="23">P10</text>
+      <text class="card-title" x="62" y="24">ADK Series</text>
     </g>
   </g>
 </svg>

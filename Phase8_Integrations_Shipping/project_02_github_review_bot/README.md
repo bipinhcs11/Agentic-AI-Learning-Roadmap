@@ -63,6 +63,9 @@ The `/webhook` endpoint is publicly accessible when using ngrok.  Without signat
 ---
 
 ## Setup
+```bash
+# Activate the project virtualenv so deps install into the right interpreter
+source ~/Documents/my-ai-project/ai-env/bin/activate
 
 ### 1. Install dependencies
 

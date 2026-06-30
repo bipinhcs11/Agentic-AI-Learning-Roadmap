@@ -55,6 +55,22 @@ What to capture:
 - Documents cited
 - Provider/model metadata
 
+## Demo 4: Google ADK Contract Compliance Team
+
+```bash
+cd Phase10_Google_ADK_Series
+docker compose up --build
+```
+
+Open `http://127.0.0.1:8000/live-compliance/`.
+
+What to capture:
+
+- The live cockpit selecting a fictional contract
+- Python ADK handoff to the Go compliance agent
+- Java financial risk scoring response
+- Generated legal parameter sheet and compliance certificate
+
 ## Asset Backlog
 
 When real recordings are available, add them under `assets/` and link them from
@@ -65,6 +81,7 @@ assets/
   roadmap-overview.svg
   documind-demo.gif
   phase9-mcp-demo.gif
+  phase10-google-adk-demo.gif
   architecture-documind.png
   architecture-mcp-hub.png
 ```

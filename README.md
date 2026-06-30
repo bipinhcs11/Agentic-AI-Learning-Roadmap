@@ -5,14 +5,15 @@
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
 ![Local First](https://img.shields.io/badge/Local--First-Ollama-green)
 ![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-purple)
+![Google ADK](https://img.shields.io/badge/Google%20ADK-A2A-blue)
 ![Stars](https://img.shields.io/github/stars/bipinhcs11/Agentic-AI-Learning-Roadmap?style=social)
 
 Build production-style Agentic AI systems locally, from your first RAG pipeline
-to MCP-powered enterprise assistants.
+to MCP-powered enterprise assistants and Google ADK agent teams.
 
-- 48+ hands-on projects across 9 phases
+- 50+ hands-on projects across 10 phases
 - Local-first with Ollama and RAM-aware examples
-- RAG, agents, multi-agent systems, MCP, FastAPI, Docker, AWS, and observability
+- RAG, agents, multi-agent systems, MCP, Google ADK, A2A, FastAPI, Docker, AWS, and observability
 - Beginner-to-production path for Python, backend, and Java/Spring developers
 - Educational mock data only, with no external AI API required for the core path
 
@@ -71,6 +72,7 @@ See [Getting Started](docs/getting-started.md) for the detailed version.
 | 7 | Advanced AI patterns | Practice GraphRAG, streaming, memory, routing, and safety |
 | 8 | Integrations and shipping | Build Slack, GitHub, email, SaaS, billing, and launch flows |
 | 9 | Dynamic RAG + MCP | Combine MCP tools, tenant RAG, provider routing, Java, and Spring Boot |
+| 10 | Google ADK Series | Build cross-language ADK + A2A agent systems with Python, Go, and Java |
 
 Full detail: [Roadmap Overview](docs/roadmap-overview.md).
 
@@ -84,11 +86,13 @@ Full detail: [Roadmap Overview](docs/roadmap-overview.md).
 | Java/Spring developer | Phase 9 Modules 04-05 | Build MCP + RAG examples with Java and Spring Boot |
 | Startup builder | Phase 6 -> Phase 8 | Ship SaaS-style AI apps with integrations and metering |
 | Enterprise AI engineer | Phase 9 | Build an MCP gateway with tenant RAG and provider routing |
+| Google ADK learner | Phase 10 | Build a local ADK + A2A contract-compliance agent team |
 
 More focused guides:
 [RAG Path](docs/rag-path.md),
 [Agent Path](docs/agent-path.md),
 [MCP Path](docs/mcp-path.md),
+[Google ADK Path](docs/google-adk-path.md),
 [Production Path](docs/production-path.md).
 
 ## Featured Builds
@@ -100,6 +104,7 @@ More focused guides:
 | DocuMind capstone | `Phase6_Production_Enterprise/project_06_capstone_product/` | Dockerized document intelligence SaaS with auth and citations |
 | GitHub review bot | `Phase8_Integrations_Shipping/project_02_github_review_bot/` | Practical integration pattern for developer workflows |
 | Enterprise Assistant Hub | `Phase9_Dynamic_Agentic_RAG_MCP/capstone_enterprise_assistant_hub/` | MCP gateway + tenant RAG + provider abstraction |
+| Contract Compliance ADK Team | `Phase10_Google_ADK_Series/` | Google ADK + A2A orchestration across Python, Go, and Java |
 
 See [Showcase](docs/showcase.md) for runnable demos.
 
@@ -110,6 +115,7 @@ See [Showcase](docs/showcase.md) for runnable demos.
 | [Getting Started](docs/getting-started.md) | First clone, virtualenv, Ollama, and the 30-minute quick win |
 | [Local AI Setup](docs/local-ai-setup.md) | Mac/local model setup and RAM-aware model choices |
 | [Roadmap Overview](docs/roadmap-overview.md) | Phase-by-phase map and completion outcomes |
+| [Google ADK Path](docs/google-adk-path.md) | ADK and A2A handoffs across local Python, Go, and Java services |
 | [Troubleshooting](docs/troubleshooting.md) | Common Ollama, Python, Docker, and dependency issues |
 | [Showcase](docs/showcase.md) | Shareable demos and screenshots to capture |
 
@@ -129,6 +135,7 @@ See [Showcase](docs/showcase.md) for runnable demos.
 | Fine-tuning | LoRA + Unsloth + GGUF |
 | Integrations | Slack, GitHub, Stripe, Email |
 | MCP | Model Context Protocol tools, resources, prompts |
+| ADK + A2A | Google Agent Development Kit with cross-language agent handoffs |
 
 ## Repository Structure
 
@@ -142,6 +149,7 @@ Phase6_Production_Enterprise/    # 6 production projects including DocuMind
 Phase7_Advanced_AI_Patterns/     # 6 advanced-pattern projects
 Phase8_Integrations_Shipping/    # 6 integration and launch projects
 Phase9_Dynamic_Agentic_RAG_MCP/  # MCP, enterprise RAG, Java, Spring Boot
+Phase10_Google_ADK_Series/       # Google ADK + A2A cross-language agent systems
 docs/                            # shareable guides by path and topic
 scripts/                         # setup helper scripts
 ```

@@ -14,6 +14,7 @@ real products.
 | 5 | `Phase6_Production_Enterprise/project_06_capstone_product/` | Run the DocuMind SaaS-style capstone |
 | 6 | `Phase8_Integrations_Shipping/project_04_multitenant_saas/` | Add tenant isolation and quotas |
 | 7 | `Phase8_Integrations_Shipping/project_06_capstone_launch/` | Practice launch packaging |
+| 8 | `Phase10_Google_ADK_Series/` | Study a containerized ADK + A2A multi-service demo |
 
 ## Production Checklist
 

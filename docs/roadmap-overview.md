@@ -1,6 +1,6 @@
 # Roadmap Overview
 
-The roadmap is paced as a 48+ week path, but the folders are meant to be useful
+The roadmap is paced as a 50+ week path, but the folders are meant to be useful
 out of order. Start with the project closest to the system you want to build.
 
 ![Agentic AI Learning Roadmap](../assets/roadmap-overview.svg)
@@ -15,6 +15,7 @@ flowchart LR
     P6 --> P7["Phase 7<br/>Advanced Patterns"]
     P7 --> P8["Phase 8<br/>Integrations & Shipping"]
     P8 --> P9["Phase 9<br/>Dynamic RAG + MCP"]
+    P9 --> P10["Phase 10<br/>Google ADK Series"]
 ```
 
 ## Phases
@@ -30,6 +31,7 @@ flowchart LR
 | 7 | 31-36 | Practice advanced patterns | GraphRAG, streaming, long-term memory, safety tests |
 | 8 | 37-44 | Ship integrations | Slack, GitHub, email, SaaS tenancy, billing, launch |
 | 9 | 45+ | Combine MCP, RAG, and routing | MCP benefits assistant, enterprise hub, Java, Spring Boot |
+| 10 | 50+ | Build Google ADK + A2A systems | Contract compliance team with Python, Go, and Java agents |
 
 ## Completion Outcomes
 
@@ -40,3 +42,4 @@ By the end of the full path you will have built:
 - Agent services with tools, memory, APIs, and multi-agent coordination
 - Production patterns for Docker, auth, observability, AWS, and billing
 - MCP servers and clients with tenant-aware RAG and provider routing
+- Google ADK and A2A agent handoffs across local Python, Go, and Java services
