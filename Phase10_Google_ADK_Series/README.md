@@ -18,6 +18,8 @@ Google ADK runs in the Python orchestration service. The Go and Java services
 are A2A-compatible remote services that expose Agent Cards and JSON-RPC
 endpoints; they do not embed a Google ADK runtime.
 
+![Phase 10 Google ADK and A2A architecture](./assets/architecture_diagram.png)
+
 All sample contracts are fictional educational fixtures. Do not use real
 financial, legal, HR, billing, benefits, customer, or contract data.
 
