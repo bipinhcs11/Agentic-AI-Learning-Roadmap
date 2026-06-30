@@ -13,6 +13,7 @@ coordination, or agent APIs.
 | 4 | `Phase3_Agentic_Stack/project_06_agent_api_server/` | Package an agent as a FastAPI service |
 | 5 | `Phase5_Multi_Agent_Systems/` | Add supervisor, crew, bus, and review-loop patterns |
 | 6 | `Phase7_Advanced_AI_Patterns/project_05_self_improving_agent/` | Practice reflection and iterative improvement |
+| 7 | `Phase10_Google_ADK_Series/` | Study Google ADK and A2A handoffs across Python, Go, and Java |
 
 ## Design Questions
 
