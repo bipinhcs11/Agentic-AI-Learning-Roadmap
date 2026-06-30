@@ -12,6 +12,10 @@ a local cross-language Google ADK + A2A system spanning **three languages**
 
 The Go and Java services are deterministic by design. They are not LLM agents; they enforce policy thresholds and compute risk scores that need repeatable audit behavior.
 
+Google ADK runs in the Python service. Go and Java participate through the A2A
+protocol as remote HTTP services with Agent Cards and JSON-RPC handlers; they
+do not run Google ADK themselves.
+
 ## Runtime Flow
 
 ```mermaid

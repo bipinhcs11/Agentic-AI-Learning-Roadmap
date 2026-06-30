@@ -49,7 +49,7 @@
   <circle cx="482" cy="162" r="5" fill="#34a853"/>
   <circle cx="468" cy="176" r="5" fill="#fbbc04"/>
   <circle cx="482" cy="176" r="5" fill="#ea4335"/>
-  <text x="800" y="178" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="600" text-anchor="middle" fill="#202124">ADK Orchestration</text>
+  <text x="800" y="178" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="600" text-anchor="middle" fill="#202124">Python ADK Orchestration</text>
 
   <!-- Orchestration guide lines. -->
   <path d="M 520 204 L 220 204 L 220 286" stroke="#aecbfa" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>

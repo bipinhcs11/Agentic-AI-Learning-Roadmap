@@ -14,6 +14,10 @@ across three services:
 - **Java A2A financial risk scoring agent** computes quantitative risk scores
   and recommendations.
 
+Google ADK runs in the Python orchestration service. The Go and Java services
+are A2A-compatible remote services that expose Agent Cards and JSON-RPC
+endpoints; they do not embed a Google ADK runtime.
+
 All sample contracts are fictional educational fixtures. Do not use real
 financial, legal, HR, billing, benefits, customer, or contract data.
 
