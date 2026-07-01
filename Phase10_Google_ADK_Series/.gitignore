@@ -1,5 +1,6 @@
 # Java build output
 java-risk-scoring-agent/target/
+project_02_java_adk_benefits_concierge/target/
 *.class
 
 # IDE files
