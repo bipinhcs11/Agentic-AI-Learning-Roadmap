@@ -54,6 +54,10 @@ logs/
 # Java / Maven build output
 **/target/
 
+# JavaScript frontend dependencies and build output
+**/node_modules/
+**/.vite/
+
 # Fine-tuning outputs (large binary files)
 lora_adapter/
 */lora_adapter/
