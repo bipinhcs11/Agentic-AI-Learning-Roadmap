@@ -36,7 +36,7 @@ financial, legal, HR, billing, benefits, customer, or contract data.
 
 | Folder | Role |
 |---|---|
-| `project_02_java_adk_benefits_concierge/` | Java ADK benefits concierge, starting with Module 01 Rung 01A text agent |
+| `project_02_java_adk_benefits_concierge/` | Java ADK benefits concierge with Module 01 Rungs 01A-01D |
 | `python-extraction-agent/` | FastAPI cockpit, ADK coordinator, extraction, state, artifacts |
 | `go-compliance-agent/` | Go A2A service for pass/review compliance checks |
 | `java-risk-scoring-agent/` | Java A2A service for deterministic risk scoring |
