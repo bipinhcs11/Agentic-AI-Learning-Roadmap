@@ -8,7 +8,7 @@ Branch: `codex/phase10-module1-rung01c`
 - Rung 01A: Java ADK text agent using `LlmAgent`.
 - Rung 01A deterministic tools:
   - benefits knowledge lookup,
-  - 401(k)/HSA projection math,
+  - primary contribution/savings account projection math,
   - non-executable election drafting,
   - request guardrail screening.
 - Rung 01A eval fixtures in `src/test/resources/evals/rung01a_eval_cases.json`.

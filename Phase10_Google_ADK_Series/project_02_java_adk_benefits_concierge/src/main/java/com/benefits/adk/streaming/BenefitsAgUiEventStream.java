@@ -63,9 +63,9 @@ public final class BenefitsAgUiEventStream {
         )));
         events.add(event("TOOL_CALL_ARGS", Map.of(
                 "toolCallId", toolCallId,
-                "delta", "{\"annualSalary\":100000,\"employee401kPercent\":6,"
-                        + "\"annualHsaContribution\":4400,\"hsaCoverage\":\"self-only\","
-                        + "\"marginalTaxRate\":24}"
+                "delta", "{\"annualSalary\":100000,\"primaryContributionPercent\":6,"
+                        + "\"annualSavingsAccountContribution\":4400,\"savingsAccountCoverage\":\"self-only\","
+                        + "\"adjustmentRate\":24}"
         )));
         events.add(event("TOOL_CALL_END", Map.of("toolCallId", toolCallId)));
         events.add(event("STATE_SNAPSHOT", Map.of("snapshot", stateSnapshot(a2uiPayload))));

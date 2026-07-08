@@ -6,51 +6,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ContributionProjectionService {
-    public static final BigDecimal EMPLOYEE_401K_LIMIT_2026 = new BigDecimal("24500");
-    public static final BigDecimal COMBINED_401K_LIMIT_2026 = new BigDecimal("72000");
-    public static final BigDecimal HSA_SELF_ONLY_LIMIT_2026 = new BigDecimal("4400");
-    public static final BigDecimal HSA_FAMILY_LIMIT_2026 = new BigDecimal("8750");
+    public static final BigDecimal EMPLOYEE_PRIMARY_CONTRIBUTION_LIMIT_2026 = new BigDecimal("24500");
+    public static final BigDecimal COMBINED_PRIMARY_CONTRIBUTION_LIMIT_2026 = new BigDecimal("72000");
+    public static final BigDecimal SAVINGS_ACCOUNT_SELF_ONLY_LIMIT_2026 = new BigDecimal("4400");
+    public static final BigDecimal SAVINGS_ACCOUNT_FAMILY_LIMIT_2026 = new BigDecimal("8750");
 
     public ContributionProjection project(
             BigDecimal annualSalary,
-            BigDecimal employee401kPercent,
-            BigDecimal annualHsaContribution,
-            String hsaCoverage,
-            BigDecimal marginalTaxRate
+            BigDecimal primaryContributionPercent,
+            BigDecimal annualSavingsAccountContribution,
+            String savingsAccountCoverage,
+            BigDecimal adjustmentRate
     ) {
         requireNonNegative(annualSalary, "annualSalary");
-        requireNonNegative(employee401kPercent, "employee401kPercent");
-        requireNonNegative(annualHsaContribution, "annualHsaContribution");
-        requireNonNegative(marginalTaxRate, "marginalTaxRate");
+        requireNonNegative(primaryContributionPercent, "primaryContributionPercent");
+        requireNonNegative(annualSavingsAccountContribution, "annualSavingsAccountContribution");
+        requireNonNegative(adjustmentRate, "adjustmentRate");
 
-        BigDecimal employee401k = annualSalary
-                .multiply(employee401kPercent)
+        BigDecimal employeePrimaryContribution = annualSalary
+                .multiply(primaryContributionPercent)
                 .divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-        BigDecimal cappedEmployee401k = employee401k.min(EMPLOYEE_401K_LIMIT_2026);
-        BigDecimal employerMatch = calculateAcmeMatch(annualSalary, employee401kPercent);
-        BigDecimal combined = cappedEmployee401k.add(employerMatch).min(COMBINED_401K_LIMIT_2026);
-        BigDecimal estimatedHsaTaxSavings = annualHsaContribution
-                .multiply(marginalTaxRate)
+        BigDecimal cappedEmployeePrimaryContribution = employeePrimaryContribution.min(EMPLOYEE_PRIMARY_CONTRIBUTION_LIMIT_2026);
+        BigDecimal employerMatch = calculateAcmeMatch(annualSalary, primaryContributionPercent);
+        BigDecimal combined = cappedEmployeePrimaryContribution.add(employerMatch).min(COMBINED_PRIMARY_CONTRIBUTION_LIMIT_2026);
+        BigDecimal estimatedSavingsAccountAdjustment = annualSavingsAccountContribution
+                .multiply(adjustmentRate)
                 .divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
 
         List<String> notes = new ArrayList<>();
-        notes.add("Fictional educational estimate; not legal, tax, investment, or fiduciary advice.");
+        notes.add("Fictional educational estimate; not legal, adjustment, allocation, or individualized advice.");
         notes.add("Mock Acme match: 100% of first 3% of pay plus 50% of next 3%.");
-        if (employee401k.compareTo(EMPLOYEE_401K_LIMIT_2026) > 0) {
-            notes.add("Employee 401(k) contribution was capped at the 2026 learning limit.");
+        if (employeePrimaryContribution.compareTo(EMPLOYEE_PRIMARY_CONTRIBUTION_LIMIT_2026) > 0) {
+            notes.add("Employee primary contribution was capped at the 2026 learning limit.");
         }
-        BigDecimal hsaLimit = hsaLimitFor(hsaCoverage);
-        if (annualHsaContribution.compareTo(hsaLimit) > 0) {
-            notes.add("Requested HSA amount is above the fixture limit for " + normalizeCoverage(hsaCoverage) + " coverage.");
+        BigDecimal savingsAccountLimit = savingsAccountLimitFor(savingsAccountCoverage);
+        if (annualSavingsAccountContribution.compareTo(savingsAccountLimit) > 0) {
+            notes.add("Requested savings account amount is above the fixture limit for " + normalizeCoverage(savingsAccountCoverage) + " coverage.");
         }
 
         return new ContributionProjection(
                 annualSalary,
-                cappedEmployee401k,
+                cappedEmployeePrimaryContribution,
                 employerMatch,
                 combined,
-                annualHsaContribution,
-                estimatedHsaTaxSavings,
+                annualSavingsAccountContribution,
+                estimatedSavingsAccountAdjustment,
                 List.copyOf(notes)
         ).rounded();
     }
@@ -71,8 +71,8 @@ public final class ContributionProjectionService {
         return firstThreePercent.add(nextThreeMatch);
     }
 
-    private static BigDecimal hsaLimitFor(String coverage) {
-        return "family".equals(normalizeCoverage(coverage)) ? HSA_FAMILY_LIMIT_2026 : HSA_SELF_ONLY_LIMIT_2026;
+    private static BigDecimal savingsAccountLimitFor(String coverage) {
+        return "family".equals(normalizeCoverage(coverage)) ? SAVINGS_ACCOUNT_FAMILY_LIMIT_2026 : SAVINGS_ACCOUNT_SELF_ONLY_LIMIT_2026;
     }
 
     private static String normalizeCoverage(String coverage) {

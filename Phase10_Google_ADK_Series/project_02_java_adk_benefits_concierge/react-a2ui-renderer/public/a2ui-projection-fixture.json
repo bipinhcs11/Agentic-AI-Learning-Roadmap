@@ -19,11 +19,11 @@
         {
           "props": {
             "rows": [
-              ["Employee 401(k)", "6000.00"],
+              ["Employee primary contribution", "6000.00"],
               ["Employer match", "4500.00"],
-              ["Combined 401(k)", "10500.00"],
-              ["HSA contribution", "4400.00"],
-              ["Estimated HSA tax savings", "1056.00"]
+              ["Combined primary contribution", "10500.00"],
+              ["savings account contribution", "4400.00"],
+              ["Estimated savings account adjustment savings", "1056.00"]
             ],
             "columns": ["Metric", "Amount"]
           },
