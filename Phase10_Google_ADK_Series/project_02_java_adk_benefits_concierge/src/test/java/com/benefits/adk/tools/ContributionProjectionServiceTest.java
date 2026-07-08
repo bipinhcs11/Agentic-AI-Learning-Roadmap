@@ -19,10 +19,10 @@ class ContributionProjectionServiceTest {
                 new BigDecimal("24")
         );
 
-        assertEquals(new BigDecimal("6000.00"), projection.employee401kContribution());
+        assertEquals(new BigDecimal("6000.00"), projection.employeePrimaryContribution());
         assertEquals(new BigDecimal("4500.00"), projection.employerMatch());
-        assertEquals(new BigDecimal("10500.00"), projection.combined401kContribution());
-        assertEquals(new BigDecimal("1056.00"), projection.estimatedHsaTaxSavings());
+        assertEquals(new BigDecimal("10500.00"), projection.combinedPrimaryContribution());
+        assertEquals(new BigDecimal("1056.00"), projection.estimatedSavingsAccountAdjustment());
     }
 
     @Test
@@ -35,7 +35,7 @@ class ContributionProjectionServiceTest {
                 new BigDecimal("20")
         );
 
-        assertEquals(new BigDecimal("24500.00"), projection.employee401kContribution());
+        assertEquals(new BigDecimal("24500.00"), projection.employeePrimaryContribution());
         assertTrue(projection.notes().stream().anyMatch(note -> note.contains("capped")));
     }
 }
