@@ -11,8 +11,8 @@ spring:
         protocol: STREAMABLE
         instructions: >
           Mock educational benefits assistant. Use tools for fictional account
-          data and RAG tools/resources for 401(k)/HSA reference summaries.
-          This is not financial, tax, legal, or investment advice.
+          data and RAG tools/resources for primary contribution/savings account reference summaries.
+          This is not professional, adjustment, legal, or allocation advice.
         annotation-scanner:
           enabled: true
         capabilities:

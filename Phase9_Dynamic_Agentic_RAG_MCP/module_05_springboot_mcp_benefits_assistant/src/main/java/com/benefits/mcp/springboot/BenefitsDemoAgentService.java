@@ -14,16 +14,16 @@ import org.springframework.stereotype.Service;
 import com.benefits.mcp.springboot.BenefitsModels.AgentDemoResponse;
 import com.benefits.mcp.springboot.BenefitsModels.AgentToolTrace;
 import com.benefits.mcp.springboot.BenefitsModels.EmployeeProfile;
-import com.benefits.mcp.springboot.BenefitsModels.HsaTaxSavingsEstimate;
+import com.benefits.mcp.springboot.BenefitsModels.SavingsAccountAdjustmentEstimate;
 import com.benefits.mcp.springboot.BenefitsModels.MatchEstimate;
-import com.benefits.mcp.springboot.BenefitsModels.Plan401k;
-import com.benefits.mcp.springboot.BenefitsModels.PlanHsa;
+import com.benefits.mcp.springboot.BenefitsModels.PrimaryContributionPlan;
+import com.benefits.mcp.springboot.BenefitsModels.SavingsAccountPlan;
 import com.benefits.mcp.springboot.BenefitsModels.SearchHit;
 
 @Service
 public class BenefitsDemoAgentService {
 
-    private static final String DEFAULT_QUESTION = "I contribute 6% to my 401(k). Am I getting the full match, and what is the 2026 employee limit?";
+    private static final String DEFAULT_QUESTION = "I contribute 6% to my primary contribution. Am I getting the full match, and what is the 2026 employee limit?";
     private static final Pattern PERCENT_PATTERN = Pattern.compile("(\\d+(?:\\.\\d+)?)\\s*%");
 
     private final BenefitsDataService benefitsData;
@@ -43,31 +43,31 @@ public class BenefitsDemoAgentService {
 
         List<AgentToolTrace> tools = new ArrayList<>();
         EmployeeProfile profile = null;
-        Plan401k plan401k = null;
+        PrimaryContributionPlan primaryContributionPlan = null;
         MatchEstimate match = null;
-        PlanHsa planHsa = null;
-        HsaTaxSavingsEstimate hsaTaxSavings = null;
+        SavingsAccountPlan savingsAccountPlan = null;
+        SavingsAccountAdjustmentEstimate savingsAccountAdjustmentSavings = null;
 
         if (useMcp) {
             profile = benefitsData.employeeProfile();
             tools.add(tool("get_employee_profile", "MCP account tool",
                     Map.of("employeeId", profile.employeeId())));
 
-            if (isHsaQuestion(lower) && !is401kQuestion(lower)) {
-                planHsa = benefitsData.planHsa();
-                tools.add(tool("get_hsa_summary", "MCP account tool",
-                        Map.of("planName", planHsa.planName())));
-                hsaTaxSavings = benefitsData.estimateHsaTaxSavings(null, null);
-                tools.add(tool("estimate_hsa_tax_savings", "MCP account tool",
-                        Map.of("annualContribution", planHsa.employeeAnnualElection(),
-                                "marginalTaxRate", profile.estimatedFederalTaxRate() + profile.estimatedStateTaxRate())));
+            if (isSavingsAccountQuestion(lower) && !isPrimaryContributionQuestion(lower)) {
+                savingsAccountPlan = benefitsData.savingsAccountPlan();
+                tools.add(tool("get_savings_account_summary", "MCP account tool",
+                        Map.of("planName", savingsAccountPlan.planName())));
+                savingsAccountAdjustmentSavings = benefitsData.estimateSavingsAccountAdjustment(null, null);
+                tools.add(tool("estimate_savings_account_adjustment", "MCP account tool",
+                        Map.of("annualContribution", savingsAccountPlan.employeeAnnualElection(),
+                                "adjustmentRate", profile.estimatedFederalAdjustmentRate() + profile.estimatedStateAdjustmentRate())));
             } else {
-                plan401k = benefitsData.plan401k();
-                tools.add(tool("get_401k_summary", "MCP account tool",
-                        Map.of("planName", plan401k.planName())));
-                double percent = firstPercent(lower, plan401k.employeeContributionPercent());
-                match = benefitsData.calculate401kMatch(profile.annualSalary(), percent);
-                tools.add(tool("calculate_401k_match", "MCP account tool",
+                primaryContributionPlan = benefitsData.primaryContributionPlan();
+                tools.add(tool("get_primary_contribution_summary", "MCP account tool",
+                        Map.of("planName", primaryContributionPlan.planName())));
+                double percent = firstPercent(lower, primaryContributionPlan.employeeContributionPercent());
+                match = benefitsData.calculatePrimaryContributionMatch(profile.annualSalary(), percent);
+                tools.add(tool("calculate_primary_contribution_match", "MCP account tool",
                         Map.of("salary", profile.annualSalary(),
                                 "employeeContributionPercent", percent)));
             }
@@ -82,7 +82,7 @@ public class BenefitsDemoAgentService {
         }
 
         List<String> citations = useRag ? citationsFor(hits) : List.of();
-        String answer = buildAnswer(route, safeQuestion, profile, match, hsaTaxSavings, hits);
+        String answer = buildAnswer(route, safeQuestion, profile, match, savingsAccountAdjustmentSavings, hits);
 
         return new AgentDemoResponse(
                 route.code,
@@ -119,14 +119,14 @@ public class BenefitsDemoAgentService {
                 || lower.contains("salary")
                 || lower.contains("paycheck")
                 || lower.contains("full match")
-                || lower.contains("tax savings");
+                || lower.contains("adjustment savings");
     }
 
     private static boolean mentionsRules(String lower) {
         return lower.contains("2026")
                 || lower.contains("limit")
-                || lower.contains("irs")
-                || lower.contains("fidelity")
+                || lower.contains("public fixture")
+                || lower.contains("fixture reference")
                 || lower.contains("rule")
                 || lower.contains("eligible")
                 || lower.contains("eligibility")
@@ -137,12 +137,12 @@ public class BenefitsDemoAgentService {
                 || lower.contains("cap");
     }
 
-    private static boolean is401kQuestion(String lower) {
-        return lower.contains("401k") || lower.contains("401(k)") || lower.contains("match");
+    private static boolean isPrimaryContributionQuestion(String lower) {
+        return lower.contains("primary_contribution") || lower.contains("primary contribution") || lower.contains("match");
     }
 
-    private static boolean isHsaQuestion(String lower) {
-        return lower.contains("hsa") || lower.contains("health savings") || lower.contains("hdhp");
+    private static boolean isSavingsAccountQuestion(String lower) {
+        return lower.contains("savings_account") || lower.contains("savings account") || lower.contains("qualifying plan");
     }
 
     private static double firstPercent(String lower, double fallback) {
@@ -169,17 +169,17 @@ public class BenefitsDemoAgentService {
             String question,
             EmployeeProfile profile,
             MatchEstimate match,
-            HsaTaxSavingsEstimate hsaTaxSavings,
+            SavingsAccountAdjustmentEstimate savingsAccountAdjustmentSavings,
             List<SearchHit> hits) {
 
         if (route == Route.DIRECT) {
-            return "This demo can answer general benefits questions directly, then escalate to MCP tools, RAG retrieval, or both when the question needs account data or policy references. Educational only - not financial, tax, legal, or investment advice.";
+            return "This demo can answer general benefits questions directly, then escalate to MCP tools, RAG retrieval, or both when the question needs account data or policy references. Educational only - not professional, adjustment, legal, or allocation advice.";
         }
 
         StringBuilder answer = new StringBuilder();
         if (match != null && profile != null) {
             answer.append(String.format(Locale.US,
-                    "For %s, a %.1f%% 401(k) contribution on a $%,.0f salary estimates a %.1f%% employer match, or about $%,.0f per year. %s",
+                    "For %s, a %.1f%% primary contribution on a $%,.0f salary estimates a %.1f%% employer match, or about $%,.0f per year. %s",
                     profile.name(),
                     match.employeeContributionPercent(),
                     match.salary(),
@@ -188,13 +188,13 @@ public class BenefitsDemoAgentService {
                     match.fullMatchReached() ? "That reaches the full mock match." : "That does not reach the full mock match yet."));
         }
 
-        if (hsaTaxSavings != null) {
+        if (savingsAccountAdjustmentSavings != null) {
             if (!answer.isEmpty()) {
                 answer.append(" ");
             }
             answer.append(String.format(Locale.US,
-                    "The mock HSA election estimates about $%,.0f in total tax savings, including income-tax and payroll-tax components.",
-                    hsaTaxSavings.estimatedTotalSavings()));
+                    "The mock savings account election estimates about $%,.0f in total adjustment savings, including income-adjustment and record system-adjustment components.",
+                    savingsAccountAdjustmentSavings.estimatedTotalSavings()));
         }
 
         if (!hits.isEmpty()) {
@@ -214,7 +214,7 @@ public class BenefitsDemoAgentService {
             answer.append("I routed \"").append(question).append("\" but did not find a stronger demo path.");
         }
 
-        answer.append(" Educational only - not financial, tax, legal, or investment advice.");
+        answer.append(" Educational only - not professional, adjustment, legal, or allocation advice.");
         return answer.toString();
     }
 

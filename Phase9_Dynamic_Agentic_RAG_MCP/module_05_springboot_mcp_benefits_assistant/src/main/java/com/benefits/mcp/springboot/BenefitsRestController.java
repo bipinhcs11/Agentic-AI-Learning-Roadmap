@@ -15,11 +15,11 @@ import com.benefits.mcp.springboot.BenefitsModels.AgentQuestionRequest;
 import com.benefits.mcp.springboot.BenefitsModels.DocumentExcerpt;
 import com.benefits.mcp.springboot.BenefitsModels.DocumentSummary;
 import com.benefits.mcp.springboot.BenefitsModels.EmployeeProfile;
-import com.benefits.mcp.springboot.BenefitsModels.HsaTaxSavingsEstimate;
+import com.benefits.mcp.springboot.BenefitsModels.SavingsAccountAdjustmentEstimate;
 import com.benefits.mcp.springboot.BenefitsModels.MatchEstimate;
 import com.benefits.mcp.springboot.BenefitsModels.MatchRequest;
-import com.benefits.mcp.springboot.BenefitsModels.Plan401k;
-import com.benefits.mcp.springboot.BenefitsModels.PlanHsa;
+import com.benefits.mcp.springboot.BenefitsModels.PrimaryContributionPlan;
+import com.benefits.mcp.springboot.BenefitsModels.SavingsAccountPlan;
 import com.benefits.mcp.springboot.BenefitsModels.SearchHit;
 import com.benefits.mcp.springboot.BenefitsModels.SourceCatalog;
 
@@ -51,27 +51,27 @@ public class BenefitsRestController {
         return benefitsData.employeeProfile();
     }
 
-    @GetMapping("/401k")
-    public Plan401k plan401k() {
-        return benefitsData.plan401k();
+    @GetMapping("/primary_contribution")
+    public PrimaryContributionPlan primaryContributionPlan() {
+        return benefitsData.primaryContributionPlan();
     }
 
-    @PostMapping("/401k/match")
+    @PostMapping("/primary_contribution/match")
     public MatchEstimate calculateMatch(@RequestBody(required = false) MatchRequest request) {
         MatchRequest safeRequest = request == null ? new MatchRequest(null, null) : request;
-        return benefitsData.calculate401kMatch(safeRequest.salary(), safeRequest.employeeContributionPercent());
+        return benefitsData.calculatePrimaryContributionMatch(safeRequest.salary(), safeRequest.employeeContributionPercent());
     }
 
-    @GetMapping("/hsa")
-    public PlanHsa planHsa() {
-        return benefitsData.planHsa();
+    @GetMapping("/savings_account")
+    public SavingsAccountPlan savingsAccountPlan() {
+        return benefitsData.savingsAccountPlan();
     }
 
-    @GetMapping("/hsa/tax-savings")
-    public HsaTaxSavingsEstimate hsaTaxSavings(
+    @GetMapping("/savings_account/adjustment-savings")
+    public SavingsAccountAdjustmentEstimate savingsAccountAdjustmentSavings(
             @RequestParam(required = false) Double annualContribution,
-            @RequestParam(required = false) Double marginalTaxRate) {
-        return benefitsData.estimateHsaTaxSavings(annualContribution, marginalTaxRate);
+            @RequestParam(required = false) Double adjustmentRate) {
+        return benefitsData.estimateSavingsAccountAdjustment(annualContribution, adjustmentRate);
     }
 
     @GetMapping("/rag/search")

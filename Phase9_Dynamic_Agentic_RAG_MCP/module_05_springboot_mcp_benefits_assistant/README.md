@@ -1,6 +1,6 @@
 # Module 05 — Spring Boot MCP + RAG Benefits Microservice
 
-This module takes the same mock 401(k)/HSA learning domain and shows how it
+This module takes the same mock primary contribution/savings account learning domain and shows how it
 looks in an enterprise Java/Spring Boot shape:
 
 - Spring Boot WebMVC microservice
@@ -10,8 +10,8 @@ looks in an enterprise Java/Spring Boot shape:
 - lightweight in-memory RAG over bundled markdown reference summaries
 - recording-friendly Agent Playground UI for LinkedIn/video demos
 
-All data is fictional. This is educational only and is not financial, tax,
-legal, or investment advice.
+All data is fictional. This is educational only and is not professional, adjustment,
+legal, or allocation advice.
 
 ## Why This Is Module 05, Not Phase 10
 
@@ -75,10 +75,10 @@ mvn test
 
 The tests verify:
 
-- 401(k) match calculation
-- HSA tax savings calculation
-- HSA limit retrieval
-- employee 401(k) contribution-limit ranking above the combined $72,000 cap
+- primary contribution match calculation
+- savings account adjustment savings calculation
+- savings account limit retrieval
+- employee primary contribution-limit ranking above the combined $72,000 cap
 - Spring Boot application context and MCP auto-registration
 
 ## Run The Microservice
@@ -107,13 +107,13 @@ Python backend during recording.
 
 ```bash
 curl "http://localhost:8085/api/benefits/profile"
-curl "http://localhost:8085/api/benefits/rag/search?query=2026%20HSA%20family%20limit"
-curl -X POST "http://localhost:8085/api/benefits/401k/match" \
+curl "http://localhost:8085/api/benefits/rag/search?query=2026%20savings account%20family%20limit"
+curl -X POST "http://localhost:8085/api/benefits/primary_contribution/match" \
   -H "Content-Type: application/json" \
   -d '{"salary":120000,"employeeContributionPercent":6}'
 curl -X POST "http://localhost:8085/api/benefits/agent/ask" \
   -H "Content-Type: application/json" \
-  -d '{"question":"I contribute 6% to my 401(k). Am I getting the full match, and what is the 2026 employee limit?"}'
+  -d '{"question":"I contribute 6% to my primary contribution. Am I getting the full match, and what is the 2026 employee limit?"}'
 ```
 
 The MCP Streamable HTTP endpoint is:
@@ -130,24 +130,24 @@ Claude Desktop-style stdio learning, keep using Module 01/04.
 | Tool | Purpose |
 |---|---|
 | `get_employee_profile` | Return mock employee profile |
-| `get_401k_summary` | Return mock 401(k) plan and contribution summary |
-| `calculate_401k_match` | Estimate mock employer match |
-| `get_hsa_summary` | Return mock HSA plan summary |
-| `estimate_hsa_tax_savings` | Estimate mock HSA tax savings |
-| `search_benefits_docs` | Search bundled 401(k)/HSA reference summaries |
+| `get_primary_contribution_summary` | Return mock primary contribution plan and contribution summary |
+| `calculate_primary_contribution_match` | Estimate mock employer match |
+| `get_savings_account_summary` | Return mock savings account plan summary |
+| `estimate_savings_account_adjustment` | Estimate mock savings account adjustment savings |
+| `search_benefits_docs` | Search bundled primary contribution/savings account reference summaries |
 | `list_documents` | List available RAG documents |
 | `get_document_excerpt` | Return a bounded document excerpt |
-| `list_sources` | Return citation source URLs |
+| `list_sources` | Return citation source labels |
 
 ## REST Endpoints
 
 | Endpoint | Purpose |
 |---|---|
 | `GET /api/benefits/profile` | Mock employee profile |
-| `GET /api/benefits/401k` | Mock 401(k) summary |
-| `POST /api/benefits/401k/match` | Match estimate |
-| `GET /api/benefits/hsa` | Mock HSA summary |
-| `GET /api/benefits/hsa/tax-savings` | HSA tax estimate |
+| `GET /api/benefits/primary_contribution` | Mock primary contribution summary |
+| `POST /api/benefits/primary_contribution/match` | Match estimate |
+| `GET /api/benefits/savings_account` | Mock savings account summary |
+| `GET /api/benefits/savings_account/adjustment-savings` | savings account adjustment estimate |
 | `GET /api/benefits/rag/search?query=...` | RAG search |
 | `GET /api/benefits/documents` | Document catalog |
 | `GET /api/benefits/documents/excerpt?documentId=...` | Document excerpt |
@@ -178,7 +178,7 @@ This module is deliberately not a full production system:
 
 - no database
 - no tenant auth
-- no real payroll, HSA, 401(k), or HR integrations
+- no real record system, savings account, primary contribution, or HR integrations
 - no vector database
 - no cloud deployment
 

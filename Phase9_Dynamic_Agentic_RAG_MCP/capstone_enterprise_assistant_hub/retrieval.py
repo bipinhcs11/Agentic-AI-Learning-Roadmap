@@ -5,7 +5,7 @@
 ║                                                                              ║
 ║  WHY: the capstone reuses Module 02's retrieval shape without sharing        ║
 ║  mutable indexes across tenants: heading chunks, local Ollama embeddings,    ║
-║  NumPy cosine, topic/keyword rerank, and 401(k) limit intent disambiguation. ║
+║  NumPy cosine, topic/keyword rerank, and primary contribution limit intent disambiguation. ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 from __future__ import annotations
@@ -87,25 +87,25 @@ def section_chunks(text: str, doc_title: str) -> list[str]:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# MODULE 02 HYBRID RERANK, INCLUDING THE 401(k) INTENT FIX
+# MODULE 02 HYBRID RERANK, INCLUDING THE primary contribution INTENT FIX
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def _source_topic(source: str) -> str:
     source_l = str(source).lower()
-    if "hsa" in source_l:
-        return "hsa"
-    if "401k" in source_l or "401(k)" in source_l:
-        return "401k"
+    if "savings_account" in source_l:
+        return "savings_account"
+    if "primary_contribution" in source_l or "primary contribution" in source_l:
+        return "primary_contribution"
     return ""
 
 
 def _query_topics(query: str) -> set[str]:
     query_l = query.lower()
     topics = set()
-    if any(w in query_l for w in ("hsa", "health savings", "hdhp", "medical")):
-        topics.add("hsa")
-    if any(w in query_l for w in ("401k", "401(k)", "match", "vest", "deferral", "roth 401", "elective")):
-        topics.add("401k")
+    if any(w in query_l for w in ("savings_account", "savings account", "qualifying plan", "medical")):
+        topics.add("savings_account")
+    if any(w in query_l for w in ("primary_contribution", "primary contribution", "match", "vest", "deferral", "roth primary contribution", "elective")):
+        topics.add("primary_contribution")
     return topics
 
 

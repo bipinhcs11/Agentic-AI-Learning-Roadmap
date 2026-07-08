@@ -81,12 +81,12 @@ public class DemoClient {
 
             // 5. Call tools (same arguments as the Python demo)
             callTool(client, "get_employee_profile",         Map.of());
-            callTool(client, "calculate_401k_match",         Map.of());
-            callTool(client, "estimate_annual_401k_contribution",
+            callTool(client, "calculate_primary_contribution_match",         Map.of());
+            callTool(client, "estimate_annual_primary_contribution",
                                                              Map.of("employee_contribution_percent", 10));
-            callTool(client, "estimate_hsa_tax_savings",     Map.of());
+            callTool(client, "estimate_savings_account_adjustment",     Map.of());
             callTool(client, "search_plan_rules",            Map.of("query", "vesting employer match"));
-            callTool(client, "get_plan_document",            Map.of("document_id", "hsa_plan_summary"));
+            callTool(client, "get_plan_document",            Map.of("document_id", "savings_account_plan_summary"));
 
             // 6. Read resources
             readResource(client, "benefits://employee/profile");

@@ -6,10 +6,10 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.benefits.mcp.springboot.BenefitsModels.EmployeeProfile;
-import com.benefits.mcp.springboot.BenefitsModels.HsaTaxSavingsEstimate;
+import com.benefits.mcp.springboot.BenefitsModels.SavingsAccountAdjustmentEstimate;
 import com.benefits.mcp.springboot.BenefitsModels.MatchEstimate;
-import com.benefits.mcp.springboot.BenefitsModels.Plan401k;
-import com.benefits.mcp.springboot.BenefitsModels.PlanHsa;
+import com.benefits.mcp.springboot.BenefitsModels.PrimaryContributionPlan;
+import com.benefits.mcp.springboot.BenefitsModels.SavingsAccountPlan;
 import com.benefits.mcp.springboot.BenefitsModels.SourceCatalog;
 
 @Service
@@ -25,52 +25,52 @@ public class BenefitsDataService {
             0.05,
             2026);
 
-    private static final Plan401k PLAN_401K = new Plan401k(
-            "Acme FutureBuilder 401(k)",
+    private static final PrimaryContributionPlan PRIMARY_CONTRIBUTION_PLAN = new PrimaryContributionPlan(
+            "Acme FutureBuilder primary contribution",
             6.0,
             7200,
             5400,
             "100% of the first 3% of pay, plus 50% of the next 3% of pay",
             4.5);
 
-    private static final PlanHsa PLAN_HSA = new PlanHsa(
-            "Acme HDHP + HSA",
+    private static final SavingsAccountPlan SAVINGS_ACCOUNT_PLAN = new SavingsAccountPlan(
+            "Acme qualifying plan + savings account",
             "family",
             4200,
             1000,
             true);
 
     private static final SourceCatalog SOURCES = new SourceCatalog(Map.of(
-            "401k_reference.md", List.of(
-                    "IRS — 401(k) limit increases to $24,500 for 2026: https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500",
-                    "Fidelity — 401(k) contribution limits 2025 and 2026: https://www.fidelity.com/learning-center/smart-money/401k-contribution-limits"),
-            "hsa_reference.md", List.of(
-                    "IRS Revenue Procedure 2025-19: https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
-                    "Fidelity — HSA contribution limits and eligibility 2026: https://www.fidelity.com/learning-center/smart-money/hsa-contribution-limits")));
+            "primary_contribution_reference.md", List.of(
+                    "Fixture source summary",
+                    "Fixture source summary"),
+            "savings_account_reference.md", List.of(
+                    "Fixture source summary",
+                    "Fixture source summary")));
 
     public EmployeeProfile employeeProfile() {
         return EMPLOYEE_PROFILE;
     }
 
-    public Plan401k plan401k() {
-        return PLAN_401K;
+    public PrimaryContributionPlan primaryContributionPlan() {
+        return PRIMARY_CONTRIBUTION_PLAN;
     }
 
-    public PlanHsa planHsa() {
-        return PLAN_HSA;
+    public SavingsAccountPlan savingsAccountPlan() {
+        return SAVINGS_ACCOUNT_PLAN;
     }
 
     public SourceCatalog sources() {
         return SOURCES;
     }
 
-    public MatchEstimate calculate401kMatch(Double salary, Double employeeContributionPercent) {
+    public MatchEstimate calculatePrimaryContributionMatch(Double salary, Double employeeContributionPercent) {
         double resolvedSalary = salary != null ? salary : EMPLOYEE_PROFILE.annualSalary();
-        double pct = employeeContributionPercent != null ? employeeContributionPercent : PLAN_401K.employeeContributionPercent();
+        double pct = employeeContributionPercent != null ? employeeContributionPercent : PRIMARY_CONTRIBUTION_PLAN.employeeContributionPercent();
 
         double firstTier = Math.min(pct, 3.0);
         double secondTier = Math.min(Math.max(pct - 3.0, 0.0), 3.0);
-        double matchPct = Math.min(firstTier + secondTier * 0.5, PLAN_401K.maxMatchPercent());
+        double matchPct = Math.min(firstTier + secondTier * 0.5, PRIMARY_CONTRIBUTION_PLAN.maxMatchPercent());
 
         return new MatchEstimate(
                 resolvedSalary,
@@ -78,22 +78,22 @@ public class BenefitsDataService {
                 round2(matchPct),
                 round2(resolvedSalary * matchPct / 100.0),
                 pct >= 6.0,
-                "Mock estimate. Not financial advice.");
+                "Mock estimate. Not professional advice.");
     }
 
-    public HsaTaxSavingsEstimate estimateHsaTaxSavings(Double annualContribution, Double marginalTaxRate) {
-        double contribution = annualContribution != null ? annualContribution : PLAN_HSA.employeeAnnualElection();
-        double defaultRate = EMPLOYEE_PROFILE.estimatedFederalTaxRate() + EMPLOYEE_PROFILE.estimatedStateTaxRate();
-        double rate = marginalTaxRate != null ? marginalTaxRate : defaultRate;
-        double ficaRate = 0.0765;
+    public SavingsAccountAdjustmentEstimate estimateSavingsAccountAdjustment(Double annualContribution, Double adjustmentRate) {
+        double contribution = annualContribution != null ? annualContribution : SAVINGS_ACCOUNT_PLAN.employeeAnnualElection();
+        double defaultRate = EMPLOYEE_PROFILE.estimatedFederalAdjustmentRate() + EMPLOYEE_PROFILE.estimatedStateAdjustmentRate();
+        double rate = adjustmentRate != null ? adjustmentRate : defaultRate;
+        double recordSystemRate = 0.0765;
 
-        return new HsaTaxSavingsEstimate(
+        return new SavingsAccountAdjustmentEstimate(
                 contribution,
                 round2(contribution * rate),
-                round2(contribution * ficaRate),
-                round2(contribution * (rate + ficaRate)),
-                "FICA savings apply to payroll Section 125 contributions, not direct deposits.",
-                "Educational estimate only. Not tax advice.");
+                round2(contribution * recordSystemRate),
+                round2(contribution * (rate + recordSystemRate)),
+                "record-system estimate applies to record-system fixture contributions, not direct deposits.",
+                "Educational estimate only. Not adjustment advice.");
     }
 
     private static double round2(double value) {

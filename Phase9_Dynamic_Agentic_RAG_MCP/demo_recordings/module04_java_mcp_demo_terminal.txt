@@ -16,17 +16,17 @@ $ java -Dorg.slf4j.simpleLogger.logFile=System.err -cp target/benefits-mcp-java-
 │ TOOLS (9)
 └──────────────────────────────────────────────────────────────────────────────
   • get_employee_profile
-    Return the mock employee profile used by the benefits assistant. Use this when a question needs employee salary, age, filing status, or estimated tax-rate assumptions before calculating 401(k) or HSA outcomes.
-  • get_401k_summary
-    Return the mock employee's current 401(k) plan and contribution summary.
-  • calculate_401k_match
-    Estimate the annual employer 401(k) match for the mock plan.
-  • estimate_annual_401k_contribution
-    Estimate annual employee 401(k) contributions and remaining mock limit.
-  • get_hsa_summary
-    Return the mock employee's HSA coverage, election, balance, and plan summary.
-  • estimate_hsa_tax_savings
-    Estimate tax savings from a mock HSA contribution.
+    Return the mock employee profile used by the benefits assistant. Use this when a question needs employee salary, age, filing status, or estimated adjustment-rate assumptions before calculating primary contribution or savings account outcomes.
+  • get_primary_contribution_summary
+    Return the mock employee's current primary contribution plan and contribution summary.
+  • calculate_primary_contribution_match
+    Estimate the annual employer primary contribution match for the mock plan.
+  • estimate_annual_primary_contribution
+    Estimate annual employee primary contributions and remaining mock limit.
+  • get_savings_account_summary
+    Return the mock employee's savings account coverage, election, balance, and plan summary.
+  • estimate_savings_account_adjustment
+    Estimate adjustment savings from a mock savings account contribution.
   • list_plan_documents
     List the mock plan documents available as MCP resources or keyword search.
   • get_plan_document
@@ -37,10 +37,10 @@ $ java -Dorg.slf4j.simpleLogger.logFile=System.err -cp target/benefits-mcp-java-
 ┌──────────────────────────────────────────────────────────────────────────────
 │ RESOURCES (4)
 └──────────────────────────────────────────────────────────────────────────────
-  • benefits://hsa/plan-summary  —  Mock HSA Plan Summary
+  • benefits://savings-account/plan-summary  —  Mock savings account Plan Summary
   • benefits://documents/benefits-faq  —  Mock Benefits FAQ
   • benefits://employee/profile  —  Mock Employee Profile
-  • benefits://401k/plan-summary  —  Mock 401(k) Plan Summary
+  • benefits://primary-contribution/plan-summary  —  Mock primary contribution Plan Summary
 
 ┌──────────────────────────────────────────────────────────────────────────────
 │ PROMPTS (1)
@@ -57,14 +57,14 @@ $ java -Dorg.slf4j.simpleLogger.logFile=System.err -cp target/benefits-mcp-java-
     "annual_salary" : 120000,
     "benefits_year" : 2026,
     "employee_id" : "EMP-1042",
-    "estimated_federal_tax_rate" : 0.24,
-    "estimated_state_tax_rate" : 0.05,
+    "estimated_federal_adjustment_rate" : 0.24,
+    "estimated_state_adjustment_rate" : 0.05,
     "filing_status" : "single",
     "name" : "Jordan Lee"
   }
 
 ┌──────────────────────────────────────────────────────────────────────────────
-│ CALL TOOL: calculate_401k_match
+│ CALL TOOL: calculate_primary_contribution_match
 └──────────────────────────────────────────────────────────────────────────────
   args = {}
   {
@@ -78,11 +78,11 @@ $ java -Dorg.slf4j.simpleLogger.logFile=System.err -cp target/benefits-mcp-java-
   }
 
 ┌──────────────────────────────────────────────────────────────────────────────
-│ CALL TOOL: estimate_annual_401k_contribution
+│ CALL TOOL: estimate_annual_primary_contribution
 └──────────────────────────────────────────────────────────────────────────────
   args = {employee_contribution_percent=10}
   {
-    "educational_note" : "This uses mock plan assumptions, not official tax guidance.",
+    "educational_note" : "This uses mock plan assumptions, not fixture guidance.",
     "employee_contribution_percent" : 10.0,
     "estimated_annual_employee_contribution" : 12000.0,
     "mock_employee_limit" : 24500,
@@ -92,17 +92,17 @@ $ java -Dorg.slf4j.simpleLogger.logFile=System.err -cp target/benefits-mcp-java-
   }
 
 ┌──────────────────────────────────────────────────────────────────────────────
-│ CALL TOOL: estimate_hsa_tax_savings
+│ CALL TOOL: estimate_savings_account_adjustment
 └──────────────────────────────────────────────────────────────────────────────
   args = {}
   {
-    "annual_hsa_employee_contribution" : 4200.0,
-    "educational_note" : "Educational estimate only. Tax treatment depends on facts and law.",
-    "estimated_combined_income_tax_rate" : 0.29,
-    "estimated_fica_savings" : 321.3,
-    "estimated_income_tax_savings" : 1218.0,
+    "annual_savings_account_employee_contribution" : 4200.0,
+    "educational_note" : "Educational estimate only. Adjustment treatment depends on facts and law.",
+    "estimated_combined_income_adjustment_rate" : 0.29,
+    "estimated_record_system_savings" : 321.3,
+    "estimated_income_adjustment_savings" : 1218.0,
     "estimated_total_savings" : 1539.3,
-    "fica_note" : "FICA savings apply to HSA contributions made through payroll (Section 125 cafeteria plan), not direct deposits.",
+    "record_system_note" : "record-system estimate applies to savings account contributions made through record system (fixture plan), not direct deposits.",
     "mock_family_limit" : 8750,
     "within_mock_limit" : true
   }
@@ -112,19 +112,19 @@ $ java -Dorg.slf4j.simpleLogger.logFile=System.err -cp target/benefits-mcp-java-
 └──────────────────────────────────────────────────────────────────────────────
   args = {query=vesting employer match}
   [ {
-    "document_id" : "401k_plan_summary",
+    "document_id" : "primary_contribution_plan_summary",
     "match_score" : 2,
-    "snippet" : "The Acme FutureBuilder 401(k) lets employees contribute a percentage of pay.\nThe mock employer match is 100% of the first 3% of pay plus 50% of the next\n3% of pay, for a maximum employer match of 4.5% of eligible pay. Employer\nmatching dollars vest 25% per year over four years."
+    "snippet" : "The Acme FutureBuilder primary contribution lets employees contribute a percentage of pay.\nThe mock employer match is 100% of the first 3% of pay plus 50% of the next\n3% of pay, for a maximum employer match of 4.5% of eligible pay. Employer\nmatching dollars vest 25% per year over four years."
   } ]
 
 ┌──────────────────────────────────────────────────────────────────────────────
 │ CALL TOOL: get_plan_document
 └──────────────────────────────────────────────────────────────────────────────
-  args = {document_id=hsa_plan_summary}
+  args = {document_id=savings_account_plan_summary}
   {
-    "document_id" : "hsa_plan_summary",
-    "text" : "The Acme HDHP + HSA lets eligible employees contribute to a Health Savings\nAccount when enrolled in the qualifying high-deductible health plan. In this\nmock plan, Acme contributes $1,000 per year for family coverage. HSA funds roll\nover year to year and can be used for qualified medical expenses.",
-    "title" : "Hsa plan summary"
+    "document_id" : "savings_account_plan_summary",
+    "text" : "The Acme qualifying plan + savings account lets eligible employees contribute to a savings account when enrolled in the qualifying plan. In this\nmock plan, Acme contributes $1,000 per year for family coverage. savings account funds roll\nover year to year and can be used for qualified medical expenses.",
+    "title" : "Savings account plan summary"
   }
 
 ┌──────────────────────────────────────────────────────────────────────────────
@@ -135,8 +135,8 @@ $ java -Dorg.slf4j.simpleLogger.logFile=System.err -cp target/benefits-mcp-java-
     "annual_salary" : 120000,
     "benefits_year" : 2026,
     "employee_id" : "EMP-1042",
-    "estimated_federal_tax_rate" : 0.24,
-    "estimated_state_tax_rate" : 0.05,
+    "estimated_federal_adjustment_rate" : 0.24,
+    "estimated_state_adjustment_rate" : 0.05,
     "filing_status" : "single",
     "name" : "Jordan Lee"
   }
@@ -145,10 +145,10 @@ $ java -Dorg.slf4j.simpleLogger.logFile=System.err -cp target/benefits-mcp-java-
 │ READ RESOURCE: benefits://documents/benefits-faq
 └──────────────────────────────────────────────────────────────────────────────
   Frequently asked mock benefits questions:
-  - 401(k) contribution changes can be made any payroll period.
-  - HSA election changes may require a qualifying life event unless made during
+  - primary contribution changes can be made any record system period.
+  - savings account election changes may require a qualifying life event unless made during
     open enrollment.
-  - This training example does not provide financial, tax, legal, or investment
+  - This training example does not provide professional, adjustment, legal, or allocation
     advice.
 
 

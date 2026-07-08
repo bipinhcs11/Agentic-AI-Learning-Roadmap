@@ -24,7 +24,7 @@
     <name>Java MCP Benefits Assistant</name>
     <description>
         Phase 9 Module 04 — Java port of the Python MCP Benefits Assistant.
-        Uses the official MCP Java SDK to expose mock 401(k) and HSA data
+        Uses the official MCP Java SDK to expose mock primary contribution and savings account data
         as MCP tools, resources, and prompts over stdio.
     </description>
 

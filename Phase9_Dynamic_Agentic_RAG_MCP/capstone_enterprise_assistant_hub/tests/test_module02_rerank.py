@@ -45,14 +45,14 @@ def test_employee_limit_intent_ranks_employee_limit_above_combined(monkeypatch):
     module = load_module02_server(monkeypatch)
     chunks = np.array(
         [
-            "[401(k) Reference — Combined employee + employer limit]\nThe combined limit is $72,000.",
-            "[401(k) Reference — Employee contribution limits]\nThe employee salary-deferral limit is $24,500.",
+            "[primary contribution Reference — Combined employee + employer limit]\nThe combined limit is $72,000.",
+            "[primary contribution Reference — Employee contribution limits]\nThe employee salary-deferral limit is $24,500.",
         ],
         dtype=object,
     )
-    sources = np.array(["401k_reference.md", "401k_reference.md"], dtype=object)
+    sources = np.array(["primary_contribution_reference.md", "primary_contribution_reference.md"], dtype=object)
     sims = np.array([0.90, 0.70], dtype=np.float32)
 
-    order = module._rank("What is the 2026 401(k) employee contribution limit?", sims, chunks, sources)
+    order = module._rank("What is the 2026 primary contribution employee contribution limit?", sims, chunks, sources)
 
     assert order[0] == 1

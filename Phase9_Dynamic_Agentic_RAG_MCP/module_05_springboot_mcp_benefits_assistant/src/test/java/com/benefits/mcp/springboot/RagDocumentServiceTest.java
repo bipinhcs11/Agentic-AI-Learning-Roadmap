@@ -10,7 +10,7 @@ class RagDocumentServiceTest {
 
     @Test
     void ranksEmployeeContributionLimitAboveCombinedLimit() {
-        var hits = service.search("What is the 2026 401(k) employee contribution limit?", 4);
+        var hits = service.search("What is the 2026 primary contribution employee contribution limit?", 4);
 
         assertThat(hits.get(0).heading()).contains("Employee contribution limits");
         assertThat(hits.get(0).text()).contains("$24,500");
@@ -19,11 +19,11 @@ class RagDocumentServiceTest {
     }
 
     @Test
-    void searchesHsaFamilyLimitInHsaDocument() {
-        var hits = service.search("What is the 2026 HSA family contribution limit?", 1);
+    void searchesSavingsAccountFamilyLimitInSavingsAccountDocument() {
+        var hits = service.search("What is the 2026 savings account family contribution limit?", 1);
 
         assertThat(hits).hasSize(1);
-        assertThat(hits.get(0).source()).isEqualTo("hsa_reference.md");
+        assertThat(hits.get(0).source()).isEqualTo("savings_account_reference.md");
         assertThat(hits.get(0).text()).contains("$8,750");
     }
 }
