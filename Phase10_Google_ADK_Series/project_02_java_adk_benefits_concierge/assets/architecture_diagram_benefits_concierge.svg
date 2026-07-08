@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Phase 10 Module 01 Java ADK Benefits Concierge architecture</title>
+  <desc id="desc">Google-style architecture diagram showing the Java ADK LlmAgent, its tool-calling loop, deterministic Java tools, and the Rung 01B trusted A2UI validator.</desc>
+
+  <defs>
+    <filter id="softShadow" x="-18%" y="-18%" width="136%" height="136%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#185abc" flood-opacity="0.14"/>
+    </filter>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4285f4"/>
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9aa0a6"/>
+    </marker>
+    <style>
+      .title { font: 500 34px Arial, Helvetica, sans-serif; fill: #202124; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .nodeTitle { font: 700 28px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .nodeSub { font: 500 20px Arial, Helvetica, sans-serif; fill: #ffffff; opacity: 0.94; }
+      .nodeHint { font: 500 17px Arial, Helvetica, sans-serif; fill: #ffffff; opacity: 0.94; }
+      .small { font: 400 17px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .tiny { font: 500 15px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .label { font: 500 17px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .tileTitle { font: 700 19px Arial, Helvetica, sans-serif; fill: #3f6fd7; }
+      .tileText { font: 400 14px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .mono { font: 600 16px Menlo, Monaco, Consolas, monospace; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#ffffff"/>
+  <rect x="0" y="0" width="1600" height="900" fill="#f8fbff"/>
+
+  <!-- Simple four-color cloud mark, inspired by Google Cloud colors. -->
+  <g transform="translate(52 36)">
+    <path d="M 24 34 C 26 21 37 12 50 12 C 60 12 69 17 74 25 C 88 26 99 37 99 51 C 99 66 87 78 72 78 L 26 78 C 12 78 1 67 1 53 C 1 41 10 31 24 34 Z" fill="#ffffff" stroke="#dadce0" stroke-width="3"/>
+    <path d="M 23 35 C 27 22 38 13 51 13" fill="none" stroke="#34a853" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 51 13 C 61 13 69 18 74 26" fill="none" stroke="#fbbc04" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 75 26 C 89 28 99 38 99 52" fill="none" stroke="#4285f4" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 27 78 C 12 78 1 67 1 53 C 1 43 8 35 18 33" fill="none" stroke="#ea4335" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <text x="180" y="68" class="title">Phase 10 Module 01: Java ADK Benefits Concierge</text>
+  <text x="180" y="102" class="subtitle">Rung 01A text agent + deterministic tools, verified into a Rung 01B trusted A2UI payload</text>
+
+  <!-- ADK orchestration bar. -->
+  <rect x="420" y="132" width="760" height="72" rx="0" fill="#aecbfa" filter="url(#softShadow)"/>
+  <circle cx="475" cy="168" r="25" fill="#ffffff"/>
+  <circle cx="468" cy="162" r="5" fill="#4285f4"/>
+  <circle cx="482" cy="162" r="5" fill="#34a853"/>
+  <circle cx="468" cy="176" r="5" fill="#fbbc04"/>
+  <circle cx="482" cy="176" r="5" fill="#ea4335"/>
+  <text x="800" y="178" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="600" text-anchor="middle" fill="#202124">Java Google ADK Orchestration</text>
+
+  <!-- Orchestration guide lines. -->
+  <path d="M 520 204 L 220 204 L 220 286" stroke="#aecbfa" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+  <path d="M 800 204 L 800 276" stroke="#aecbfa" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+  <path d="M 1080 204 L 1258 204 L 1258 276" stroke="#aecbfa" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+
+  <!-- Java LlmAgent (left hexagon). -->
+  <polygon points="206,282 352,282 436,404 352,526 206,526 122,404" fill="#34a853" filter="url(#softShadow)"/>
+  <circle cx="278" cy="325" r="25" fill="#4285f4"/>
+  <path d="M 278 312 L 278 338 M 265 325 L 291 325" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="278" cy="325" r="9" fill="none" stroke="#ffffff" stroke-width="4"/>
+  <text x="279" y="374" class="nodeTitle" text-anchor="middle">Java</text>
+  <text x="279" y="407" class="nodeTitle" text-anchor="middle">LlmAgent</text>
+  <text x="279" y="450" class="nodeSub" text-anchor="middle">Concierge</text>
+  <text x="279" y="548" class="small" text-anchor="middle">model: gemini-2.0-flash,</text>
+  <text x="279" y="572" class="small" text-anchor="middle">screenRequest guardrail,</text>
+  <text x="279" y="596" class="small" text-anchor="middle">Rung 01A text-only</text>
+
+  <!-- ADK tool-calling loop (center stack). -->
+  <rect x="702" y="280" width="286" height="274" fill="#5f8ff6" opacity="0.35" filter="url(#softShadow)"/>
+  <rect x="682" y="294" width="286" height="274" fill="#4f83e9" opacity="0.72"/>
+  <rect x="662" y="308" width="286" height="274" fill="#4285f4"/>
+  <circle cx="805" cy="344" r="27" fill="#ffffff"/>
+  <circle cx="797" cy="337" r="7" fill="#4285f4"/>
+  <circle cx="813" cy="337" r="7" fill="#34a853"/>
+  <circle cx="797" cy="353" r="7" fill="#fbbc04"/>
+  <circle cx="813" cy="353" r="7" fill="#ea4335"/>
+  <text x="805" y="403" class="nodeTitle" text-anchor="middle">ADK Core</text>
+  <text x="805" y="439" class="nodeSub" text-anchor="middle">Tool-Calling</text>
+  <text x="805" y="467" class="nodeSub" text-anchor="middle">Loop</text>
+  <text x="805" y="605" class="small" text-anchor="middle">In-process Java function tools</text>
+  <text x="805" y="629" class="tiny" text-anchor="middle">FunctionTool.create(...)</text>
+
+  <!-- Deterministic tools (top-right hexagon). -->
+  <polygon points="1162,282 1370,282 1460,392 1370,502 1162,502 1072,392" fill="#fbbc04" filter="url(#softShadow)"/>
+  <circle cx="1266" cy="326" r="25" fill="#4285f4"/>
+  <path d="M 1266 313 L 1266 339 M 1253 326 L 1279 326" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="1266" cy="326" r="9" fill="none" stroke="#ffffff" stroke-width="4"/>
+  <text x="1266" y="375" class="nodeTitle" text-anchor="middle">Java Tools</text>
+  <text x="1266" y="418" class="nodeSub" text-anchor="middle">Retrieval + Math</text>
+  <text x="1266" y="456" class="nodeHint" text-anchor="middle">local KB + BigDecimal calc</text>
+  <text x="1266" y="480" class="nodeHint" text-anchor="middle">projection + election draft</text>
+
+  <!-- Rung 01B A2UI validator (bottom-right hexagon). -->
+  <polygon points="1162,526 1370,526 1460,626 1370,726 1162,726 1072,626" fill="#4285f4" filter="url(#softShadow)"/>
+  <circle cx="1266" cy="568" r="25" fill="#fbbc04"/>
+  <path d="M 1256 568 L 1263 575 L 1277 561" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="1266" y="614" class="nodeTitle" text-anchor="middle">Rung 01B</text>
+  <text x="1266" y="650" class="nodeSub" text-anchor="middle">A2UI Validator</text>
+  <text x="1266" y="684" class="nodeHint" text-anchor="middle">Card / Table / Text only</text>
+  <text x="1266" y="708" class="nodeHint" text-anchor="middle">blocks onClick, href, script</text>
+
+  <!-- Flow arrows. -->
+  <path d="M 438 388 L 652 388" stroke="#4285f4" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="540" y="370" class="label" text-anchor="middle">1. Ask Question</text>
+
+  <path d="M 652 430 L 438 430" stroke="#4285f4" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="540" y="460" class="label" text-anchor="middle">6. Grounded Answer</text>
+
+  <path d="M 955 366 L 1064 366" stroke="#4285f4" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="1010" y="347" class="label" text-anchor="middle">2. Tool Call</text>
+
+  <path d="M 1064 414 L 955 414" stroke="#4285f4" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="1010" y="445" class="label" text-anchor="middle">3. Tool Result</text>
+
+  <path d="M 955 615 L 1064 615" stroke="#4285f4" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="1010" y="596" class="label" text-anchor="middle">4. Build A2UI Card</text>
+
+  <path d="M 1064 665 L 955 665" stroke="#4285f4" stroke-width="4" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="1010" y="693" class="label" text-anchor="middle">5. Validated Payload</text>
+
+  <!-- Dotted audit boundary. -->
+  <line x1="130" y1="740" x2="1470" y2="740" stroke="#dadce0" stroke-width="3" stroke-dasharray="3 9"/>
+  <circle cx="279" cy="740" r="7" fill="#5f6368"/>
+  <circle cx="805" cy="740" r="7" fill="#5f6368"/>
+  <circle cx="1266" cy="740" r="7" fill="#5f6368"/>
+
+  <!-- Bottom value tiles. -->
+  <g transform="translate(64 770)">
+    <rect x="0" y="0" width="350" height="106" fill="#edf3fe"/>
+    <text x="24" y="34" class="tileTitle">Deterministic Math</text>
+    <text x="24" y="62" class="tileText">Java BigDecimal handles every</text>
+    <text x="24" y="84" class="tileText">demo contribution calculation.</text>
+  </g>
+
+  <g transform="translate(423 770)">
+    <rect x="0" y="0" width="350" height="106" fill="#edf3fe"/>
+    <text x="24" y="34" class="tileTitle">Trusted UI Catalog</text>
+    <text x="24" y="62" class="tileText">Only Card, Table, and Text</text>
+    <text x="24" y="84" class="tileText">components ever reach the screen.</text>
+  </g>
+
+  <g transform="translate(782 770)">
+    <rect x="0" y="0" width="350" height="106" fill="#edf3fe"/>
+    <text x="24" y="34" class="tileTitle">Guardrails First</text>
+    <text x="24" y="62" class="tileText">Real data, transactions, and</text>
+    <text x="24" y="84" class="tileText">advice requests are screened out.</text>
+  </g>
+
+  <g transform="translate(1141 770)">
+    <rect x="0" y="0" width="350" height="106" fill="#edf3fe"/>
+    <text x="24" y="34" class="tileTitle">Verified Offline</text>
+    <text x="24" y="62" class="tileText">13/13 JUnit tests pass with</text>
+    <text x="24" y="84" class="tileText">no live Gemini call required.</text>
+  </g>
+</svg>

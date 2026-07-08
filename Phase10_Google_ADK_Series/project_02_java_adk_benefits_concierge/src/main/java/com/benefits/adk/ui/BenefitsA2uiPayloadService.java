@@ -21,11 +21,11 @@ public final class BenefitsA2uiPayloadService {
                 Map.of(
                         "columns", List.of("Metric", "Amount"),
                         "rows", List.of(
-                                List.of("Employee 401(k)", projection.employee401kContribution().toPlainString()),
+                                List.of("Employee primary contribution", projection.employeePrimaryContribution().toPlainString()),
                                 List.of("Employer match", projection.employerMatch().toPlainString()),
-                                List.of("Combined 401(k)", projection.combined401kContribution().toPlainString()),
-                                List.of("HSA contribution", projection.hsaContribution().toPlainString()),
-                                List.of("Estimated HSA tax savings", projection.estimatedHsaTaxSavings().toPlainString())
+                                List.of("Combined primary contribution", projection.combinedPrimaryContribution().toPlainString()),
+                                List.of("savings account contribution", projection.savingsContribution().toPlainString()),
+                                List.of("Estimated savings adjustment", projection.estimatedSavingsAdjustment().toPlainString())
                         )
                 ),
                 List.of()

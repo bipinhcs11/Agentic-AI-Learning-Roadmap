@@ -10,9 +10,9 @@ ADK text orchestration and does not introduce React, AG-UI, UCP, or A2A yet.
 
 | Skill | Input | Output | Rung 01A behavior | Later UI state |
 |---|---|---|---|---|
-| Benefits education | Plain-language 401(k)/HSA question | Grounded explanation plus caveats | Uses local fictional KB through the retrieval tool | Education card |
+| Benefits education | Plain-language primary contribution/savings account question | Grounded explanation plus caveats | Uses local fictional KB through the retrieval tool | Education card |
 | Retrieval + citation | Topic and user question | Relevant snippets and source ids | Local adapter stands in for managed Agent Search until cloud config exists | Citation list |
-| Projection | Salary, 401(k) percent, HSA amount, coverage | Deterministic match/tax estimate | Java calculator tool, no LLM math | Projection table |
+| Projection | Salary, primary contribution percent, savings account amount, coverage | Deterministic match/adjustment estimate | Java calculator tool, no LLM math | Projection table |
 | A2UI projection card | Projection inputs | Trusted `Card` + `Table` + `Text` payload | Rung 01B validation scaffold only | ADK web UI verification payload |
 | Election drafting | Requested contribution change | Non-executable draft summary | Produces a draft only; no commit path | Draft election panel |
 | Approval gating | Draft action and user confirmation | Allowed/blocked decision | Blocks all commits in Rung 01A | Confirmation modal |
@@ -22,11 +22,10 @@ ADK text orchestration and does not introduce React, AG-UI, UCP, or A2A yet.
 ## Guardrail Boundaries
 
 - The agent is educational and fictional; it must not claim to access real
-  payroll, HRIS, provider, account, or customer data.
+  record system, HRIS, provider, account, or customer data.
 - It may calculate examples from user-provided numbers, but it must label them
   estimates.
-- It must not provide legal, tax, investment, fiduciary, or individualized
-  financial advice.
+- It must not provide professional or personalized account advice.
 - It must not execute benefit elections, move money, open accounts, or update
   real records.
 - Any election discussion must remain a draft until a future UCP confirmation

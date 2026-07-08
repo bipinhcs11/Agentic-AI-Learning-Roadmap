@@ -1,4 +1,8 @@
 const TRUSTED_COMPONENTS = new Set(["Card", "Table", "Text"]);
+const TRUSTED_SCHEMA_VERSIONS = new Set([
+  "a2ui.phase10.rung01b.v1",
+  "a2ui.phase10.module02.v1",
+]);
 const ALLOWED_PROPS = {
   Card: new Set(["title"]),
   Table: new Set(["columns", "rows"]),
@@ -12,7 +16,7 @@ export function validateA2uiPayload(payload) {
     errors.push("Unsupported payload MIME type.");
   }
 
-  if (payload?.data?.schemaVersion !== "a2ui.phase10.rung01b.v1") {
+  if (!TRUSTED_SCHEMA_VERSIONS.has(payload?.data?.schemaVersion)) {
     errors.push("Unsupported A2UI schema version.");
   }
 

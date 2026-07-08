@@ -1,4 +1,4 @@
-# Fictional 401(k) Reference - 2026
+# Fictional primary contribution Reference - 2026
 
 This is an educational fixture for the Phase 10 Java ADK benefits concierge. It
 uses a fictional employer plan and must not be treated as real plan guidance.
@@ -7,7 +7,7 @@ uses a fictional employer plan and must not be treated as real plan guidance.
 
 For the 2026 learning example, the employee salary-deferral limit is $24,500.
 This is the maximum an employee can elect to defer from their own paycheck
-across traditional and Roth 401(k) contributions for the year.
+across traditional and Roth primary contribution contributions for the year.
 
 ## Combined employee + employer limit
 
@@ -24,4 +24,4 @@ The fictional Acme plan matches 100% of the first 3% of pay plus 50% of the next
 
 The concierge may explain these fictional rules and calculate examples from
 user-provided inputs. It must not make a real election or provide personalized
-tax, legal, investment, or fiduciary advice.
+professional advice.

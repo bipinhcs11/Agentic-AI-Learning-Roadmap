@@ -6,21 +6,21 @@ import java.util.List;
 
 public record ContributionProjection(
         BigDecimal annualSalary,
-        BigDecimal employee401kContribution,
+        BigDecimal employeePrimaryContribution,
         BigDecimal employerMatch,
-        BigDecimal combined401kContribution,
-        BigDecimal hsaContribution,
-        BigDecimal estimatedHsaTaxSavings,
+        BigDecimal combinedPrimaryContribution,
+        BigDecimal savingsContribution,
+        BigDecimal estimatedSavingsAdjustment,
         List<String> notes
 ) {
     public ContributionProjection rounded() {
         return new ContributionProjection(
                 money(annualSalary),
-                money(employee401kContribution),
+                money(employeePrimaryContribution),
                 money(employerMatch),
-                money(combined401kContribution),
-                money(hsaContribution),
-                money(estimatedHsaTaxSavings),
+                money(combinedPrimaryContribution),
+                money(savingsContribution),
+                money(estimatedSavingsAdjustment),
                 notes
         );
     }

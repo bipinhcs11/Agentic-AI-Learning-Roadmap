@@ -36,45 +36,45 @@ public final class BenefitsConciergeTools {
 
     public static ContributionProjection projectContributions(
             double annualSalary,
-            double employee401kPercent,
-            double annualHsaContribution,
-            String hsaCoverage,
-            double marginalTaxRate
+            double employeePrimaryPercent,
+            double annualSavingsContribution,
+            String coverageType,
+            double adjustmentRate
     ) {
         return PROJECTION_SERVICE.project(
                 BigDecimal.valueOf(annualSalary),
-                BigDecimal.valueOf(employee401kPercent),
-                BigDecimal.valueOf(annualHsaContribution),
-                hsaCoverage,
-                BigDecimal.valueOf(marginalTaxRate)
+                BigDecimal.valueOf(employeePrimaryPercent),
+                BigDecimal.valueOf(annualSavingsContribution),
+                coverageType,
+                BigDecimal.valueOf(adjustmentRate)
         );
     }
 
     public static ElectionDraft draftElectionChange(
             String electionType,
-            double proposed401kPercent,
-            double proposedAnnualHsaContribution
+            double proposedPrimaryPercent,
+            double proposedAnnualSavingsContribution
     ) {
         return DRAFT_SERVICE.draft(
                 electionType,
-                BigDecimal.valueOf(proposed401kPercent),
-                BigDecimal.valueOf(proposedAnnualHsaContribution)
+                BigDecimal.valueOf(proposedPrimaryPercent),
+                BigDecimal.valueOf(proposedAnnualSavingsContribution)
         );
     }
 
     public static Map<String, Object> buildProjectionA2uiCard(
             double annualSalary,
-            double employee401kPercent,
-            double annualHsaContribution,
-            String hsaCoverage,
-            double marginalTaxRate
+            double employeePrimaryPercent,
+            double annualSavingsContribution,
+            String coverageType,
+            double adjustmentRate
     ) {
         ContributionProjection projection = projectContributions(
                 annualSalary,
-                employee401kPercent,
-                annualHsaContribution,
-                hsaCoverage,
-                marginalTaxRate
+                employeePrimaryPercent,
+                annualSavingsContribution,
+                coverageType,
+                adjustmentRate
         );
         A2uiPayload payload = A2UI_SERVICE.projectionSummary(projection);
         return Map.of(
