@@ -5,8 +5,8 @@ import java.util.List;
 
 public record ElectionDraft(
         String electionType,
-        BigDecimal proposed401kPercent,
-        BigDecimal proposedAnnualHsaContribution,
+        BigDecimal proposedPrimaryPercent,
+        BigDecimal proposedAnnualSavingsContribution,
         boolean executableInRung01A,
         List<String> approvalSteps
 ) {

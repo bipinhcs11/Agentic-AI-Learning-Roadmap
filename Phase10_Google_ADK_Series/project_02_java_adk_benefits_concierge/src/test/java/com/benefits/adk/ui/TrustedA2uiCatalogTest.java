@@ -33,7 +33,7 @@ class TrustedA2uiCatalogTest {
 
     @Test
     void rejectsExecutableProps() {
-        A2uiComponent component = new A2uiComponent("Text", Map.of("onClick", "submitPayroll()"), List.of());
+        A2uiComponent component = new A2uiComponent("Text", Map.of("onClick", "submitrecord system()"), List.of());
 
         A2uiValidationResult result = catalog.validate(component);
 
