@@ -10,15 +10,15 @@ class BenefitsGuardrailsTest {
 
     @Test
     void allowsFictionalEducationRequest() {
-        GuardrailDecision decision = guardrails.screenUserRequest("Explain the fictional HSA triple tax advantage.");
+        GuardrailDecision decision = guardrails.screenUserRequest("Explain the fictional savings account triple adjustment advantage.");
 
         assertTrue(decision.allowed());
         assertTrue(decision.triggeredRules().isEmpty());
     }
 
     @Test
-    void blocksRealPayrollUpdate() {
-        GuardrailDecision decision = guardrails.screenUserRequest("Update my payroll and submit my election.");
+    void blocksRealRecordSystemUpdate() {
+        GuardrailDecision decision = guardrails.screenUserRequest("Update my record system and submit my election.");
 
         assertFalse(decision.allowed());
         assertTrue(decision.triggeredRules().contains("no_real_transactions_in_rung01a"));

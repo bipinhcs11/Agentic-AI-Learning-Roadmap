@@ -45,7 +45,7 @@ ollama pull qwen2.5:3b
 ollama pull nomic-embed-text
 
 AI_PROVIDER=ollama python hub.py --tenant acme \
-  "I contribute 6%. Am I getting the full match, and what is the 2026 employee 401k limit?"
+  "I contribute 6%. Am I getting the full match, and what is the 2026 employee primary contribution limit?"
 ```
 
 What to capture:
@@ -68,7 +68,7 @@ What to capture:
 
 - The live cockpit selecting a fictional contract
 - Python ADK handoff to the Go compliance agent
-- Java financial risk scoring response
+- Java professional risk scoring response
 - Generated legal parameter sheet and compliance certificate
 
 ## Asset Backlog

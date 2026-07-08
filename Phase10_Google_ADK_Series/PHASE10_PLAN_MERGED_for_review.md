@@ -32,7 +32,7 @@ OpenAI, then AWS), so using managed cloud services is the point, not scope creep
 ## Goal
 
 Build a **Java-first Google ADK benefits concierge** on the familiar fictional
-**401(k)/HSA** domain from Phase 9, where:
+**primary contribution/savings account** domain from Phase 9, where:
 
 - the agent reasons and orchestrates in **Java ADK** (Vertex Gemini)
 - the frontend is driven by **A2UI**
@@ -43,7 +43,7 @@ Build a **Java-first Google ADK benefits concierge** on the familiar fictional
 Working title: `project_02_java_adk_benefits_concierge`
 
 One-line pitch: a Java Google ADK benefits concierge that explains fictional
-401(k)/HSA choices, renders guided React screens through A2UI, streams live state
+primary contribution/savings account choices, renders guided React screens through A2UI, streams live state
 through AG-UI, and executes a narrow benefits action through UCP.
 
 ## Immediate Focus
@@ -58,7 +58,7 @@ commitment:
 That means:
 
 - Java ADK
-- fictional 401(k)/HSA domain
+- fictional primary contribution/savings account domain
 - text responses first
 - managed retrieval only if needed
 
@@ -124,10 +124,10 @@ enough; flesh out contracts as you build, not as an upfront gate.
 
 Initial skills:
 
-1. **Benefits education** — match, HSA rules, limits, tradeoffs.
+1. **Benefits education** — match, savings account rules, limits, tradeoffs.
 2. **Retrieval + citation** — managed retrieval for plan guidance/policy.
-3. **Projection** — deterministic contribution / match / tax-savings math.
-4. **Election drafting** — turn intent into a proposed 401(k)/HSA change.
+3. **Projection** — deterministic contribution / match / adjustment-savings math.
+4. **Election drafting** — turn intent into a proposed primary contribution/savings account change.
 5. **Approval gating** — explicit human confirmation before any commit.
 6. **Transaction execution** — call the UCP lane (checkout/order).
 7. **Optional specialist** — reserved for A2A (Module 03).
@@ -143,7 +143,7 @@ React rendering, AG-UI streaming, deterministic calculations. **Do not build it
 all at once.** Ship in four rungs; each rung runs locally and is **one LinkedIn
 post**. Climb the next rung only after the current one runs and the post is out.
 
-- **Rung 01A — Java ADK text agent (first runnable win).** Answers 401(k)/HSA in
+- **Rung 01A — Java ADK text agent (first runnable win).** Answers primary contribution/savings account in
   text on Vertex Gemini, backed by deterministic calculators + managed retrieval.
   → *Post: "Rebuilt my Phase 9 benefits assistant in Java ADK — Gemini + managed retrieval under the hood."*
 - **Rung 01B — Verify A2UI path, then render it in the built-in ADK web UI.**
@@ -231,7 +231,7 @@ Optional A2A Specialists
 
 ## Reuse From Phase 9
 
-Reuse: fictional 401(k)/HSA domain, contribution/tax examples, plan references +
+Reuse: fictional primary contribution/savings account domain, contribution/adjustment examples, plan references +
 educational disclaimers, Java/Spring familiarity.
 
 Don't re-teach: raw chunking, embeddings from scratch, basic MCP concepts,

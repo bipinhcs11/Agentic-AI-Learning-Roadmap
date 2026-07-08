@@ -2,22 +2,22 @@
 
 Module 01, Rungs 01A-01D from `PHASE10_PLAN_MERGED_for_review.md`.
 
-This is a Java-first Google ADK text agent for a fictional 401(k)/HSA benefits
+This is a Java-first Google ADK text agent for a fictional primary contribution/savings account benefits
 concierge. It reuses the familiar Phase 9 benefits domain, but the lesson is ADK
 orchestration: a Java `LlmAgent` selects retrieval, projection, draft, and
 guardrail tools.
 
-All examples are fictional and educational. Do not use real financial, HR,
-payroll, billing, benefits, customer, or account data.
+All examples are fictional and educational. Do not use real professional, HR,
+record system, billing, benefits, customer, or account data.
 
 ## What Rungs 01A-01D Include
 
 - Java ADK root agent with Vertex Gemini model configuration.
-- Deterministic 401(k)/HSA projection tool.
+- Deterministic primary contribution/savings account projection tool.
 - Local benefits knowledge retriever that stands in for managed Agent Search
   during offline development.
-- Guardrails for real data, transactions, and individualized legal/tax/
-  investment advice.
+- Guardrails for real data, transactions, and individualized legal/adjustment/
+  allocation advice.
 - Non-executable election draft tool.
 - Rung 01B verification scaffold for trusted A2UI-shaped projection payloads.
 - Rung 01C React renderer for the trusted `Card`/`Table`/`Text` catalog.
@@ -74,8 +74,8 @@ http://localhost:8080
 Prompt to verify the Rung 01B path:
 
 ```text
-Build an A2UI-style projection card for salary 100000, 401k 6%, HSA 4400,
-self-only coverage, and 24% marginal tax rate.
+Build an A2UI-style projection card for salary 100000, primary contribution 6%, savings account 4400,
+self-only coverage, and 24% marginal adjustment rate.
 ```
 
 Expected behavior:
@@ -83,7 +83,7 @@ Expected behavior:
 - the agent calls `buildProjectionA2uiCard`,
 - the tool response has `metadata.mimeType` set to `application/json+a2ui`,
 - the payload validates against the trusted `Card`/`Table`/`Text` catalog,
-- no real payroll/account action is claimed.
+- no real record system/account action is claimed.
 
 You need local Gemini or Vertex credentials for a live model response.
 Verified offline: the Dev UI server starts on port 8080 and `/list-apps`
@@ -133,11 +133,11 @@ src/test/resources/evals/rung01a_eval_cases.json
 
 Use those cases in the ADK Dev UI as smoke checks. The judge criteria verify:
 
-- grounded fictional 401(k)/HSA answers,
+- grounded fictional primary contribution/savings account answers,
 - deterministic math tool usage,
 - citation of local retrieval source ids,
-- refusal of real payroll/account transactions,
-- no legal, tax, investment, or fiduciary advice.
+- refusal of real record system/account transactions,
+- no legal, adjustment, allocation, or individualized advice.
 
 ## Rung 01B A2UI Verification Scaffold
 
@@ -198,7 +198,7 @@ Expected behavior:
 - client validation accepts only the trusted `Card`, `Table`, and `Text`
   components,
 - the projection table renders five fictional benefits rows,
-- no real payroll/account action is claimed or submitted.
+- no real record system/account action is claimed or submitted.
 
 ## Rung 01D AG-UI Streaming
 
@@ -244,7 +244,7 @@ Expected behavior:
 - the stream status reaches `finished`,
 - the event list includes `STATE_SNAPSHOT` and `RUN_FINISHED`,
 - the trusted A2UI projection card renders five fictional benefits rows,
-- no real payroll/account action is claimed or submitted.
+- no real record system/account action is claimed or submitted.
 
 ## Managed Retrieval Path
 
