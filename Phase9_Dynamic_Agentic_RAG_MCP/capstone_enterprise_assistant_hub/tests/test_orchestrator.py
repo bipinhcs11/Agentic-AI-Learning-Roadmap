@@ -27,9 +27,9 @@ def test_route_logic_examples(monkeypatch):
     monkeypatch.setenv("HUB_ROUTER_MODE", "heuristic")
 
     assert orchestrator.classify_route("hello there").route == "direct"
-    assert orchestrator.classify_route("Am I getting my full 401(k) match?").route == "mcp_only"
-    assert orchestrator.classify_route("What is the 2026 HSA family limit?").route == "rag_only"
-    assert orchestrator.classify_route("I contribute 6%. Am I maxing the match, and what is the 2026 401k limit?").route == "mcp+rag"
+    assert orchestrator.classify_route("Am I getting my full primary contribution match?").route == "mcp_only"
+    assert orchestrator.classify_route("What is the 2026 savings account family limit?").route == "rag_only"
+    assert orchestrator.classify_route("I contribute 6%. Am I maxing the match, and what is the 2026 primary_contribution limit?").route == "mcp+rag"
 
 
 def test_run_orchestrated_mcp_and_rag_with_stub_provider(monkeypatch):
@@ -38,15 +38,15 @@ def test_run_orchestrated_mcp_and_rag_with_stub_provider(monkeypatch):
     gateway = MCPGateway(external_enabled=False)
 
     result = orchestrator.run_orchestrated(
-        question="I contribute 6%. Am I maxing the match, and what is the 2026 401k employee limit?",
+        question="I contribute 6%. Am I maxing the match, and what is the 2026 primary_contribution employee limit?",
         tenant_id="acme",
         gateway=gateway,
         write_audit=False,
     )
 
     assert result.route == "mcp+rag"
-    assert "calculate_401k_match" in result.tools_used
-    assert "401k_reference.md" in result.documents_used
+    assert "calculate_primary_contribution_match" in result.tools_used
+    assert "primary_contribution_reference.md" in result.documents_used
     assert result.provider == "fake"
 
 
@@ -58,7 +58,7 @@ def test_mcp_error_falls_back_to_tenant_rag(monkeypatch):
             raise RuntimeError("mcp down")
 
     result = orchestrator.run_orchestrated(
-        question="Am I getting my full 401(k) match?",
+        question="Am I getting my full primary contribution match?",
         tenant_id="acme",
         gateway=BrokenGateway(external_enabled=False),
         classifier=lambda _: orchestrator.RouteDecision("mcp_only", "forced"),
@@ -76,7 +76,7 @@ def test_audit_jsonl_written(monkeypatch, tmp_path):
     monkeypatch.setattr(orchestrator, "get_provider", lambda: FakeProvider())
 
     orchestrator.run_orchestrated(
-        question="What is the 2026 HSA family limit?",
+        question="What is the 2026 savings account family limit?",
         tenant_id="acme",
         gateway=MCPGateway(external_enabled=False),
     )

@@ -31,30 +31,30 @@ Requirements captured:
 
 - Create a Python MCP server named `benefits_mcp_server.py`.
 - Use mock employee benefits data only.
-- Do not require real financial accounts or credentials.
+- Do not require real professional accounts or credentials.
 - Add MCP tools:
   - `get_employee_profile`
-  - `get_401k_summary`
-  - `calculate_401k_match`
-  - `estimate_annual_401k_contribution`
-  - `get_hsa_summary`
-  - `estimate_hsa_tax_savings`
+  - `get_primary_contribution_summary`
+  - `calculate_primary_contribution_match`
+  - `estimate_annual_primary_contribution`
+  - `get_savings_account_summary`
+  - `estimate_savings_account_adjustment`
   - `list_plan_documents`
   - `search_plan_rules`
 - Add MCP resources for:
   - employee profile
-  - 401k plan summary
-  - HSA plan summary
+  - primary_contribution plan summary
+  - savings account plan summary
   - benefits FAQ
 - Add a simple client/demo script showing example prompts and tool calls.
 - Add beginner-friendly docs explaining:
   - what MCP is
-  - why 401(k) + HSA is a good MCP example
+  - why primary contribution + savings account is a good MCP example
   - how to run the server
   - how to connect it to Claude Desktop or Claude Code
   - how this later combines with RAG
 - Keep all guidance educational.
-- Add a note that this is not financial, tax, legal, or investment advice.
+- Add a note that this is not professional, adjustment, legal, or allocation advice.
 - Do not integrate with AWS yet.
 - Do not add RAG yet.
 - Include a section called “Next Step: MCP + RAG”.
@@ -78,7 +78,7 @@ The older `mcp_benefits_example/` folder is an early working MCP+RAG prototype
 and can be used as a reference when building this module.
 
 Retrieval uses heading-anchored chunks, Ollama `nomic-embed-text`, NumPy cosine,
-topic/keyword reranking, and a small 401(k) intent boost so an employee
+topic/keyword reranking, and a small primary contribution intent boost so an employee
 salary-deferral limit query ranks the $24,500 employee-only limit above the
 $72,000 combined employee plus employer cap.
 
@@ -105,7 +105,7 @@ enterprise integration boundary.
 ## Module 04 — Java MCP Benefits Assistant  ✅ built
 
 `module_04_java_mcp_benefits_assistant/` is the plain Java companion to Module
-01. It should stay close to the Python module: same mock 401(k)/HSA domain, same
+01. It should stay close to the Python module: same mock primary contribution/savings account domain, same
 tools/resources/prompts, and the same safety boundaries. The point is
 side-by-side comparison for Java developers, not a new product surface. The demo
 client launches the Java server over stdio and exercises tools, resources, and
@@ -121,7 +121,7 @@ in a Spring Boot WebMVC microservice shape:
 - REST inspection endpoints under `/api/benefits`
 - mock benefits account tools
 - lightweight in-memory RAG over bundled markdown reference summaries
-- regression test for ranking the 2026 employee 401(k) limit above the combined
+- regression test for ranking the 2026 employee primary contribution limit above the combined
   employee plus employer cap
 
 This still belongs in Phase 9. A future Phase 10 should wait until the Java and

@@ -32,7 +32,7 @@ except ImportError:  # pragma: no cover
 
 ROUTES = {"direct", "mcp_only", "rag_only", "mcp+rag"}
 MAX_TOOL_ITERATIONS = 4
-DISCLAIMER = "Educational only; not financial, tax, legal, or investment advice."
+DISCLAIMER = "Educational only; not professional, adjustment, legal, or allocation advice."
 
 
 @dataclass(frozen=True)
@@ -73,8 +73,8 @@ def heuristic_route(question: str) -> RouteDecision:
             "contribution rate",
             "match",
             "election",
-            "tax savings",
-            "account",
+            "adjustment savings",
+            "my account",
             "ytd",
         )
     ) or bool(re.search(r"\b\d+(\.\d+)?\s*%", q))
@@ -84,21 +84,21 @@ def heuristic_route(question: str) -> RouteDecision:
             "2026",
             "limit",
             "rule",
-            "irs",
-            "fidelity",
+            "public fixture",
+            "fixture reference",
             "source",
             "document",
             "policy",
             "eligible",
             "qualified",
-            "hdhp",
+            "qualifying plan",
             "vesting",
             "catch-up",
             "catch up",
         )
     )
-    # HSA/401(k) alone can be conversational; pair it with a rule/account signal.
-    if any(token in q for token in ("hsa", "401k", "401(k)")) and not account_signal:
+    # savings account/primary contribution alone can be conversational; pair it with a rule/account signal.
+    if any(token in q for token in ("savings_account", "primary_contribution", "primary contribution")) and not account_signal:
         rag_signal = rag_signal or any(token in q for token in ("what", "how much", "can", "eligible"))
 
     if account_signal and rag_signal:
@@ -163,14 +163,14 @@ def classify_route(question: str, classifier: Optional[Callable[[str], RouteDeci
 def _mcp_tool_plan(question: str) -> list[tuple[str, dict]]:
     q = question.lower()
     planned: list[tuple[str, dict]] = []
-    if "hsa" in q:
-        planned.append(("get_hsa_summary", {}))
-        if "tax" in q or "saving" in q:
-            planned.append(("estimate_hsa_tax_savings", {}))
-    if "401" in q or "match" in q or "contribute" in q:
-        planned.append(("get_401k_summary", {}))
+    if "savings_account" in q:
+        planned.append(("get_savings_account_summary", {}))
+        if "adjustment" in q or "saving" in q:
+            planned.append(("estimate_savings_account_adjustment", {}))
+    if "primary contribution" in q or "match" in q or "contribute" in q:
+        planned.append(("get_primary_contribution_summary", {}))
         if "match" in q or "%" in q or "contribute" in q:
-            planned.append(("calculate_401k_match", {}))
+            planned.append(("calculate_primary_contribution_match", {}))
     if not planned:
         planned.append(("get_employee_profile", {}))
     return planned[:MAX_TOOL_ITERATIONS]

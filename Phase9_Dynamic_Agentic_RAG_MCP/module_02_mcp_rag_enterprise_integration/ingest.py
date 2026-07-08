@@ -1,12 +1,12 @@
 """
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║  Phase 9 · Module 02 | ingest.py                                              ║
-║  Build the RAG index for the public-source 401(k)/HSA reference summaries.     ║
+║  Build the RAG index for the public-source primary contribution/savings account reference summaries.     ║
 ║                                                                                ║
 ║  CHUNKING: heading-anchored, not fixed-width. Markdown is split on '## '        ║
 ║  section headings; each chunk is prefixed with "[Doc — Heading]" so (a) it      ║
 ║  stays on ONE topic and (b) the embedding sees the topic words. Fixed-width     ║
-║  slicing mixed 401(k) and HSA text in a single chunk and hurt retrieval.        ║
+║  slicing mixed primary contribution and savings account text in a single chunk and hurt retrieval.        ║
 ║                                                                                ║
 ║  EMBEDDING: Ollama nomic-embed-text with the recommended asymmetric prefix      ║
 ║  "search_document:" (queries use "search_query:" in the server). RAM-safe.      ║

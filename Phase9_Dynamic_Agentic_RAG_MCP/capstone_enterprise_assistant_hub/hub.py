@@ -3,7 +3,7 @@
 ║  Phase 9 · Capstone | hub.py                                                ║
 ║  CLI and thin FastAPI entrypoint for the Enterprise Assistant Hub.           ║
 ║                                                                              ║
-║  RUN: python hub.py --tenant acme "What is the 2026 employee 401k limit?"   ║
+║  RUN: python hub.py --tenant acme "What is the 2026 employee primary contribution limit?"   ║
 ║  API: uvicorn hub:app --reload                                               ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """

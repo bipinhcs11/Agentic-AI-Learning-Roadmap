@@ -20,7 +20,7 @@
     <name>Spring Boot MCP Benefits Assistant</name>
     <description>
         Phase 9 Module 05 — Spring Boot MCP + RAG benefits microservice.
-        Uses Spring AI MCP annotations to expose mock 401(k) and HSA data
+        Uses Spring AI MCP annotations to expose mock primary contribution and savings account data
         plus document retrieval over Streamable HTTP.
     </description>
 

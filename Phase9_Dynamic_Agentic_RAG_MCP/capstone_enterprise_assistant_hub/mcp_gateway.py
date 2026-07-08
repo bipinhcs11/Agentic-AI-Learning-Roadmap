@@ -64,13 +64,13 @@ EMPLOYEE_PROFILE = {
     "age": 36,
     "annual_salary": 120000,
     "filing_status": "single",
-    "estimated_federal_tax_rate": 0.24,
-    "estimated_state_tax_rate": 0.05,
+    "estimated_federal_adjustment_rate": 0.24,
+    "estimated_state_adjustment_rate": 0.05,
     "benefits_year": 2026,
 }
 
-PLAN_401K = {
-    "plan_name": "Acme FutureBuilder 401(k)",
+PRIMARY_CONTRIBUTION_PLAN = {
+    "plan_name": "Acme FutureBuilder primary contribution",
     "employee_contribution_percent": 6.0,
     "ytd_employee_contribution": 7200,
     "ytd_employer_match": 5400,
@@ -78,8 +78,8 @@ PLAN_401K = {
     "max_match_percent": 4.5,
 }
 
-PLAN_HSA = {
-    "plan_name": "Acme HDHP + HSA",
+SAVINGS_ACCOUNT_PLAN = {
+    "plan_name": "Acme qualifying plan + savings account",
     "coverage": "family",
     "employee_annual_election": 4200,
     "employer_annual_contribution": 1000,
@@ -87,33 +87,33 @@ PLAN_HSA = {
 }
 
 
-def _calculate_401k_match(salary: Optional[float] = None, employee_contribution_percent: Optional[float] = None) -> dict:
+def _calculate_primary_contribution_match(salary: Optional[float] = None, employee_contribution_percent: Optional[float] = None) -> dict:
     salary = salary if salary is not None else EMPLOYEE_PROFILE["annual_salary"]
-    pct = employee_contribution_percent if employee_contribution_percent is not None else PLAN_401K["employee_contribution_percent"]
+    pct = employee_contribution_percent if employee_contribution_percent is not None else PRIMARY_CONTRIBUTION_PLAN["employee_contribution_percent"]
     first = min(pct, 3.0)
     second = min(max(pct - 3.0, 0.0), 3.0)
-    match_pct = min(first + second * 0.5, PLAN_401K["max_match_percent"])
+    match_pct = min(first + second * 0.5, PRIMARY_CONTRIBUTION_PLAN["max_match_percent"])
     return {
         "salary": salary,
         "employee_contribution_percent": pct,
         "employer_match_percent": round(match_pct, 2),
         "estimated_annual_employer_match": round(salary * match_pct / 100, 2),
         "full_match_reached": pct >= 6.0,
-        "educational_note": "Mock estimate. Not financial advice.",
+        "educational_note": "Mock estimate. Not professional advice.",
     }
 
 
-def _estimate_hsa_tax_savings(annual_contribution: Optional[float] = None, marginal_tax_rate: Optional[float] = None) -> dict:
-    contribution = annual_contribution if annual_contribution is not None else PLAN_HSA["employee_annual_election"]
-    default_rate = EMPLOYEE_PROFILE["estimated_federal_tax_rate"] + EMPLOYEE_PROFILE["estimated_state_tax_rate"]
-    rate = marginal_tax_rate if marginal_tax_rate is not None else default_rate
-    fica_rate = 0.0765
+def _estimate_savings_account_adjustment(annual_contribution: Optional[float] = None, adjustment_rate: Optional[float] = None) -> dict:
+    contribution = annual_contribution if annual_contribution is not None else SAVINGS_ACCOUNT_PLAN["employee_annual_election"]
+    default_rate = EMPLOYEE_PROFILE["estimated_federal_adjustment_rate"] + EMPLOYEE_PROFILE["estimated_state_adjustment_rate"]
+    rate = adjustment_rate if adjustment_rate is not None else default_rate
+    record_system_rate = 0.0765
     return {
-        "annual_hsa_employee_contribution": contribution,
-        "estimated_income_tax_savings": round(contribution * rate, 2),
-        "estimated_fica_savings": round(contribution * fica_rate, 2),
-        "estimated_total_savings": round(contribution * (rate + fica_rate), 2),
-        "educational_note": "Educational estimate only. Not tax advice.",
+        "annual_savings_account_employee_contribution": contribution,
+        "estimated_income_adjustment_savings": round(contribution * rate, 2),
+        "estimated_record_system_savings": round(contribution * record_system_rate, 2),
+        "estimated_total_savings": round(contribution * (rate + record_system_rate), 2),
+        "educational_note": "Educational estimate only. Not adjustment advice.",
     }
 
 
@@ -136,10 +136,10 @@ class MCPGateway:
         self._external_tools: Optional[dict[str, Any]] = None
         self._local_specs = {
             "get_employee_profile": "Return the fictional employee profile.",
-            "get_401k_summary": "Return the fictional 401(k) plan and contribution summary.",
-            "calculate_401k_match": "Estimate the fictional employer 401(k) match.",
-            "get_hsa_summary": "Return the fictional HSA plan summary.",
-            "estimate_hsa_tax_savings": "Estimate fictional HSA tax savings.",
+            "get_primary_contribution_summary": "Return the fictional primary contribution plan and contribution summary.",
+            "calculate_primary_contribution_match": "Estimate the fictional employer primary contribution match.",
+            "get_savings_account_summary": "Return the fictional savings account plan summary.",
+            "estimate_savings_account_adjustment": "Estimate fictional savings account adjustment savings.",
             "search_benefits_docs": "Search the tenant's benefits reference summaries.",
             "list_sources": "List citation sources in the tenant corpus.",
             "search_tenant_docs": "Search only this tenant's document corpus.",
@@ -231,10 +231,10 @@ class MCPGateway:
 
         local: dict[str, Callable[..., Any]] = {
             "get_employee_profile": lambda: EMPLOYEE_PROFILE,
-            "get_401k_summary": lambda: PLAN_401K,
-            "calculate_401k_match": _calculate_401k_match,
-            "get_hsa_summary": lambda: PLAN_HSA,
-            "estimate_hsa_tax_savings": _estimate_hsa_tax_savings,
+            "get_primary_contribution_summary": lambda: PRIMARY_CONTRIBUTION_PLAN,
+            "calculate_primary_contribution_match": _calculate_primary_contribution_match,
+            "get_savings_account_summary": lambda: SAVINGS_ACCOUNT_PLAN,
+            "estimate_savings_account_adjustment": _estimate_savings_account_adjustment,
             "search_benefits_docs": lambda query, k=4: [
                 {"document_id": r.document_id, "source": r.source, "text": r.text, "score": r.score}
                 for r in rag.search(query, k=k)

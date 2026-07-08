@@ -49,9 +49,9 @@ def _embed(text: str) -> np.ndarray:
 
 @mcp.tool()
 def search_benefits_docs(query: str, k: int = 4) -> str:
-    """Search the 401(k) and HSA reference documents for the passages most
+    """Search the primary contribution and savings account reference documents for the passages most
     relevant to a question. Use this for any question about contribution limits,
-    catch-up rules, HDHP eligibility, tax treatment, or 401(k)-vs-HSA differences.
+    catch-up rules, qualifying plan eligibility, adjustment treatment, or primary contribution-vs-savings account differences.
 
     Args:
         query: the user's question or search phrase.

@@ -14,7 +14,7 @@ HERE = Path(__file__).resolve().parent
 DOCS_DIR = HERE / "docs"
 
 DEFAULT_QUESTION = (
-    "I contribute 6% to my 401(k). Am I getting the full match, "
+    "I contribute 6% to my primary contribution. Am I getting the full match, "
     "and what is the 2026 employee limit?"
 )
 
@@ -24,13 +24,13 @@ EMPLOYEE_PROFILE = {
     "age": 36,
     "annual_salary": 120000.0,
     "filing_status": "single",
-    "estimated_federal_tax_rate": 0.24,
-    "estimated_state_tax_rate": 0.05,
+    "estimated_federal_adjustment_rate": 0.24,
+    "estimated_state_adjustment_rate": 0.05,
     "benefits_year": 2026,
 }
 
-PLAN_401K = {
-    "plan_name": "Acme FutureBuilder 401(k)",
+PRIMARY_CONTRIBUTION_PLAN = {
+    "plan_name": "Acme FutureBuilder primary contribution",
     "employee_contribution_percent": 6.0,
     "ytd_employee_contribution": 7200.0,
     "ytd_employer_match": 5400.0,
@@ -38,8 +38,8 @@ PLAN_401K = {
     "max_match_percent": 4.5,
 }
 
-PLAN_HSA = {
-    "plan_name": "Acme HDHP + HSA",
+SAVINGS_ACCOUNT_PLAN = {
+    "plan_name": "Acme qualifying plan + savings account",
     "coverage": "family",
     "employee_annual_election": 4200.0,
     "employer_annual_contribution": 1000.0,
@@ -47,13 +47,13 @@ PLAN_HSA = {
 }
 
 SOURCES = {
-    "401k_reference.md": [
-        "IRS - 401(k) limit increases to $24,500 for 2026: https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500",
-        "Fidelity - 401(k) contribution limits 2025 and 2026: https://www.fidelity.com/learning-center/smart-money/401k-contribution-limits",
+    "primary_contribution_reference.md": [
+        "Fixture source summary",
+        "Fixture source summary",
     ],
-    "hsa_reference.md": [
-        "IRS Revenue Procedure 2025-19: https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
-        "Fidelity - HSA contribution limits and eligibility 2026: https://www.fidelity.com/learning-center/smart-money/hsa-contribution-limits",
+    "savings_account_reference.md": [
+        "Fixture source summary",
+        "Fixture source summary",
     ],
 }
 
@@ -71,7 +71,7 @@ def answer(question: str | None) -> dict[str, Any]:
     tools: list[dict[str, Any]] = []
     profile = None
     match = None
-    hsa_tax_savings = None
+    savings_account_adjustment_savings = None
 
     if use_mcp:
         profile = EMPLOYEE_PROFILE
@@ -79,25 +79,25 @@ def answer(question: str | None) -> dict[str, Any]:
             "employee_id": profile["employee_id"],
         }))
 
-        if _is_hsa_question(lower) and not _is_401k_question(lower):
-            tools.append(_tool("get_hsa_summary", "Python MCP account tool", {
-                "plan_name": PLAN_HSA["plan_name"],
+        if _is_savings_account_question(lower) and not _is_primary_contribution_question(lower):
+            tools.append(_tool("get_savings_account_summary", "Python MCP account tool", {
+                "plan_name": SAVINGS_ACCOUNT_PLAN["plan_name"],
             }))
-            hsa_tax_savings = estimate_hsa_tax_savings()
-            tools.append(_tool("estimate_hsa_tax_savings", "Python MCP account tool", {
-                "annual_contribution": PLAN_HSA["employee_annual_election"],
-                "marginal_tax_rate": (
-                    profile["estimated_federal_tax_rate"]
-                    + profile["estimated_state_tax_rate"]
+            savings_account_adjustment_savings = estimate_savings_account_adjustment()
+            tools.append(_tool("estimate_savings_account_adjustment", "Python MCP account tool", {
+                "annual_contribution": SAVINGS_ACCOUNT_PLAN["employee_annual_election"],
+                "adjustment_rate": (
+                    profile["estimated_federal_adjustment_rate"]
+                    + profile["estimated_state_adjustment_rate"]
                 ),
             }))
         else:
-            tools.append(_tool("get_401k_summary", "Python MCP account tool", {
-                "plan_name": PLAN_401K["plan_name"],
+            tools.append(_tool("get_primary_contribution_summary", "Python MCP account tool", {
+                "plan_name": PRIMARY_CONTRIBUTION_PLAN["plan_name"],
             }))
-            percent = _first_percent(lower, PLAN_401K["employee_contribution_percent"])
-            match = calculate_401k_match(profile["annual_salary"], percent)
-            tools.append(_tool("calculate_401k_match", "Python MCP account tool", {
+            percent = _first_percent(lower, PRIMARY_CONTRIBUTION_PLAN["employee_contribution_percent"])
+            match = calculate_primary_contribution_match(profile["annual_salary"], percent)
+            tools.append(_tool("calculate_primary_contribution_match", "Python MCP account tool", {
                 "salary": profile["annual_salary"],
                 "employee_contribution_percent": percent,
             }))
@@ -115,14 +115,14 @@ def answer(question: str | None) -> dict[str, Any]:
         "route": route,
         "routeLabel": _route_label(route),
         "backend": "Python MCP + RAG router (Module 02)",
-        "answer": _build_answer(route, safe_question, profile, match, hsa_tax_savings, docs),
+        "answer": _build_answer(route, safe_question, profile, match, savings_account_adjustment_savings, docs),
         "toolCalls": tools,
         "retrievedDocuments": docs,
         "citations": _citations_for(docs) if use_rag else [],
     }
 
 
-def calculate_401k_match(
+def calculate_primary_contribution_match(
     salary: float | None = None,
     employee_contribution_percent: float | None = None,
 ) -> dict[str, Any]:
@@ -130,39 +130,39 @@ def calculate_401k_match(
     pct = (
         employee_contribution_percent
         if employee_contribution_percent is not None
-        else PLAN_401K["employee_contribution_percent"]
+        else PRIMARY_CONTRIBUTION_PLAN["employee_contribution_percent"]
     )
     first = min(pct, 3.0)
     second = min(max(pct - 3.0, 0.0), 3.0)
-    match_pct = min(first + second * 0.5, PLAN_401K["max_match_percent"])
+    match_pct = min(first + second * 0.5, PRIMARY_CONTRIBUTION_PLAN["max_match_percent"])
     return {
         "salary": resolved_salary,
         "employee_contribution_percent": pct,
         "employer_match_percent": round(match_pct, 2),
         "estimated_annual_employer_match": round(resolved_salary * match_pct / 100, 2),
         "full_match_reached": pct >= 6.0,
-        "educational_note": "Mock estimate. Not financial advice.",
+        "educational_note": "Mock estimate. Not professional advice.",
     }
 
 
-def estimate_hsa_tax_savings(
+def estimate_savings_account_adjustment(
     annual_contribution: float | None = None,
-    marginal_tax_rate: float | None = None,
+    adjustment_rate: float | None = None,
 ) -> dict[str, Any]:
-    contribution = annual_contribution if annual_contribution is not None else PLAN_HSA["employee_annual_election"]
+    contribution = annual_contribution if annual_contribution is not None else SAVINGS_ACCOUNT_PLAN["employee_annual_election"]
     default_rate = (
-        EMPLOYEE_PROFILE["estimated_federal_tax_rate"]
-        + EMPLOYEE_PROFILE["estimated_state_tax_rate"]
+        EMPLOYEE_PROFILE["estimated_federal_adjustment_rate"]
+        + EMPLOYEE_PROFILE["estimated_state_adjustment_rate"]
     )
-    rate = marginal_tax_rate if marginal_tax_rate is not None else default_rate
-    fica_rate = 0.0765
+    rate = adjustment_rate if adjustment_rate is not None else default_rate
+    record_system_rate = 0.0765
     return {
-        "annual_hsa_employee_contribution": contribution,
-        "estimated_income_tax_savings": round(contribution * rate, 2),
-        "estimated_fica_savings": round(contribution * fica_rate, 2),
-        "estimated_total_savings": round(contribution * (rate + fica_rate), 2),
-        "fica_note": "FICA savings apply to payroll Section 125 contributions, not direct deposits.",
-        "educational_note": "Educational estimate only. Not tax advice.",
+        "annual_savings_account_employee_contribution": contribution,
+        "estimated_income_adjustment_savings": round(contribution * rate, 2),
+        "estimated_record_system_savings": round(contribution * record_system_rate, 2),
+        "estimated_total_savings": round(contribution * (rate + record_system_rate), 2),
+        "record_system_note": "record-system estimate applies to record-system fixture contributions, not direct deposits.",
+        "educational_note": "Educational estimate only. Not adjustment advice.",
     }
 
 
@@ -204,7 +204,7 @@ def _mentions_account(lower: str) -> bool:
             "salary",
             "paycheck",
             "full match",
-            "tax savings",
+            "adjustment savings",
         )
     ) or lower.startswith("i ")
 
@@ -215,8 +215,8 @@ def _mentions_rules(lower: str) -> bool:
         for phrase in (
             "2026",
             "limit",
-            "irs",
-            "fidelity",
+            "public fixture",
+            "fixture reference",
             "rule",
             "eligible",
             "eligibility",
@@ -237,12 +237,12 @@ def _route_label(route: str) -> str:
     }.get(route, "Direct")
 
 
-def _is_401k_question(lower: str) -> bool:
-    return "401k" in lower or "401(k)" in lower or "match" in lower
+def _is_primary_contribution_question(lower: str) -> bool:
+    return "primary_contribution" in lower or "primary contribution" in lower or "match" in lower
 
 
-def _is_hsa_question(lower: str) -> bool:
-    return "hsa" in lower or "health savings" in lower or "hdhp" in lower
+def _is_savings_account_question(lower: str) -> bool:
+    return "savings_account" in lower or "savings account" in lower or "qualifying plan" in lower
 
 
 def _first_percent(lower: str, fallback: float) -> float:
@@ -314,6 +314,12 @@ def _score(query: str, chunk: dict[str, str]) -> float:
     if topic and topic in _query_topics(lower):
         score += 3.0
 
+    heading_lower = chunk["heading"].lower()
+    if "savings account" in lower and "limit" in lower and "contribution limits" in heading_lower:
+        score += 4.0
+    if "family" in lower and "$8,750" in chunk["text"]:
+        score += 2.0
+
     intent = _contribution_intent(lower)
     if intent:
         kind = _contribution_kind(chunk["heading"])
@@ -331,25 +337,25 @@ def _keywords(text: str) -> set[str]:
 
 def _query_topics(lower: str) -> set[str]:
     topics: set[str] = set()
-    if "hsa" in lower or "health savings" in lower or "hdhp" in lower:
-        topics.add("hsa")
+    if "savings_account" in lower or "savings account" in lower or "qualifying plan" in lower:
+        topics.add("savings_account")
     if (
-        "401k" in lower
-        or "401(k)" in lower
+        "primary_contribution" in lower
+        or "primary contribution" in lower
         or "match" in lower
         or "deferral" in lower
         or "elective" in lower
     ):
-        topics.add("401k")
+        topics.add("primary_contribution")
     return topics
 
 
 def _topic(text: str) -> str:
     lower = text.lower()
-    if "hsa" in lower:
-        return "hsa"
-    if "401k" in lower or "401(k)" in lower:
-        return "401k"
+    if "savings_account" in lower:
+        return "savings_account"
+    if "primary_contribution" in lower or "primary contribution" in lower:
+        return "primary_contribution"
     return ""
 
 
@@ -404,7 +410,7 @@ def _build_answer(
     question: str,
     profile: dict[str, Any] | None,
     match: dict[str, Any] | None,
-    hsa_tax_savings: dict[str, Any] | None,
+    savings_account_adjustment_savings: dict[str, Any] | None,
     docs: list[dict[str, Any]],
 ) -> str:
     if route == "direct":
@@ -412,24 +418,24 @@ def _build_answer(
             "This Python demo can answer general benefits questions directly, "
             "then escalate to MCP tools, RAG retrieval, or both when the question "
             "needs account data or policy references. Educational only - not "
-            "financial, tax, legal, or investment advice."
+            "professional, adjustment, legal, or allocation advice."
         )
 
     parts: list[str] = []
     if match and profile:
         parts.append(
             f"For {profile['name']}, a {match['employee_contribution_percent']:.1f}% "
-            f"401(k) contribution on a ${match['salary']:,.0f} salary estimates a "
+            f"primary contribution on a ${match['salary']:,.0f} salary estimates a "
             f"{match['employer_match_percent']:.1f}% employer match, or about "
             f"${match['estimated_annual_employer_match']:,.0f} per year. "
             f"{'That reaches the full mock match.' if match['full_match_reached'] else 'That does not reach the full mock match yet.'}"
         )
 
-    if hsa_tax_savings:
+    if savings_account_adjustment_savings:
         parts.append(
-            "The mock HSA election estimates about "
-            f"${hsa_tax_savings['estimated_total_savings']:,.0f} in total tax savings, "
-            "including income-tax and payroll-tax components."
+            "The mock savings account election estimates about "
+            f"${savings_account_adjustment_savings['estimated_total_savings']:,.0f} in total adjustment savings, "
+            "including income-adjustment and record system-adjustment components."
         )
 
     if docs:
@@ -442,7 +448,7 @@ def _build_answer(
     if not parts:
         parts.append(f"I routed \"{question}\" but did not find a stronger demo path.")
 
-    return " ".join(parts) + " Educational only - not financial, tax, legal, or investment advice."
+    return " ".join(parts) + " Educational only - not professional, adjustment, legal, or allocation advice."
 
 
 def _compact(text: str) -> str:

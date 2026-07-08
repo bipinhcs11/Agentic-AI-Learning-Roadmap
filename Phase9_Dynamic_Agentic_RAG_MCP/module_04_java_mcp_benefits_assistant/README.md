@@ -1,7 +1,7 @@
 # Module 04 — Java MCP Benefits Assistant
 
 Java port of the Python [Module 01](../module_01_mcp_benefits_assistant/) MCP
-Benefits Assistant. Same mock 401(k) and HSA data, same tools, same resources,
+Benefits Assistant. Same mock primary contribution and savings account data, same tools, same resources,
 same prompt — now built with the **official MCP Java SDK**.
 
 ## Goal
@@ -12,12 +12,12 @@ implementations side by side while focusing on MCP concepts rather than
 language differences.
 
 ```text
-Am I getting the full 401(k) employer match?
-How much more would I contribute if I increased my 401(k) rate to 10%?
-What are my estimated HSA tax savings?
+Am I getting the full primary contribution employer match?
+How much more would I contribute if I increased my primary contribution rate to 10%?
+What are my estimated savings account adjustment savings?
 ```
 
-All data is fictional. No real financial accounts, payroll systems, benefits
+All data is fictional. No real professional accounts, record system systems, benefits
 providers, or employee records are used.
 
 ## Prerequisites
@@ -69,12 +69,12 @@ java -jar target/benefits-mcp-java-1.0.0-jar-with-deps.jar
 
 | Tool | Purpose |
 |---|---|
-| `get_employee_profile` | Return mock age, salary, filing status, and tax assumptions |
-| `get_401k_summary` | Return mock 401(k) plan and contribution details |
-| `calculate_401k_match` | Estimate whether the mock employee gets the full employer match |
-| `estimate_annual_401k_contribution` | Estimate annual contribution and remaining mock limit |
-| `get_hsa_summary` | Return mock HSA coverage, election, and contribution details |
-| `estimate_hsa_tax_savings` | Estimate HSA tax savings using mock tax assumptions |
+| `get_employee_profile` | Return mock age, salary, filing status, and adjustment assumptions |
+| `get_primary_contribution_summary` | Return mock primary contribution plan and contribution details |
+| `calculate_primary_contribution_match` | Estimate whether the mock employee gets the full employer match |
+| `estimate_annual_primary_contribution` | Estimate annual contribution and remaining mock limit |
+| `get_savings_account_summary` | Return mock savings account coverage, election, and contribution details |
+| `estimate_savings_account_adjustment` | Estimate savings account adjustment savings using mock adjustment assumptions |
 | `list_plan_documents` | List small built-in mock plan documents |
 | `get_plan_document` | Return the full text of a mock plan document by id |
 | `search_plan_rules` | Keyword search mock plan rules without RAG |
@@ -84,8 +84,8 @@ java -jar target/benefits-mcp-java-1.0.0-jar-with-deps.jar
 | Resource URI | Purpose |
 |---|---|
 | `benefits://employee/profile` | Mock employee profile |
-| `benefits://401k/plan-summary` | Mock 401(k) plan summary |
-| `benefits://hsa/plan-summary` | Mock HSA plan summary |
+| `benefits://primary-contribution/plan-summary` | Mock primary contribution plan summary |
+| `benefits://savings-account/plan-summary` | Mock savings account plan summary |
 | `benefits://documents/benefits-faq` | Mock benefits FAQ |
 
 ## MCP Prompts
@@ -117,7 +117,7 @@ for your machine:
 Restart Claude Desktop after editing the config. Then ask:
 
 ```text
-Using the mock benefits assistant, am I getting the full 401(k) match?
+Using the mock benefits assistant, am I getting the full primary contribution match?
 ```
 
 ## Technology Stack
@@ -149,7 +149,7 @@ you full IDE autocomplete and type safety.
 
 ## Educational Safety Note
 
-This module is for learning MCP only. It is not financial, tax, legal, or
-investment advice. The data, limits, formulas, rates, and employer plan details
+This module is for learning MCP only. It is not professional, adjustment, legal, or
+allocation advice. The data, limits, formulas, rates, and employer plan details
 are mock examples. Real benefits decisions should be checked against official
 plan documents and qualified professionals.

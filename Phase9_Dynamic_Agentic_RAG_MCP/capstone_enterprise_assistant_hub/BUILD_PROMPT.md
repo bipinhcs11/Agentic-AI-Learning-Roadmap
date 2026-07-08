@@ -7,7 +7,7 @@
 
 STEP 0 — FIX MODULE 02 FIRST (keep it small):
 Before building the capstone, review `Phase9_Dynamic_Agentic_RAG_MCP/module_02_mcp_rag_enterprise_integration/`
-and fix the remaining retrieval-quality issue where a 401(k) "employee contribution limit"
+and fix the remaining retrieval-quality issue where a primary contribution "employee contribution limit"
 query can rank the combined employee+employer limit ($72,000) above the employee-only limit
 ($24,500). Add a small intent boost to the reranker (distinguish "employee/elective/salary
 deferral" vs "combined/total/employer"). Keep the fix minimal. The capstone MUST inherit this
@@ -61,8 +61,8 @@ HARD CONSTRAINTS (from CLAUDE.md):
   (mock boto3 in tests).
 - RAM-safe: NO PyTorch, NO sentence-transformers; embeddings via Ollama nomic-embed-text;
   cosine via numpy.
-- Mock account data + public-source reference summaries ONLY (no real financial accounts).
-  Educational; include a "not financial, tax, legal, or investment advice" disclaimer.
+- Mock account data + public-source reference summaries ONLY (no real professional accounts).
+  Educational; include a "not professional, adjustment, legal, or allocation advice" disclaimer.
 - House style: ═══ header block per .py file, WHY comments, section dividers, no docstrings on
   obvious functions.
 - Work on branch phase9-capstone-hub. Put everything under

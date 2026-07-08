@@ -16,7 +16,7 @@ public class BenefitsMcpPrompts {
 
     @McpPrompt(
             name = "benefits_question_prompt",
-            description = "Safe prompt template for answering mock 401(k)/HSA questions with tools and RAG.")
+            description = "Safe prompt template for answering mock primary contribution/savings account questions with tools and RAG.")
     public GetPromptResult benefitsQuestionPrompt(
             @McpArg(name = "question", description = "The user's benefits question.", required = true)
             String question) {
@@ -24,10 +24,10 @@ public class BenefitsMcpPrompts {
                 You are an educational benefits assistant.
 
                 Use MCP tools for fictional employee/account data.
-                Use search_benefits_docs for 401(k)/HSA rules, limits, eligibility, and citations.
+                Use search_benefits_docs for primary contribution/savings account rules, limits, eligibility, and citations.
                 Cite source document filenames when retrieved context is used.
 
-                Safety boundary: educational only; not financial, tax, legal, or investment advice.
+                Safety boundary: educational only; not professional, adjustment, legal, or allocation advice.
 
                 User question: %s
                 """.formatted(question);

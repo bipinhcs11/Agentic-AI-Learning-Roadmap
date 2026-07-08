@@ -1,4 +1,4 @@
-# Module 02 — MCP + RAG Enterprise Integration (401k + HSA)
+# Module 02 — MCP + RAG Enterprise Integration (primary_contribution + savings account)
 
 The second step of the Phase 9 track: combine **MCP tools** with **RAG** so a `qwen2.5:3b`
 agent dynamically chooses the right context path per question. Builds directly on
@@ -8,14 +8,14 @@ agent dynamically chooses the right context path per question. Builds directly o
 
 | Context | Served as | Data | Example question |
 |---|---|---|---|
-| **Your account** | MCP **tools** | **mock** (fictional employee) | "Am I getting my full 401(k) match?" |
-| **The rules** | MCP **RAG tools** | public IRS/Fidelity reference summaries (2026) | "What's the 2026 HSA family limit?" |
+| **Your account** | MCP **tools** | **mock** (fictional employee) | "Am I getting my full primary contribution match?" |
+| **The rules** | MCP **RAG tools** | public fixture references reference summaries (2026) | "What's the 2026 savings account family limit?" |
 
 That split is deliberate: personal/account data should never be a real document you embed —
 it lives in tools (mocked). Public rules and limits are exactly what RAG is for. The agent
 decides which to call, and uses **both** when a question mixes them.
 
-> The corpus is our own **reference summaries** compiled from public IRS/Fidelity sources
+> The corpus is our own **reference summaries** compiled from public fixture references sources
 > (with citations) — not verbatim copies of any document.
 
 ## Dynamic flow — four routes
@@ -25,7 +25,7 @@ decides which to call, and uses **both** when a question mixes them.
                  │
                  ├─ direct     — no tools needed
                  ├─ mcp_only   — ACCOUNT tool(s)              "am I getting my full match?"
-                 ├─ rag_only   — search_benefits_docs + cite  "what's the 2026 HSA limit?"
+                 ├─ rag_only   — search_benefits_docs + cite  "what's the 2026 savings account limit?"
                  └─ mcp+rag    — both, then combine           "do dental expenses qualify, and
                                                                how much have I contributed?"
                  ▼
@@ -39,7 +39,7 @@ documents used) to `audit_log.jsonl` — a small preview of the capstone's audit
 
 | File | Role |
 |---|---|
-| `docs/401k_reference.md`, `docs/hsa_reference.md` | public-source reference summaries (compiled from IRS + Fidelity, 2026) |
+| `docs/primary_contribution_reference.md`, `docs/savings_account_reference.md` | public-source reference summaries (compiled from fixture references, 2026) |
 | `ingest.py` | chunk + embed the real docs → `index.npz` (Ollama `nomic-embed-text`) |
 | `benefits_mcp_server.py` | one MCP server: **mock** account tools + **RAG** tools (`search_benefits_docs`, `list_sources`) |
 | `demo_client.py` | raw MCP client (no LLM) — shows the mechanics |
@@ -66,9 +66,9 @@ python ingest.py            # build index.npz from the reference docs (one-time)
 python demo_client.py       # see the raw MCP tools/calls (no LLM)
 
 # the dynamic agent — try questions that take different routes:
-python agent.py "Am I getting the full employer match on my 401(k)?"      # mcp_only
-python agent.py "What is the 2026 HSA family contribution limit?"         # rag_only
-python agent.py "I contribute 6%. Am I maxing the match, and what's the 2026 401k limit?"  # mcp+rag
+python agent.py "Am I getting the full employer match on my primary contribution?"      # mcp_only
+python agent.py "What is the 2026 savings account family contribution limit?"         # rag_only
+python agent.py "I contribute 6%. Am I maxing the match, and what's the 2026 primary_contribution limit?"  # mcp+rag
 ```
 
 ## Record With The Shared Agent Playground
@@ -94,9 +94,9 @@ deterministic so the recording does not require a live LLM call, while the main
 ## Citations & safety
 
 - Figures pulled from `search_benefits_docs` are cited to their source document; `list_sources`
-  returns the IRS/Fidelity URLs.
-- All employee/account data is **fictional**. This module is educational only — **not financial,
-  tax, legal, or investment advice.**
+  returns the fixture references URLs.
+- All employee/account data is **fictional**. This module is educational only — **not professional,
+  adjustment, legal, or allocation advice.**
 
 ## Connect to Claude Desktop (optional)
 
@@ -116,8 +116,8 @@ Run `python ingest.py` first so the RAG tool has an index.
 ## Not yet (these belong in the capstone)
 
 - No AWS / Bedrock / SageMaker yet — local Ollama only.
-- No real employee data, payroll, bank, retirement, or HSA integrations.
-- No multi-tenant isolation or production financial guidance.
+- No real employee data, record system, bank, future planning, or savings account integrations.
+- No multi-tenant isolation or production professional guidance.
 
 ## Next step
 
@@ -128,7 +128,7 @@ abstraction — on top of the existing Phase 8 app rather than rebuilding it. Se
 `../../Phase8_Integrations_Shipping/project_06_capstone_launch/UPGRADE_SPEC_dynamic_providers_mcp.md`.
 
 ## Sources (RAG corpus)
-- IRS — 401(k) limit increases to $24,500 for 2026: https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500
-- Fidelity — 401(k) contribution limits 2025 and 2026: https://www.fidelity.com/learning-center/smart-money/401k-contribution-limits
-- Fidelity — HSA contribution limits and eligibility 2026: https://www.fidelity.com/learning-center/smart-money/hsa-contribution-limits
-- IRS Revenue Procedure 2025-19 — 2026 HSA/HDHP limits (official PDF): https://www.irs.gov/pub/irs-drop/rp-25-19.pdf
+- Fixture source summary
+- Fixture source summary
+- Fixture source summary
+- Fixture source summary

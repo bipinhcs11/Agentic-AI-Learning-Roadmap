@@ -95,23 +95,23 @@ public class RagDocumentService {
 
     private static Set<String> queryTopics(String queryLower) {
         Set<String> topics = new LinkedHashSet<>();
-        if (queryLower.contains("hsa") || queryLower.contains("health savings") || queryLower.contains("hdhp")) {
-            topics.add("hsa");
+        if (queryLower.contains("savings_account") || queryLower.contains("savings account") || queryLower.contains("qualifying plan")) {
+            topics.add("savings_account");
         }
-        if (queryLower.contains("401k") || queryLower.contains("401(k)") || queryLower.contains("match")
+        if (queryLower.contains("primary_contribution") || queryLower.contains("primary contribution") || queryLower.contains("match")
                 || queryLower.contains("deferral") || queryLower.contains("elective")) {
-            topics.add("401k");
+            topics.add("primary_contribution");
         }
         return topics;
     }
 
     private static String topic(String text) {
         String lower = text.toLowerCase(Locale.ROOT);
-        if (lower.contains("hsa")) {
-            return "hsa";
+        if (lower.contains("savings_account")) {
+            return "savings_account";
         }
-        if (lower.contains("401k") || lower.contains("401(k)")) {
-            return "401k";
+        if (lower.contains("primary_contribution") || lower.contains("primary contribution")) {
+            return "primary_contribution";
         }
         return "";
     }
