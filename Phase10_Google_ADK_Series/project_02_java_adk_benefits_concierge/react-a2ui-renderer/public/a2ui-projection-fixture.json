@@ -1,43 +1,34 @@
 {
-  "metadata": {
-    "trustedCatalog": ["Card", "Table", "Text"],
-    "rung": "01B",
-    "mimeType": "application/json+a2ui"
-  },
-  "data": {
-    "validation": {
-      "valid": true,
-      "errors": []
-    },
-    "schemaVersion": "a2ui.phase10.rung01b.v1",
-    "root": {
-      "props": {
-        "title": "Fictional benefits projection"
-      },
-      "type": "Card",
-      "children": [
-        {
-          "props": {
-            "rows": [
-              ["Employee primary contribution", "6000.00"],
-              ["Employer match", "4500.00"],
-              ["Combined primary contribution", "10500.00"],
-              ["savings account contribution", "4400.00"],
-              ["Estimated savings account adjustment savings", "1056.00"]
-            ],
-            "columns": ["Metric", "Amount"]
-          },
-          "type": "Table",
-          "children": []
-        },
-        {
-          "props": {
-            "text": "Fictional educational estimate. No real election has been created or submitted."
-          },
-          "type": "Text",
-          "children": []
+  "data" : {
+    "root" : {
+      "children" : [ {
+        "children" : [ ],
+        "type" : "Table",
+        "props" : {
+          "rows" : [ [ "Employee primary contribution", "6000.00" ], [ "Employer match", "4500.00" ], [ "Combined primary contribution", "10500.00" ], [ "savings account contribution", "4400.00" ], [ "Estimated savings adjustment", "1056.00" ] ],
+          "columns" : [ "Metric", "Amount" ]
         }
-      ]
+      }, {
+        "children" : [ ],
+        "type" : "Text",
+        "props" : {
+          "text" : "Fictional educational estimate. No real election has been created or submitted."
+        }
+      } ],
+      "type" : "Card",
+      "props" : {
+        "title" : "Fictional benefits projection"
+      }
+    },
+    "schemaVersion" : "a2ui.phase10.rung01b.v1",
+    "validation" : {
+      "errors" : [ ],
+      "valid" : true
     }
+  },
+  "metadata" : {
+    "mimeType" : "application/json+a2ui",
+    "rung" : "01B",
+    "trustedCatalog" : [ "Card", "Table", "Text" ]
   }
 }

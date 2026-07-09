@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Phase 10 Module 01 complete Google ADK architecture</title>
+  <desc id="desc">Google-style architecture diagram for Module 01 showing Java ADK orchestration, deterministic tools, trusted A2UI JSON, React rendering, and AG-UI streaming.</desc>
+
+  <defs>
+    <filter id="softShadow" x="-18%" y="-18%" width="136%" height="136%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#185abc" flood-opacity="0.14"/>
+    </filter>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4285f4"/>
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9aa0a6"/>
+    </marker>
+    <style>
+      .title { font: 600 34px Arial, Helvetica, sans-serif; fill: #202124; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .bandTitle { font: 700 20px Arial, Helvetica, sans-serif; fill: #202124; }
+      .bandText { font: 500 15px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .nodeTitle { font: 700 23px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .nodeSub { font: 500 16px Arial, Helvetica, sans-serif; fill: #ffffff; opacity: 0.96; }
+      .small { font: 500 15px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .tiny { font: 500 13px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .laneTitle { font: 700 16px Arial, Helvetica, sans-serif; fill: #3c4043; }
+      .laneText { font: 500 13px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .label { font: 600 15px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .tileTitle { font: 700 18px Arial, Helvetica, sans-serif; fill: #3f6fd7; }
+      .tileText { font: 500 13px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .mono { font: 600 14px Menlo, Monaco, Consolas, monospace; fill: #3c4043; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#ffffff"/>
+  <rect width="1600" height="900" fill="#f8fbff"/>
+
+  <g transform="translate(52 36)">
+    <path d="M 24 34 C 26 21 37 12 50 12 C 60 12 69 17 74 25 C 88 26 99 37 99 51 C 99 66 87 78 72 78 L 26 78 C 12 78 1 67 1 53 C 1 41 10 31 24 34 Z" fill="#ffffff" stroke="#dadce0" stroke-width="3"/>
+    <path d="M 23 35 C 27 22 38 13 51 13" fill="none" stroke="#34a853" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 51 13 C 61 13 69 18 74 26" fill="none" stroke="#fbbc04" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 75 26 C 89 28 99 38 99 52" fill="none" stroke="#4285f4" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 27 78 C 12 78 1 67 1 53 C 1 43 8 35 18 33" fill="none" stroke="#ea4335" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <text x="180" y="68" class="title">Phase 10 Module 01: Java ADK Benefits Concierge</text>
+  <text x="180" y="102" class="subtitle">Completed rungs 01A-01D: Java ADK skills, trusted A2UI JSON, React rendering, and AG-UI streaming</text>
+
+  <rect x="72" y="132" width="1456" height="70" fill="#e8f0fe" filter="url(#softShadow)"/>
+  <circle cx="130" cy="167" r="22" fill="#ffffff"/>
+  <circle cx="123" cy="161" r="5" fill="#4285f4"/>
+  <circle cx="137" cy="161" r="5" fill="#34a853"/>
+  <circle cx="123" cy="175" r="5" fill="#fbbc04"/>
+  <circle cx="137" cy="175" r="5" fill="#ea4335"/>
+  <text x="172" y="162" class="bandTitle">Google ADK orchestration boundary</text>
+  <text x="172" y="185" class="bandText">Local-first Java agent runtime with deterministic tools and browser-facing UI contracts</text>
+
+  <g transform="translate(72 236)">
+    <rect x="0" y="0" width="330" height="416" fill="#ffffff" stroke="#dadce0" stroke-width="2" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="330" height="54" fill="#e6f4ea"/>
+    <text x="24" y="34" class="laneTitle">Rung 01A - Java ADK Agent</text>
+    <polygon points="90,104 238,104 292,190 238,276 90,276 36,190" fill="#34a853"/>
+    <text x="164" y="178" class="nodeTitle" text-anchor="middle">Java LlmAgent</text>
+    <text x="164" y="208" class="nodeSub" text-anchor="middle">Benefits concierge</text>
+    <text x="24" y="326" class="laneText">- Gemini model config</text>
+    <text x="24" y="350" class="laneText">- guardrail screening</text>
+    <text x="24" y="374" class="laneText">- local fictional KB</text>
+    <text x="24" y="398" class="laneText">- no real transactions</text>
+  </g>
+
+  <g transform="translate(436 236)">
+    <rect x="0" y="0" width="330" height="416" fill="#ffffff" stroke="#dadce0" stroke-width="2" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="330" height="54" fill="#fff7df"/>
+    <text x="24" y="34" class="laneTitle">Rung 01B - Trusted A2UI</text>
+    <rect x="70" y="96" width="190" height="208" fill="#fbbc04"/>
+    <rect x="90" y="118" width="150" height="40" fill="#ffffff"/>
+    <rect x="90" y="176" width="150" height="76" fill="#ffffff" opacity="0.92"/>
+    <text x="165" y="142" class="mono" text-anchor="middle">Card</text>
+    <text x="165" y="210" class="mono" text-anchor="middle">Table</text>
+    <text x="165" y="236" class="mono" text-anchor="middle">Text</text>
+    <text x="24" y="326" class="laneText">- JSON payload validated server-side</text>
+    <text x="24" y="350" class="laneText">- Card / Table / Text only</text>
+    <text x="24" y="374" class="laneText">- blocks executable props</text>
+    <text x="24" y="398" class="laneText">- mime: application/json+a2ui</text>
+  </g>
+
+  <g transform="translate(800 236)">
+    <rect x="0" y="0" width="330" height="416" fill="#ffffff" stroke="#dadce0" stroke-width="2" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="330" height="54" fill="#e8f0fe"/>
+    <text x="24" y="34" class="laneTitle">Rung 01C - React Renderer</text>
+    <rect x="52" y="100" width="226" height="182" fill="#4285f4"/>
+    <rect x="72" y="122" width="186" height="42" fill="#ffffff"/>
+    <rect x="72" y="184" width="186" height="20" fill="#ffffff" opacity="0.9"/>
+    <rect x="72" y="214" width="186" height="20" fill="#ffffff" opacity="0.9"/>
+    <rect x="72" y="244" width="186" height="20" fill="#ffffff" opacity="0.9"/>
+    <text x="165" y="148" class="mono" text-anchor="middle">React</text>
+    <text x="24" y="326" class="laneText">- loads A2UI fixture JSON</text>
+    <text x="24" y="350" class="laneText">- validates client catalog</text>
+    <text x="24" y="374" class="laneText">- renders projection table</text>
+    <text x="24" y="398" class="laneText">- no arbitrary model UI</text>
+  </g>
+
+  <g transform="translate(1164 236)">
+    <rect x="0" y="0" width="364" height="416" fill="#ffffff" stroke="#dadce0" stroke-width="2" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="364" height="54" fill="#fce8e6"/>
+    <text x="24" y="34" class="laneTitle">Rung 01D - AG-UI Stream</text>
+    <polygon points="110,94 254,94 314,180 254,266 110,266 50,180" fill="#ea4335"/>
+    <text x="182" y="168" class="nodeTitle" text-anchor="middle">SSE Events</text>
+    <text x="182" y="198" class="nodeSub" text-anchor="middle">State snapshot</text>
+    <text x="24" y="326" class="laneText">- RUN_STARTED / RUN_FINISHED</text>
+    <text x="24" y="350" class="laneText">- TEXT_MESSAGE_CONTENT</text>
+    <text x="24" y="374" class="laneText">- TOOL_CALL_* progress</text>
+    <text x="24" y="398" class="laneText">- STATE_SNAPSHOT carries A2UI</text>
+  </g>
+
+  <path d="M 402 444 L 430 444" stroke="#4285f4" stroke-width="5" marker-end="url(#arrowBlue)"/>
+  <path d="M 766 444 L 794 444" stroke="#4285f4" stroke-width="5" marker-end="url(#arrowBlue)"/>
+  <path d="M 1130 444 L 1158 444" stroke="#4285f4" stroke-width="5" marker-end="url(#arrowBlue)"/>
+
+  <text x="416" y="424" class="label" text-anchor="middle">tools</text>
+  <text x="780" y="424" class="label" text-anchor="middle">JSON</text>
+  <text x="1144" y="424" class="label" text-anchor="middle">live</text>
+
+  <line x1="72" y1="684" x2="1528" y2="684" stroke="#dadce0" stroke-width="3" stroke-dasharray="3 9"/>
+
+  <g transform="translate(72 724)">
+    <rect x="0" y="0" width="330" height="116" fill="#edf3fe"/>
+    <text x="24" y="36" class="tileTitle">Deterministic Tools</text>
+    <text x="24" y="66" class="tileText">Java BigDecimal handles math;</text>
+    <text x="24" y="88" class="tileText">the LLM explains, not calculates.</text>
+  </g>
+
+  <g transform="translate(436 724)">
+    <rect x="0" y="0" width="330" height="116" fill="#edf3fe"/>
+    <text x="24" y="36" class="tileTitle">Trusted Catalog</text>
+    <text x="24" y="66" class="tileText">Only safe A2UI components</text>
+    <text x="24" y="88" class="tileText">reach the browser renderer.</text>
+  </g>
+
+  <g transform="translate(800 724)">
+    <rect x="0" y="0" width="330" height="116" fill="#edf3fe"/>
+    <text x="24" y="36" class="tileTitle">React Boundary</text>
+    <text x="24" y="66" class="tileText">The frontend maps JSON types</text>
+    <text x="24" y="88" class="tileText">to known React components.</text>
+  </g>
+
+  <g transform="translate(1164 724)">
+    <rect x="0" y="0" width="364" height="116" fill="#edf3fe"/>
+    <text x="24" y="36" class="tileTitle">AG-UI-Style Streaming</text>
+    <text x="24" y="66" class="tileText">Lifecycle, text, tool, and state</text>
+    <text x="24" y="88" class="tileText">events update the browser live.</text>
+  </g>
+</svg>

@@ -7,18 +7,18 @@ import java.util.Locale;
 public final class BenefitsGuardrails {
     private static final List<String> TRANSACTION_TERMS = List.of(
             "submit election", "submit my election", "change my contribution",
-            "update my payroll", "move money", "execute", "confirm the trade",
+            "update my record system", "move money", "execute", "confirm the trade",
             "enroll me", "open an account"
     );
 
     private static final List<String> REAL_DATA_TERMS = List.of(
-            "my ssn", "social security", "payroll id", "employee id",
+            "my ssn", "social security", "record system id", "employee id",
             "bank account", "routing number", "customer data", "real account"
     );
 
     private static final List<String> ADVICE_TERMS = List.of(
-            "what should i invest", "guarantee", "legal advice", "tax advice",
-            "fiduciary advice", "which fund should i buy"
+            "what should i invest", "guarantee", "legal advice", "professional advice",
+            "professional advice", "which fund should i buy"
     );
 
     public GuardrailDecision screenUserRequest(String request) {
@@ -32,7 +32,7 @@ public final class BenefitsGuardrails {
             triggered.add("no_real_sensitive_or_enterprise_data");
         }
         if (containsAny(normalized, ADVICE_TERMS)) {
-            triggered.add("no_individualized_legal_tax_investment_advice");
+            triggered.add("no_personalized_legal_tax_product_advice");
         }
 
         if (triggered.isEmpty()) {

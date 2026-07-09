@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public final class ElectionDraftService {
-    public ElectionDraft draft(String electionType, BigDecimal proposedPrimaryContributionPercent, BigDecimal proposedAnnualSavingsAccountContribution) {
+    public ElectionDraft draft(String electionType, BigDecimal proposedPrimaryPercent, BigDecimal proposedAnnualSavingsContribution) {
         return new ElectionDraft(
                 electionType == null || electionType.isBlank() ? "educational-example" : electionType,
-                proposedPrimaryContributionPercent == null ? BigDecimal.ZERO : proposedPrimaryContributionPercent,
-                proposedAnnualSavingsAccountContribution == null ? BigDecimal.ZERO : proposedAnnualSavingsAccountContribution,
+                proposedPrimaryPercent == null ? BigDecimal.ZERO : proposedPrimaryPercent,
+                proposedAnnualSavingsContribution == null ? BigDecimal.ZERO : proposedAnnualSavingsContribution,
                 false,
                 List.of(
                         "Review the fictional projection.",

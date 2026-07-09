@@ -29,6 +29,10 @@ Branch: `codex/phase10-module1-rung01c`
   - AG-UI-shaped lifecycle, text, tool-call, state, and finish events,
   - streamed `STATE_SNAPSHOT` carrying the trusted A2UI payload,
   - React `Start stream` path that renders the live state update.
+- Module 01 launch materials:
+  - LinkedIn-ready posts for rungs 01A/01B, 01C, and 01D,
+  - recap post and recommended posting order in `launch/module01_linkedin_launch_pack.md`,
+  - completed Google-style architecture diagram in `assets/module01_complete_google_style_architecture.png`.
 
 ## Verification
 

@@ -24,8 +24,8 @@ public final class BenefitsA2uiPayloadService {
                                 List.of("Employee primary contribution", projection.employeePrimaryContribution().toPlainString()),
                                 List.of("Employer match", projection.employerMatch().toPlainString()),
                                 List.of("Combined primary contribution", projection.combinedPrimaryContribution().toPlainString()),
-                                List.of("savings account contribution", projection.savingsAccountContribution().toPlainString()),
-                                List.of("Estimated savings account adjustment savings", projection.estimatedSavingsAccountAdjustment().toPlainString())
+                                List.of("savings account contribution", projection.savingsContribution().toPlainString()),
+                                List.of("Estimated savings adjustment", projection.estimatedSavingsAdjustment().toPlainString())
                         )
                 ),
                 List.of()

@@ -25,8 +25,7 @@ ADK text orchestration and does not introduce React, AG-UI, UCP, or A2A yet.
   record system, HRIS, provider, account, or customer data.
 - It may calculate examples from user-provided numbers, but it must label them
   estimates.
-- It must not provide legal, adjustment, allocation, individualized, or individualized
-  professional advice.
+- It must not provide professional or personalized account advice.
 - It must not execute benefit elections, move money, open accounts, or update
   real records.
 - Any election discussion must remain a draft until a future UCP confirmation

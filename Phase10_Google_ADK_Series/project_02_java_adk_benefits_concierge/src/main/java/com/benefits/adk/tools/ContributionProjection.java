@@ -9,8 +9,8 @@ public record ContributionProjection(
         BigDecimal employeePrimaryContribution,
         BigDecimal employerMatch,
         BigDecimal combinedPrimaryContribution,
-        BigDecimal savingsAccountContribution,
-        BigDecimal estimatedSavingsAccountAdjustment,
+        BigDecimal savingsContribution,
+        BigDecimal estimatedSavingsAdjustment,
         List<String> notes
 ) {
     public ContributionProjection rounded() {
@@ -19,8 +19,8 @@ public record ContributionProjection(
                 money(employeePrimaryContribution),
                 money(employerMatch),
                 money(combinedPrimaryContribution),
-                money(savingsAccountContribution),
-                money(estimatedSavingsAccountAdjustment),
+                money(savingsContribution),
+                money(estimatedSavingsAdjustment),
                 notes
         );
     }

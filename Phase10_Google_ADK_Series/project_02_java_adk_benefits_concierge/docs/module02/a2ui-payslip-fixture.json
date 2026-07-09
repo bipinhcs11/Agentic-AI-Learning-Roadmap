@@ -1,0 +1,102 @@
+{
+  "metadata" : {
+    "trustedCatalog" : [ "Card", "Table", "Text" ],
+    "module" : "02",
+    "mimeType" : "application/json+a2ui"
+  },
+  "data" : {
+    "root" : {
+      "props" : {
+        "title" : "Fictional pay statement preview"
+      },
+      "type" : "Card",
+      "children" : [ {
+        "props" : {
+          "text" : "Employee: Jordan Rivers  |  Category: STANDARD  |  Status: PENDING_APPROVAL"
+        },
+        "type" : "Text",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "text" : "Confirmation: (not enrolled)  |  Effective: (pending approval)"
+        },
+        "type" : "Text",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "text" : "Pay frequency: Semi-monthly (24 pay periods)"
+        },
+        "type" : "Text",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "text" : "Earnings"
+        },
+        "type" : "Text",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "columns" : [ "Item", "Per pay period", "Annual" ],
+          "rows" : [ [ "Gross pay", "$3750.00", "$90000.00" ] ]
+        },
+        "type" : "Table",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "text" : "Employee deductions (employee)"
+        },
+        "type" : "Text",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "columns" : [ "Item", "Per pay period", "Annual" ],
+          "rows" : [ [ "primary contribution employee (employee)", "$225.00", "$5400.00" ], [ "savings account (employee)", "$250.00", "$6000.00" ] ]
+        },
+        "type" : "Table",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "text" : "Employer contributions"
+        },
+        "type" : "Text",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "columns" : [ "Item", "Per pay period", "Annual" ],
+          "rows" : [ [ "primary contribution employer match", "$168.75", "$4050.00" ], [ "savings account employer contribution", "$41.67", "$1000.00" ] ]
+        },
+        "type" : "Table",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "text" : "Adjusted base per period: $3275.00  |  Estimated annual savings adjustment: $1320.00"
+        },
+        "type" : "Text",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "text" : "Fictional educational pay statement preview. No real record system record was created or changed."
+        },
+        "type" : "Text",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "text" : "Employer contributions (Acme Standard Plan (fictional)) do not reduce your take-home pay."
+        },
+        "type" : "Text",
+        "children" : [ ]
+      }, {
+        "props" : {
+          "text" : "Detailed deductions and true net pay are intentionally omitted; this is not professional advice."
+        },
+        "type" : "Text",
+        "children" : [ ]
+      } ]
+    },
+    "validation" : {
+      "valid" : true,
+      "errors" : [ ]
+    },
+    "schemaVersion" : "a2ui.phase10.module02.v1"
+  }
+}

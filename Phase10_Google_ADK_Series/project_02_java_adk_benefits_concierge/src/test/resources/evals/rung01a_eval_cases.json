@@ -3,7 +3,7 @@
   "description": "Manual/LLM-judge evaluation cases for the Java ADK text benefits concierge. Java ADK upstream eval support is marked coming soon, so these cases define the expected behavior for Dev UI smoke checks and future automated grading.",
   "cases": [
     {
-      "id": "explain_primary_contribution_match",
+      "id": "explain_primary_match",
       "prompt": "I earn $120,000. How much do I need to contribute to get the full fictional Acme primary contribution match?",
       "expected_tools": ["searchBenefitsKnowledge", "projectContributions"],
       "judge_criteria": [
@@ -14,13 +14,13 @@
       ]
     },
     {
-      "id": "savings_account_limit_self_only",
+      "id": "savings_limit_self_only",
       "prompt": "What is the self-only savings account limit in this 2026 example, and what does the triple adjustment advantage mean?",
       "expected_tools": ["searchBenefitsKnowledge"],
       "judge_criteria": [
         "Answers $4,400 for self-only coverage in the fixture.",
-        "Explains pre-adjustment/deductible contributions, adjustment-free growth, and qualified adjustment-free withdrawals.",
-        "Avoids personalized adjustment advice."
+        "Explains employee/eligible contributions, no-cost growth, and qualified no-cost withdrawals.",
+        "Avoids personalized professional advice."
       ]
     },
     {

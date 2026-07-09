@@ -7,7 +7,7 @@ concierge. It reuses the familiar Phase 9 benefits domain, but the lesson is ADK
 orchestration: a Java `LlmAgent` selects retrieval, projection, draft, and
 guardrail tools.
 
-All examples are fictional and educational. Do not use real professional, HR,
+All examples are fictional and educational. Do not use real account, HR,
 record system, billing, benefits, customer, or account data.
 
 ## What Rungs 01A-01D Include
@@ -16,8 +16,7 @@ record system, billing, benefits, customer, or account data.
 - Deterministic primary contribution/savings account projection tool.
 - Local benefits knowledge retriever that stands in for managed Agent Search
   during offline development.
-- Guardrails for real data, transactions, and individualized legal/adjustment/
-  allocation advice.
+- Guardrails for real data, transactions, and personalized advice requests.
 - Non-executable election draft tool.
 - Rung 01B verification scaffold for trusted A2UI-shaped projection payloads.
 - Rung 01C React renderer for the trusted `Card`/`Table`/`Text` catalog.
@@ -28,6 +27,30 @@ record system, billing, benefits, customer, or account data.
 
 - UCP transaction lane: Module 02.
 - A2A specialist agents: Module 03.
+
+## Launch Assets
+
+Module 01 social-safe copy and image notes are in:
+
+```text
+launch/module01_linkedin_launch_pack.md
+```
+
+Module 02 social-safe copy is in:
+
+```text
+launch/module02_ucp_transactions_linkedin_post_draft.md
+```
+
+The launch drafts intentionally avoid sensitive product terms, vendor names,
+and advice language.
+
+Use this completed Google-style architecture image for Module 01 recap and
+Rung 01C/01D posts:
+
+```text
+assets/module01_complete_google_style_architecture.png
+```
 
 ## Run Offline Checks
 
@@ -40,7 +63,7 @@ Expected output:
 
 ```text
 BUILD SUCCESS
-Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 33, Failures: 0, Errors: 0, Skipped: 0
 ```
 
 ## Create the Agent Object
@@ -74,8 +97,8 @@ http://localhost:8080
 Prompt to verify the Rung 01B path:
 
 ```text
-Build an A2UI-style projection card for salary 100000, primary contribution 6%, savings account 4400,
-self-only coverage, and 24% marginal adjustment rate.
+Build an A2UI-style projection card for salary 100000, primary 6%, savings account 4400,
+self-only coverage, and 24% adjustment rate.
 ```
 
 Expected behavior:
@@ -137,7 +160,7 @@ Use those cases in the ADK Dev UI as smoke checks. The judge criteria verify:
 - deterministic math tool usage,
 - citation of local retrieval source ids,
 - refusal of real record system/account transactions,
-- no legal, adjustment, allocation, or individualized advice.
+- no professional advice.
 
 ## Rung 01B A2UI Verification Scaffold
 

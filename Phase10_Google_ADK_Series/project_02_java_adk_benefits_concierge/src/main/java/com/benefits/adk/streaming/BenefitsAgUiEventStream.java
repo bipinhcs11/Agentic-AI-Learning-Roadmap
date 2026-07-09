@@ -63,8 +63,8 @@ public final class BenefitsAgUiEventStream {
         )));
         events.add(event("TOOL_CALL_ARGS", Map.of(
                 "toolCallId", toolCallId,
-                "delta", "{\"annualSalary\":100000,\"primaryContributionPercent\":6,"
-                        + "\"annualSavingsAccountContribution\":4400,\"savingsAccountCoverage\":\"self-only\","
+                "delta", "{\"annualSalary\":100000,\"employeePrimaryPercent\":6,"
+                        + "\"annualSavingsContribution\":4400,\"coverageType\":\"self-only\","
                         + "\"adjustmentRate\":24}"
         )));
         events.add(event("TOOL_CALL_END", Map.of("toolCallId", toolCallId)));
