@@ -12,7 +12,7 @@
 ║  WHY qwen2.5:3b (not gemma3)? It has strong native tool-calling, which MCP     ║
 ║  leans on. Embeddings + retrieval stay local via the MCP server.              ║
 ║                                                                                ║
-║  RUN:  python agent.py "What is the 2026 HSA family contribution limit?"       ║
+║  RUN:  python agent.py "What is the 2026 savings account family contribution limit?"       ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 import asyncio
@@ -31,7 +31,7 @@ ROUTER_MODEL = os.getenv("MCP_ROUTER_MODEL", "qwen2.5:3b")   # ollama pull qwen2
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 SYSTEM = SystemMessage(content=(
-    "You are a benefits assistant for 401(k) and HSA questions. "
+    "You are a benefits assistant for primary contribution and savings account questions. "
     "ALWAYS call search_benefits_docs to ground your answer before replying. "
     "Answer ONLY from the retrieved excerpts; if the answer isn't there, say so. "
     "State the exact figures and name the source document."
@@ -85,5 +85,5 @@ async def ask(question: str) -> None:
 
 if __name__ == "__main__":
     q = " ".join(sys.argv[1:]) or \
-        "What is the 2026 401(k) employee limit and the catch-up for someone over 50?"
+        "What is the 2026 primary contribution employee limit and the catch-up for someone over 50?"
     asyncio.run(ask(q))

@@ -1,15 +1,15 @@
 /*
  * ╔══════════════════════════════════════════════════════════════════════════════╗
  * ║  Phase 9 · Module 04 | BenefitsMcpServer.java                              ║
- * ║  Local MCP Benefits Assistant for mock 401(k) and HSA data.                ║
+ * ║  Local MCP Benefits Assistant for mock primary contribution and savings account data.                ║
  * ║                                                                            ║
  * ║  PURPOSE: Teach MCP tools and resources using the official Java MCP SDK.   ║
  * ║  This is a 1:1 port of the Python Module 01 server. It exposes structured  ║
  * ║  benefits data over MCP so an LLM client can inspect employee data,        ║
- * ║  calculate matches, estimate HSA tax savings, and read plan rules.         ║
+ * ║  calculate matches, estimate savings account adjustment savings, and read plan rules.         ║
  * ║                                                                            ║
  * ║  SAFETY: All data is fictional. This is educational only and is not        ║
- * ║  financial, tax, legal, or investment advice.                              ║
+ * ║  professional, adjustment, legal, or allocation advice.                              ║
  * ║                                                                            ║
  * ║  RUN:  java -jar benefits-mcp-java-1.0.0-jar-with-deps.jar                ║
  * ║  The process speaks MCP over stdio and is normally launched by a client.   ║
@@ -58,8 +58,8 @@ public class BenefitsMcpServer {
     // ═══════════════════════════════════════════════════════════════════════════
     // MOCK DATA
     // WHY mock data? MCP is a protocol boundary. You can learn the shape of
-    // tools, resources, and client calls without connecting to payroll,
-    // retirement, banking, or benefits-provider systems. Later modules replace
+    // tools, resources, and client calls without connecting to record system,
+    // future planning, banking, or benefits-provider systems. Later modules replace
     // this with real tenant-scoped APIs, databases, and RAG-backed plan docs.
     // ═══════════════════════════════════════════════════════════════════════════
 
@@ -69,14 +69,14 @@ public class BenefitsMcpServer {
             Map.entry("age", 36),
             Map.entry("annual_salary", 120000),
             Map.entry("filing_status", "single"),
-            Map.entry("estimated_federal_tax_rate", 0.24),
-            Map.entry("estimated_state_tax_rate", 0.05),
+            Map.entry("estimated_federal_adjustment_rate", 0.24),
+            Map.entry("estimated_state_adjustment_rate", 0.05),
             Map.entry("benefits_year", 2026)
     ));
 
-    static final Map<String, Object> PLAN_401K = new LinkedHashMap<>(Map.ofEntries(
+    static final Map<String, Object> PRIMARY_CONTRIBUTION_PLAN = new LinkedHashMap<>(Map.ofEntries(
             Map.entry("provider", "MockRetire"),
-            Map.entry("plan_name", "Acme FutureBuilder 401(k)"),
+            Map.entry("plan_name", "Acme FutureBuilder primary contribution"),
             Map.entry("employee_contribution_percent", 6.0),
             Map.entry("ytd_employee_contribution", 7200),
             Map.entry("ytd_employer_match", 5400),
@@ -89,9 +89,9 @@ public class BenefitsMcpServer {
                     "Employer match vests 25% per year over four years.")
     ));
 
-    static final Map<String, Object> PLAN_HSA = new LinkedHashMap<>(Map.ofEntries(
+    static final Map<String, Object> SAVINGS_ACCOUNT_PLAN = new LinkedHashMap<>(Map.ofEntries(
             Map.entry("provider", "MockHealth Bank"),
-            Map.entry("plan_name", "Acme HDHP + HSA"),
+            Map.entry("plan_name", "Acme qualifying plan + savings account"),
             Map.entry("coverage", "family"),
             Map.entry("employee_annual_election", 4200),
             Map.entry("employer_annual_contribution", 1000),
@@ -104,24 +104,23 @@ public class BenefitsMcpServer {
     ));
 
     static final Map<String, String> PLAN_DOCUMENTS = new LinkedHashMap<>(Map.of(
-            "401k_plan_summary",
-            "The Acme FutureBuilder 401(k) lets employees contribute a percentage of pay.\n"
+            "primary_contribution_plan_summary",
+            "The Acme FutureBuilder primary contribution lets employees contribute a percentage of pay.\n"
                     + "The mock employer match is 100% of the first 3% of pay plus 50% of the next\n"
                     + "3% of pay, for a maximum employer match of 4.5% of eligible pay. Employer\n"
                     + "matching dollars vest 25% per year over four years.",
 
-            "hsa_plan_summary",
-            "The Acme HDHP + HSA lets eligible employees contribute to a Health Savings\n"
-                    + "Account when enrolled in the qualifying high-deductible health plan. In this\n"
-                    + "mock plan, Acme contributes $1,000 per year for family coverage. HSA funds roll\n"
+            "savings_account_plan_summary",
+            "The Acme qualifying plan + savings account lets eligible employees contribute to a savings account when enrolled in the qualifying plan. In this\n"
+                    + "mock plan, Acme contributes $1,000 per year for family coverage. savings account funds roll\n"
                     + "over year to year and can be used for qualified medical expenses.",
 
             "benefits_faq",
             "Frequently asked mock benefits questions:\n"
-                    + "- 401(k) contribution changes can be made any payroll period.\n"
-                    + "- HSA election changes may require a qualifying life event unless made during\n"
+                    + "- primary contribution changes can be made any record system period.\n"
+                    + "- savings account election changes may require a qualifying life event unless made during\n"
                     + "  open enrollment.\n"
-                    + "- This training example does not provide financial, tax, legal, or investment\n"
+                    + "- This training example does not provide professional, adjustment, legal, or allocation\n"
                     + "  advice."
     ));
 
@@ -156,14 +155,14 @@ public class BenefitsMcpServer {
         return new CallToolResult(toJson(EMPLOYEE_PROFILE), false);
     }
 
-    /** Tool: get_401k_summary */
-    private static CallToolResult handleGet401kSummary(
+    /** Tool: get_primary_contribution_summary */
+    private static CallToolResult handleGetPrimaryContributionSummary(
             Object exchange, Map<String, Object> args) {
-        return new CallToolResult(toJson(PLAN_401K), false);
+        return new CallToolResult(toJson(PRIMARY_CONTRIBUTION_PLAN), false);
     }
 
-    /** Tool: calculate_401k_match */
-    private static CallToolResult handleCalculate401kMatch(
+    /** Tool: calculate_primary_contribution_match */
+    private static CallToolResult handleCalculatePrimaryContributionMatch(
             Object exchange, Map<String, Object> args) {
 
         double salary = args.containsKey("salary")
@@ -172,12 +171,12 @@ public class BenefitsMcpServer {
 
         double contributionPercent = args.containsKey("employee_contribution_percent")
                 ? ((Number) args.get("employee_contribution_percent")).doubleValue()
-                : ((Number) PLAN_401K.get("employee_contribution_percent")).doubleValue();
+                : ((Number) PRIMARY_CONTRIBUTION_PLAN.get("employee_contribution_percent")).doubleValue();
 
         double firstTier = Math.min(contributionPercent, 3.0);
         double secondTier = Math.min(Math.max(contributionPercent - 3.0, 0.0), 3.0);
         double matchPercent = firstTier + (secondTier * 0.5);
-        double maxMatchPercent = ((Number) PLAN_401K.get("max_match_percent")).doubleValue();
+        double maxMatchPercent = ((Number) PRIMARY_CONTRIBUTION_PLAN.get("max_match_percent")).doubleValue();
         matchPercent = Math.min(matchPercent, maxMatchPercent);
         double annualMatch = salary * (matchPercent / 100);
 
@@ -187,15 +186,15 @@ public class BenefitsMcpServer {
         result.put("employer_match_percent", Math.round(matchPercent * 100.0) / 100.0);
         result.put("estimated_annual_employer_match", Math.round(annualMatch * 100.0) / 100.0);
         result.put("full_match_reached", contributionPercent >= 6.0);
-        result.put("formula", PLAN_401K.get("match_formula"));
+        result.put("formula", PRIMARY_CONTRIBUTION_PLAN.get("match_formula"));
         result.put("educational_note",
                 "Mock estimate only. Confirm rules with the real plan document.");
 
         return new CallToolResult(toJson(result), false);
     }
 
-    /** Tool: estimate_annual_401k_contribution */
-    private static CallToolResult handleEstimateAnnual401kContribution(
+    /** Tool: estimate_annual_primary_contribution */
+    private static CallToolResult handleEstimateAnnualPrimaryContribution(
             Object exchange, Map<String, Object> args) {
 
         double salary = args.containsKey("salary")
@@ -204,10 +203,10 @@ public class BenefitsMcpServer {
 
         double contributionPercent = args.containsKey("employee_contribution_percent")
                 ? ((Number) args.get("employee_contribution_percent")).doubleValue()
-                : ((Number) PLAN_401K.get("employee_contribution_percent")).doubleValue();
+                : ((Number) PRIMARY_CONTRIBUTION_PLAN.get("employee_contribution_percent")).doubleValue();
 
         double annualContribution = salary * (contributionPercent / 100);
-        int mockLimit = ((Number) PLAN_401K.get("mock_employee_limit")).intValue();
+        int mockLimit = ((Number) PRIMARY_CONTRIBUTION_PLAN.get("mock_employee_limit")).intValue();
         double remainingToLimit = mockLimit - annualContribution;
 
         Map<String, Object> result = new LinkedHashMap<>();
@@ -220,59 +219,59 @@ public class BenefitsMcpServer {
                 Math.round(Math.max(0.0, remainingToLimit) * 100.0) / 100.0);
         result.put("would_exceed_mock_limit", annualContribution > mockLimit);
         result.put("educational_note",
-                "This uses mock plan assumptions, not official tax guidance.");
+                "This uses mock plan assumptions, not fixture guidance.");
 
         return new CallToolResult(toJson(result), false);
     }
 
-    /** Tool: get_hsa_summary */
-    private static CallToolResult handleGetHsaSummary(
+    /** Tool: get_savings_account_summary */
+    private static CallToolResult handleGetSavingsAccountSummary(
             Object exchange, Map<String, Object> args) {
-        return new CallToolResult(toJson(PLAN_HSA), false);
+        return new CallToolResult(toJson(SAVINGS_ACCOUNT_PLAN), false);
     }
 
-    /** Tool: estimate_hsa_tax_savings */
-    private static CallToolResult handleEstimateHsaTaxSavings(
+    /** Tool: estimate_savings_account_adjustment */
+    private static CallToolResult handleEstimateSavingsAccountAdjustment(
             Object exchange, Map<String, Object> args) {
 
         double contribution = args.containsKey("annual_contribution")
                 ? ((Number) args.get("annual_contribution")).doubleValue()
-                : ((Number) PLAN_HSA.get("employee_annual_election")).doubleValue();
+                : ((Number) SAVINGS_ACCOUNT_PLAN.get("employee_annual_election")).doubleValue();
 
         double defaultRate =
-                ((Number) EMPLOYEE_PROFILE.get("estimated_federal_tax_rate")).doubleValue()
-                        + ((Number) EMPLOYEE_PROFILE.get("estimated_state_tax_rate")).doubleValue();
+                ((Number) EMPLOYEE_PROFILE.get("estimated_federal_adjustment_rate")).doubleValue()
+                        + ((Number) EMPLOYEE_PROFILE.get("estimated_state_adjustment_rate")).doubleValue();
 
-        double taxRate = args.containsKey("marginal_tax_rate")
-                ? ((Number) args.get("marginal_tax_rate")).doubleValue()
+        double adjustmentRate = args.containsKey("adjustment_rate")
+                ? ((Number) args.get("adjustment_rate")).doubleValue()
                 : defaultRate;
 
-        double ficaRate = 0.0765; // Social Security 6.2% + Medicare 1.45%
-        double incomeTaxSavings = contribution * taxRate;
-        double ficaSavings = contribution * ficaRate;
+        double recordSystemRate = 0.0765; // mock record-system rate
+        double incomeAdjustment = contribution * adjustmentRate;
+        double recordSystemSavings = contribution * recordSystemRate;
 
-        int mockFamilyLimit = ((Number) PLAN_HSA.get("mock_family_limit")).intValue();
+        int mockFamilyLimit = ((Number) SAVINGS_ACCOUNT_PLAN.get("mock_family_limit")).intValue();
         int employerAnnualContribution =
-                ((Number) PLAN_HSA.get("employer_annual_contribution")).intValue();
+                ((Number) SAVINGS_ACCOUNT_PLAN.get("employer_annual_contribution")).intValue();
 
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("annual_hsa_employee_contribution", contribution);
-        result.put("estimated_combined_income_tax_rate",
-                Math.round(taxRate * 10000.0) / 10000.0);
-        result.put("estimated_income_tax_savings",
-                Math.round(incomeTaxSavings * 100.0) / 100.0);
-        result.put("estimated_fica_savings",
-                Math.round(ficaSavings * 100.0) / 100.0);
+        result.put("annual_savings_account_employee_contribution", contribution);
+        result.put("estimated_combined_income_adjustment_rate",
+                Math.round(adjustmentRate * 10000.0) / 10000.0);
+        result.put("estimated_income_adjustment_savings",
+                Math.round(incomeAdjustment * 100.0) / 100.0);
+        result.put("estimated_record_system_savings",
+                Math.round(recordSystemSavings * 100.0) / 100.0);
         result.put("estimated_total_savings",
-                Math.round((incomeTaxSavings + ficaSavings) * 100.0) / 100.0);
+                Math.round((incomeAdjustment + recordSystemSavings) * 100.0) / 100.0);
         result.put("mock_family_limit", mockFamilyLimit);
         result.put("within_mock_limit",
                 contribution + employerAnnualContribution <= mockFamilyLimit);
-        result.put("fica_note",
-                "FICA savings apply to HSA contributions made through payroll "
-                        + "(Section 125 cafeteria plan), not direct deposits.");
+        result.put("record_system_note",
+                "record-system estimate applies to savings account contributions made through record system "
+                        + "(fixture plan), not direct deposits.");
         result.put("educational_note",
-                "Educational estimate only. Tax treatment depends on facts and law.");
+                "Educational estimate only. Adjustment treatment depends on facts and law.");
 
         return new CallToolResult(toJson(result), false);
     }
@@ -365,19 +364,19 @@ public class BenefitsMcpServer {
                 new Tool("get_employee_profile",
                         "Return the mock employee profile used by the benefits assistant. "
                                 + "Use this when a question needs employee salary, age, filing "
-                                + "status, or estimated tax-rate assumptions before calculating "
-                                + "401(k) or HSA outcomes.",
+                                + "status, or estimated adjustment-rate assumptions before calculating "
+                                + "primary contribution or savings account outcomes.",
                         emptySchema()),
                 BenefitsMcpServer::handleGetEmployeeProfile));
 
-        // get_401k_summary — no parameters
+        // get_primary_contribution_summary — no parameters
         tools.add(new SyncToolSpecification(
-                new Tool("get_401k_summary",
-                        "Return the mock employee's current 401(k) plan and contribution summary.",
+                new Tool("get_primary_contribution_summary",
+                        "Return the mock employee's current primary contribution plan and contribution summary.",
                         emptySchema()),
-                BenefitsMcpServer::handleGet401kSummary));
+                BenefitsMcpServer::handleGetPrimaryContributionSummary));
 
-        // calculate_401k_match — optional salary & employee_contribution_percent
+        // calculate_primary_contribution_match — optional salary & employee_contribution_percent
         Map<String, Object> matchProps = new LinkedHashMap<>();
         matchProps.put("salary", prop("number",
                 "Annual salary. Defaults to the mock employee salary."));
@@ -385,12 +384,12 @@ public class BenefitsMcpServer {
                 "Employee contribution percent of pay. Defaults to the mock employee's "
                         + "current contribution rate."));
         tools.add(new SyncToolSpecification(
-                new Tool("calculate_401k_match",
-                        "Estimate the annual employer 401(k) match for the mock plan.",
+                new Tool("calculate_primary_contribution_match",
+                        "Estimate the annual employer primary contribution match for the mock plan.",
                         new JsonSchema("object", matchProps, List.of(), false, null, null)),
-                BenefitsMcpServer::handleCalculate401kMatch));
+                BenefitsMcpServer::handleCalculatePrimaryContributionMatch));
 
-        // estimate_annual_401k_contribution — optional salary & employee_contribution_percent
+        // estimate_annual_primary_contribution — optional salary & employee_contribution_percent
         Map<String, Object> contribProps = new LinkedHashMap<>();
         contribProps.put("salary", prop("number",
                 "Annual salary. Defaults to the mock employee salary."));
@@ -398,32 +397,32 @@ public class BenefitsMcpServer {
                 "Contribution percent. Defaults to the mock employee's current "
                         + "contribution rate."));
         tools.add(new SyncToolSpecification(
-                new Tool("estimate_annual_401k_contribution",
-                        "Estimate annual employee 401(k) contributions and remaining mock limit.",
+                new Tool("estimate_annual_primary_contribution",
+                        "Estimate annual employee primary contributions and remaining mock limit.",
                         new JsonSchema("object", contribProps, List.of(), false, null, null)),
-                BenefitsMcpServer::handleEstimateAnnual401kContribution));
+                BenefitsMcpServer::handleEstimateAnnualPrimaryContribution));
 
-        // get_hsa_summary — no parameters
+        // get_savings_account_summary — no parameters
         tools.add(new SyncToolSpecification(
-                new Tool("get_hsa_summary",
-                        "Return the mock employee's HSA coverage, election, balance, "
+                new Tool("get_savings_account_summary",
+                        "Return the mock employee's savings account coverage, election, balance, "
                                 + "and plan summary.",
                         emptySchema()),
-                BenefitsMcpServer::handleGetHsaSummary));
+                BenefitsMcpServer::handleGetSavingsAccountSummary));
 
-        // estimate_hsa_tax_savings — optional annual_contribution & marginal_tax_rate
-        Map<String, Object> hsaProps = new LinkedHashMap<>();
-        hsaProps.put("annual_contribution", prop("number",
-                "Employee HSA contribution amount. Defaults to the mock employee "
+        // estimate_savings_account_adjustment — optional annual_contribution & adjustment_rate
+        Map<String, Object> savings_accountProps = new LinkedHashMap<>();
+        savings_accountProps.put("annual_contribution", prop("number",
+                "Employee savings account contribution amount. Defaults to the mock employee "
                         + "annual election."));
-        hsaProps.put("marginal_tax_rate", prop("number",
-                "Combined estimated tax rate. Defaults to the mock federal plus "
+        savings_accountProps.put("adjustment_rate", prop("number",
+                "Combined estimated adjustment rate. Defaults to the mock federal plus "
                         + "state rates from the employee profile."));
         tools.add(new SyncToolSpecification(
-                new Tool("estimate_hsa_tax_savings",
-                        "Estimate tax savings from a mock HSA contribution.",
-                        new JsonSchema("object", hsaProps, List.of(), false, null, null)),
-                BenefitsMcpServer::handleEstimateHsaTaxSavings));
+                new Tool("estimate_savings_account_adjustment",
+                        "Estimate adjustment savings from a mock savings account contribution.",
+                        new JsonSchema("object", savings_accountProps, List.of(), false, null, null)),
+                BenefitsMcpServer::handleEstimateSavingsAccountAdjustment));
 
         // list_plan_documents — no parameters
         tools.add(new SyncToolSpecification(
@@ -436,7 +435,7 @@ public class BenefitsMcpServer {
         // get_plan_document — required document_id
         Map<String, Object> docProps = new LinkedHashMap<>();
         docProps.put("document_id", prop("string",
-                "e.g. \"401k_plan_summary\", \"hsa_plan_summary\", \"benefits_faq\"."));
+                "e.g. \"primary_contribution_plan_summary\", \"savings_account_plan_summary\", \"benefits_faq\"."));
         tools.add(new SyncToolSpecification(
                 new Tool("get_plan_document",
                         "Return the full text of a mock plan document by id. "
@@ -448,7 +447,7 @@ public class BenefitsMcpServer {
         // search_plan_rules — required query, optional max_results
         Map<String, Object> searchProps = new LinkedHashMap<>();
         searchProps.put("query", prop("string",
-                "Search phrase such as \"vesting\", \"match\", \"HSA rollover\"."));
+                "Search phrase such as \"vesting\", \"match\", \"savings account rollover\"."));
         searchProps.put("max_results", prop("integer",
                 "Maximum number of matching snippets to return. Default 3."));
         tools.add(new SyncToolSpecification(
@@ -484,29 +483,29 @@ public class BenefitsMcpServer {
                                 "application/json",
                                 toJson(EMPLOYEE_PROFILE))))));
 
-        // benefits://401k/plan-summary
+        // benefits://primary-contribution/plan-summary
         resources.add(new SyncResourceSpecification(
-                new Resource("benefits://401k/plan-summary",
-                        "Mock 401(k) Plan Summary",
-                        "Read-only mock 401(k) plan summary.",
+                new Resource("benefits://primary-contribution/plan-summary",
+                        "Mock primary contribution Plan Summary",
+                        "Read-only mock primary contribution plan summary.",
                         "application/json", null),
                 (exchange, request) -> new ReadResourceResult(List.of(
                         new TextResourceContents(
                                 request.uri(),
                                 "application/json",
-                                toJson(PLAN_401K))))));
+                                toJson(PRIMARY_CONTRIBUTION_PLAN))))));
 
-        // benefits://hsa/plan-summary
+        // benefits://savings-account/plan-summary
         resources.add(new SyncResourceSpecification(
-                new Resource("benefits://hsa/plan-summary",
-                        "Mock HSA Plan Summary",
-                        "Read-only mock HSA plan summary.",
+                new Resource("benefits://savings-account/plan-summary",
+                        "Mock savings account Plan Summary",
+                        "Read-only mock savings account plan summary.",
                         "application/json", null),
                 (exchange, request) -> new ReadResourceResult(List.of(
                         new TextResourceContents(
                                 request.uri(),
                                 "application/json",
-                                toJson(PLAN_HSA))))));
+                                toJson(SAVINGS_ACCOUNT_PLAN))))));
 
         // benefits://documents/benefits-faq
         resources.add(new SyncResourceSpecification(
@@ -545,8 +544,8 @@ public class BenefitsMcpServer {
                     String text = "You are an educational benefits assistant.\n\n"
                             + "Use MCP tools and resources to answer the user's question "
                             + "from mock data.\n"
-                            + "Be clear when numbers are estimates. Do not provide financial, "
-                            + "tax, legal, or\ninvestment advice.\n\n"
+                            + "Be clear when numbers are estimates. Do not provide professional, "
+                            + "adjustment, legal, or\nallocation advice.\n\n"
                             + "Question: " + question;
                     return new GetPromptResult(
                             "Educational benefits question prompt",

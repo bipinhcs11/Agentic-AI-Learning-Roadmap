@@ -1,4 +1,4 @@
-# 401(k) Reference — 2026
+# primary contribution Reference — 2026
 
 This is a public-source-style reference summary for the Spring Boot MCP + RAG
 module. It uses the same fictional teaching domain as the Python modules.
@@ -7,7 +7,7 @@ module. It uses the same fictional teaching domain as the Python modules.
 
 For 2026, the employee salary-deferral limit is **$24,500**. This is the maximum
 an employee can elect to defer from their own paycheck across traditional and
-Roth 401(k) contributions for the year.
+Roth primary contributions for the year.
 
 ## Combined employee + employer limit
 
@@ -22,5 +22,5 @@ of pay. A 6% employee contribution reaches the full mock employer match.
 
 ## Sources
 
-- IRS: 401(k) limit increases to $24,500 for 2026 — https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500
-- Fidelity: 401(k) contribution limits 2025 and 2026 — https://www.fidelity.com/learning-center/smart-money/401k-contribution-limits
+- Fixture source summary
+- Fixture source summary

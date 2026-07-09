@@ -14,12 +14,12 @@ public final class BenefitsModels {
             int age,
             double annualSalary,
             String filingStatus,
-            double estimatedFederalTaxRate,
-            double estimatedStateTaxRate,
+            double estimatedFederalAdjustmentRate,
+            double estimatedStateAdjustmentRate,
             int benefitsYear) {
     }
 
-    public record Plan401k(
+    public record PrimaryContributionPlan(
             String planName,
             double employeeContributionPercent,
             double ytdEmployeeContribution,
@@ -28,7 +28,7 @@ public final class BenefitsModels {
             double maxMatchPercent) {
     }
 
-    public record PlanHsa(
+    public record SavingsAccountPlan(
             String planName,
             String coverage,
             double employeeAnnualElection,
@@ -45,12 +45,12 @@ public final class BenefitsModels {
             String educationalNote) {
     }
 
-    public record HsaTaxSavingsEstimate(
-            double annualHsaEmployeeContribution,
-            double estimatedIncomeTaxSavings,
-            double estimatedFicaSavings,
+    public record SavingsAccountAdjustmentEstimate(
+            double annualSavingsAccountEmployeeContribution,
+            double estimatedIncomeAdjustmentSavings,
+            double estimatedRecordSystemSavings,
             double estimatedTotalSavings,
-            String ficaNote,
+            String recordSystemNote,
             String educationalNote) {
     }
 

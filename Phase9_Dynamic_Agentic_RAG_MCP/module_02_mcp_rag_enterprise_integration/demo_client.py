@@ -54,18 +54,18 @@ async def main() -> None:
             _show("Available MCP Tools", [t.name for t in tools.tools])
 
             # --- MOCK account tools (work without Ollama) ---
-            match = await session.call_tool("calculate_401k_match", {})
-            hsa = await session.call_tool("estimate_hsa_tax_savings", {})
-            _show("ACCOUNT · calculate_401k_match", match.content)
-            _show("ACCOUNT · estimate_hsa_tax_savings", hsa.content)
+            match = await session.call_tool("calculate_primary_contribution_match", {})
+            savings_account = await session.call_tool("estimate_savings_account_adjustment", {})
+            _show("ACCOUNT · calculate_primary_contribution_match", match.content)
+            _show("ACCOUNT · estimate_savings_account_adjustment", savings_account.content)
 
             # --- RAG tools (real docs; need index.npz + Ollama) ---
             sources = await session.call_tool("list_sources", {})
             search = await session.call_tool(
-                "search_benefits_docs", {"query": "2026 HSA family contribution limit", "k": 2}
+                "search_benefits_docs", {"query": "2026 savings account family contribution limit", "k": 2}
             )
             _show("RULES · list_sources", sources.content)
-            _show("RULES · search_benefits_docs('2026 HSA family limit')", search.content)
+            _show("RULES · search_benefits_docs('2026 savings account family limit')", search.content)
 
 
 if __name__ == "__main__":

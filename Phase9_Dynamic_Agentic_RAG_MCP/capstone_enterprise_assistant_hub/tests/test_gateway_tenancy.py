@@ -11,7 +11,7 @@ def test_disallowed_tool_is_blocked():
     gateway = MCPGateway(external_enabled=False)
 
     with pytest.raises(ToolPermissionError):
-        gateway.call_tool("globex", "get_401k_summary")
+        gateway.call_tool("globex", "get_primary_contribution_summary")
 
 
 def test_tenant_a_cannot_retrieve_tenant_b_document():

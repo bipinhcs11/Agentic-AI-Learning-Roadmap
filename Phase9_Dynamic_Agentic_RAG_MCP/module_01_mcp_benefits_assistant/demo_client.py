@@ -70,21 +70,21 @@ async def main() -> None:
             _print_json("Available MCP Prompts", [prompt.name for prompt in prompts.prompts])
 
             profile = await session.call_tool("get_employee_profile", {})
-            match = await session.call_tool("calculate_401k_match", {})
+            match = await session.call_tool("calculate_primary_contribution_match", {})
             contribution = await session.call_tool(
-                "estimate_annual_401k_contribution",
+                "estimate_annual_primary_contribution",
                 {"employee_contribution_percent": 10},
             )
-            hsa = await session.call_tool("estimate_hsa_tax_savings", {})
+            savings_account = await session.call_tool("estimate_savings_account_adjustment", {})
             rules = await session.call_tool("search_plan_rules", {"query": "vesting employer match"})
-            document = await session.call_tool("get_plan_document", {"document_id": "hsa_plan_summary"})
+            document = await session.call_tool("get_plan_document", {"document_id": "savings_account_plan_summary"})
 
             _print_json("Prompt: Am I getting the full employer match?", profile.content)
-            _print_json("Tool Call: calculate_401k_match", match.content)
-            _print_json("Tool Call: estimate_annual_401k_contribution at 10%", contribution.content)
-            _print_json("Prompt: What are my estimated HSA tax savings?", hsa.content)
+            _print_json("Tool Call: calculate_primary_contribution_match", match.content)
+            _print_json("Tool Call: estimate_annual_primary_contribution at 10%", contribution.content)
+            _print_json("Prompt: What are my estimated savings account adjustment savings?", savings_account.content)
             _print_json("Tool Call: search_plan_rules('vesting employer match')", rules.content)
-            _print_json("Tool Call: get_plan_document('hsa_plan_summary')", document.content)
+            _print_json("Tool Call: get_plan_document('savings_account_plan_summary')", document.content)
 
             employee_resource = await session.read_resource("benefits://employee/profile")
             faq_resource = await session.read_resource("benefits://documents/benefits-faq")

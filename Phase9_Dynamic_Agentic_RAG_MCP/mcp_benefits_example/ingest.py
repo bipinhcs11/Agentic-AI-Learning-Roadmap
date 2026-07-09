@@ -1,7 +1,7 @@
 """
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║  Phase 9 · MCP Benefits Example | ingest.py                                    ║
-║  Build the vector index for the 401(k)/HSA reference docs.                     ║
+║  Build the vector index for the primary contribution/savings account reference docs.                     ║
 ║                                                                                ║
 ║  PIPELINE: docs/*.md → overlapping chunks → embed (Ollama nomic-embed-text)    ║
 ║            → save vectors + chunks + sources to index.npz (NumPy).             ║

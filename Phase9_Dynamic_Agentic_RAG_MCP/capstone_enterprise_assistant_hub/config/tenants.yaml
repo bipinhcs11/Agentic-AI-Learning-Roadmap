@@ -6,10 +6,10 @@ tenants:
     corpus: docs/acme
     allowed_tools:
       - get_employee_profile
-      - get_401k_summary
-      - calculate_401k_match
-      - get_hsa_summary
-      - estimate_hsa_tax_savings
+      - get_primary_contribution_summary
+      - calculate_primary_contribution_match
+      - get_savings_account_summary
+      - estimate_savings_account_adjustment
       - search_benefits_docs
       - list_sources
       - search_tenant_docs

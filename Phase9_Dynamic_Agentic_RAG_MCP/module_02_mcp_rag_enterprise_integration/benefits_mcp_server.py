@@ -4,20 +4,20 @@
 ║  MCP + RAG: one server, two kinds of context.                                 ║
 ║                                                                                ║
 ║  ┌─ MOCK structured tools ("your account") ──────────────────────────────┐    ║
-║  │  get_employee_profile · get_401k_summary · calculate_401k_match ·      │    ║
-║  │  get_hsa_summary · estimate_hsa_tax_savings   (fictional data only)    │    ║
+║  │  get_employee_profile · get_primary_contribution_summary · calculate_primary_contribution_match ·      │    ║
+║  │  get_savings_account_summary · estimate_savings_account_adjustment   (fictional data only)    │    ║
 ║  └────────────────────────────────────────────────────────────────────────┘    ║
 ║  ┌─ RAG tools ("the rules") ─────────────────────────────────────────────┐    ║
 ║  │  search_benefits_docs · list_sources                                   │    ║
-║  │  Corpus = public-source REFERENCE SUMMARIES compiled from IRS/Fidelity │    ║
+║  │  Corpus = public-source REFERENCE SUMMARIES compiled from fixture references │    ║
 ║  │  (our own wording + source links — not verbatim copies of any doc).    │    ║
 ║  └────────────────────────────────────────────────────────────────────────┘    ║
 ║                                                                                ║
-║  Retrieval = cosine + a topic/keyword rerank, so an "HSA limit" query cannot   ║
-║  rank the 401(k) summary first. Queries use the nomic "search_query:" prefix.  ║
+║  Retrieval = cosine + a topic/keyword rerank, so an "savings account limit" query cannot   ║
+║  rank the primary contribution summary first. Queries use the nomic "search_query:" prefix.  ║
 ║                                                                                ║
 ║  SAFETY: All employee/account data is fictional. Educational only — not        ║
-║  financial, tax, legal, or investment advice.                                  ║
+║  professional, adjustment, legal, or allocation advice.                                  ║
 ║  RUN: python benefits_mcp_server.py   (speaks MCP over stdio)                  ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
@@ -48,13 +48,13 @@ EMPLOYEE_PROFILE = {
     "age": 36,
     "annual_salary": 120000,
     "filing_status": "single",
-    "estimated_federal_tax_rate": 0.24,
-    "estimated_state_tax_rate": 0.05,
+    "estimated_federal_adjustment_rate": 0.24,
+    "estimated_state_adjustment_rate": 0.05,
     "benefits_year": 2026,
 }
 
-PLAN_401K = {
-    "plan_name": "Acme FutureBuilder 401(k)",
+PRIMARY_CONTRIBUTION_PLAN = {
+    "plan_name": "Acme FutureBuilder primary contribution",
     "employee_contribution_percent": 6.0,
     "ytd_employee_contribution": 7200,
     "ytd_employer_match": 5400,
@@ -62,8 +62,8 @@ PLAN_401K = {
     "max_match_percent": 4.5,
 }
 
-PLAN_HSA = {
-    "plan_name": "Acme HDHP + HSA",
+SAVINGS_ACCOUNT_PLAN = {
+    "plan_name": "Acme qualifying plan + savings account",
     "coverage": "family",
     "employee_annual_election": 4200,
     "employer_annual_contribution": 1000,
@@ -71,16 +71,16 @@ PLAN_HSA = {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# CITATION SOURCES for the RAG corpus (public IRS / Fidelity references)
+# CITATION SOURCES for the RAG corpus (public fixture references references)
 # ═══════════════════════════════════════════════════════════════════════════════
 SOURCES = {
-    "401k_reference.md": [
-        "IRS — 401(k) limit increases to $24,500 for 2026: https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500",
-        "Fidelity — 401(k) contribution limits 2025 and 2026: https://www.fidelity.com/learning-center/smart-money/401k-contribution-limits",
+    "primary_contribution_reference.md": [
+        "Fixture source summary",
+        "Fixture source summary",
     ],
-    "hsa_reference.md": [
-        "IRS Revenue Procedure 2025-19 (official 2026 HSA/HDHP limits, PDF): https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
-        "Fidelity — HSA contribution limits and eligibility 2026: https://www.fidelity.com/learning-center/smart-money/hsa-contribution-limits",
+    "savings_account_reference.md": [
+        "Fixture source summary",
+        "Fixture source summary",
     ],
 }
 
@@ -90,23 +90,23 @@ SOURCES = {
 # ═══════════════════════════════════════════════════════════════════════════════
 @mcp.tool()
 def get_employee_profile() -> dict:
-    """Return the mock employee profile (salary, age, filing status, tax assumptions).
+    """Return the mock employee profile (salary, age, filing status, adjustment assumptions).
     Use for the user's PERSONAL numbers before any account calculation."""
     return EMPLOYEE_PROFILE
 
 
 @mcp.tool()
-def get_401k_summary() -> dict:
-    """Return the mock employee's current 401(k) plan + contribution summary (their account)."""
-    return PLAN_401K
+def get_primary_contribution_summary() -> dict:
+    """Return the mock employee's current primary contribution plan + contribution summary (their account)."""
+    return PRIMARY_CONTRIBUTION_PLAN
 
 
 @mcp.tool()
-def calculate_401k_match(
+def calculate_primary_contribution_match(
     salary: Optional[float] = None,
     employee_contribution_percent: Optional[float] = None,
 ) -> dict:
-    """Estimate the mock employer 401(k) match (an account calculation, not a rule lookup).
+    """Estimate the mock employer primary contribution match (an account calculation, not a rule lookup).
 
     Args:
         salary: defaults to the mock employee's salary.
@@ -114,52 +114,52 @@ def calculate_401k_match(
     """
     salary = salary if salary is not None else EMPLOYEE_PROFILE["annual_salary"]
     pct = (employee_contribution_percent if employee_contribution_percent is not None
-           else PLAN_401K["employee_contribution_percent"])
+           else PRIMARY_CONTRIBUTION_PLAN["employee_contribution_percent"])
     first = min(pct, 3.0)
     second = min(max(pct - 3.0, 0.0), 3.0)
-    match_pct = min(first + second * 0.5, PLAN_401K["max_match_percent"])
+    match_pct = min(first + second * 0.5, PRIMARY_CONTRIBUTION_PLAN["max_match_percent"])
     return {
         "salary": salary,
         "employee_contribution_percent": pct,
         "employer_match_percent": round(match_pct, 2),
         "estimated_annual_employer_match": round(salary * match_pct / 100, 2),
         "full_match_reached": pct >= 6.0,
-        "educational_note": "Mock estimate. Not financial advice.",
+        "educational_note": "Mock estimate. Not professional advice.",
     }
 
 
 @mcp.tool()
-def get_hsa_summary() -> dict:
-    """Return the mock employee's HSA coverage, election, and employer contribution (their account)."""
-    return PLAN_HSA
+def get_savings_account_summary() -> dict:
+    """Return the mock employee's savings account coverage, election, and employer contribution (their account)."""
+    return SAVINGS_ACCOUNT_PLAN
 
 
 @mcp.tool()
-def estimate_hsa_tax_savings(
+def estimate_savings_account_adjustment(
     annual_contribution: Optional[float] = None,
-    marginal_tax_rate: Optional[float] = None,
+    adjustment_rate: Optional[float] = None,
 ) -> dict:
-    """Estimate tax savings from a mock HSA contribution (an account calculation).
+    """Estimate adjustment savings from a mock savings account contribution (an account calculation).
 
     Args:
         annual_contribution: defaults to the mock employee's election.
-        marginal_tax_rate: defaults to mock federal + state rates.
+        adjustment_rate: defaults to mock federal + state rates.
     """
     contribution = (annual_contribution if annual_contribution is not None
-                    else PLAN_HSA["employee_annual_election"])
-    default_rate = (EMPLOYEE_PROFILE["estimated_federal_tax_rate"]
-                    + EMPLOYEE_PROFILE["estimated_state_tax_rate"])
-    rate = marginal_tax_rate if marginal_tax_rate is not None else default_rate
-    fica_rate = 0.0765  # payroll (Section 125) contributions also avoid FICA
-    income_tax_savings = contribution * rate
-    fica_savings = contribution * fica_rate
+                    else SAVINGS_ACCOUNT_PLAN["employee_annual_election"])
+    default_rate = (EMPLOYEE_PROFILE["estimated_federal_adjustment_rate"]
+                    + EMPLOYEE_PROFILE["estimated_state_adjustment_rate"])
+    rate = adjustment_rate if adjustment_rate is not None else default_rate
+    record_system_rate = 0.0765  # record-system fixture contributions also avoid record-system
+    income_adjustment_savings = contribution * rate
+    record_system_savings = contribution * record_system_rate
     return {
-        "annual_hsa_employee_contribution": contribution,
-        "estimated_income_tax_savings": round(income_tax_savings, 2),
-        "estimated_fica_savings": round(fica_savings, 2),
-        "estimated_total_savings": round(income_tax_savings + fica_savings, 2),
-        "fica_note": "FICA savings apply to payroll (Section 125) contributions, not direct deposits.",
-        "educational_note": "Educational estimate only. Not tax advice.",
+        "annual_savings_account_employee_contribution": contribution,
+        "estimated_income_adjustment_savings": round(income_adjustment_savings, 2),
+        "estimated_record_system_savings": round(record_system_savings, 2),
+        "estimated_total_savings": round(income_adjustment_savings + record_system_savings, 2),
+        "record_system_note": "record-system estimate applies to record-system fixture contributions, not direct deposits.",
+        "educational_note": "Educational estimate only. Not adjustment advice.",
     }
 
 
@@ -183,22 +183,22 @@ def _load_index() -> dict:
 
 def _source_topic(source: str) -> str:
     s = str(source).lower()
-    if "hsa" in s:
-        return "hsa"
-    if "401k" in s or "401(k)" in s:
-        return "401k"
+    if "savings_account" in s:
+        return "savings_account"
+    if "primary_contribution" in s or "primary contribution" in s:
+        return "primary_contribution"
     return ""
 
 
 def _query_topics(query: str) -> set[str]:
     ql = query.lower()
     topics = set()
-    if any(w in ql for w in ("hsa", "health savings", "hdhp", "high-deductible",
+    if any(w in ql for w in ("savings_account", "savings account", "qualifying plan", "high-deductible",
                              "high deductible", "medical")):
-        topics.add("hsa")
-    if any(w in ql for w in ("401k", "401(k)", "match", "vest", "deferral",
-                             "roth 401", "elective")):
-        topics.add("401k")
+        topics.add("savings_account")
+    if any(w in ql for w in ("primary_contribution", "primary contribution", "match", "vest", "deferral",
+                             "roth primary contribution", "elective")):
+        topics.add("primary_contribution")
     return topics
 
 
@@ -206,8 +206,8 @@ def _keywords(query: str) -> set[str]:
     return {w.strip(".,()?:;'\"") for w in query.lower().split() if len(w) > 2}
 
 
-# ─── Intent disambiguation within the 401(k) doc ──────────────────────────────
-# Two 401(k) limits compete and SHARE the '401k' topic, so the topic boost can't
+# ─── Intent disambiguation within the primary contribution doc ──────────────────────────────
+# Two primary contribution limits compete and SHARE the 'primary_contribution' topic, so the topic boost can't
 # separate them: the employee-only salary-deferral limit ($24,500) vs the combined
 # employee+employer annual cap ($72,000). A bare "employee contribution limit" query
 # was ranking $72,000 first. Detect which limit the user asked for and nudge it up.
@@ -225,7 +225,7 @@ def _contribution_intent(query: str) -> str:
 
 
 def _chunk_contribution_kind(chunk: str) -> str:
-    """Tag a 401(k) chunk by which limit it documents, read from its heading prefix."""
+    """Tag a primary contribution chunk by which limit it documents, read from its heading prefix."""
     head = str(chunk).splitlines()[0].lower() if chunk else ""
     if "combined" in head and "employer" in head:
         return "combined"
@@ -236,8 +236,8 @@ def _chunk_contribution_kind(chunk: str) -> str:
 
 def _rank(query: str, sims, chunks, sources) -> list[int]:
     """Pure hybrid rerank (no Ollama needed): cosine + topic-match boost + keyword
-    overlap + a small employee-vs-combined intent boost. Guarantees an 'HSA family
-    limit' query can't rank the 401(k) doc first, and that an "employee contribution
+    overlap + a small employee-vs-combined intent boost. Guarantees an 'savings account family
+    limit' query can't rank the primary contribution doc first, and that an "employee contribution
     limit" query ranks $24,500 above the combined $72,000 cap."""
     qtopics = _query_topics(query)
     qwords = _keywords(query)
@@ -262,14 +262,14 @@ def _rank(query: str, sims, chunks, sources) -> list[int]:
 
 @mcp.tool()
 def search_benefits_docs(query: str, k: int = 4) -> str:
-    """Search the public-source 401(k)/HSA reference summaries (IRS + Fidelity, 2026).
+    """Search the public-source primary contribution/savings account reference summaries (fixture references, 2026).
 
-    Use this for official RULES, LIMITS, eligibility, or tax treatment — anything
+    Use this for official RULES, LIMITS, eligibility, or adjustment treatment — anything
     not specific to the user's own account. Cite the returned source file and call
     list_sources for the URLs.
 
     Args:
-        query: the rule/limit question, e.g. "2026 HSA family contribution limit".
+        query: the rule/limit question, e.g. "2026 savings account family contribution limit".
         k: number of excerpts to return (default 4).
     """
     if not os.path.exists(INDEX_PATH):

@@ -6,7 +6,7 @@ without rebuilding the full SaaS app: tenant context, RAG isolation, metering
 metadata, provider abstraction, and audit logs.
 
 All account data is fictional. Outputs are educational only and are not
-financial, tax, legal, or investment advice.
+professional, adjustment, legal, or allocation advice.
 
 ## What Is Built
 
@@ -14,7 +14,7 @@ financial, tax, legal, or investment advice.
 - `mcp_gateway.py` — tenant tool allowlists, tenant-bound local tools, and an external
   `langchain-mcp-adapters` hook for the Module 02 benefits MCP server.
 - `retrieval.py` — tenant-scoped heading chunks, local Ollama embeddings, NumPy cosine,
-  keyword/topic rerank, and the Module 02 employee-vs-combined 401(k) intent boost.
+  keyword/topic rerank, and the Module 02 employee-vs-combined primary contribution intent boost.
 - `orchestrator.py` — route selection for `direct`, `mcp_only`, `rag_only`, and `mcp+rag`,
   bounded to four planned tool calls with RAG fallback on MCP errors.
 - `hub.py` — CLI plus a thin FastAPI `/chat` endpoint using mock API-key tenant auth.
@@ -32,14 +32,14 @@ ollama pull qwen2.5:3b
 ollama pull nomic-embed-text
 
 AI_PROVIDER=ollama python hub.py --tenant acme \
-  "I contribute 6%. Am I getting the full match, and what is the 2026 employee 401k limit?"
+  "I contribute 6%. Am I getting the full match, and what is the 2026 employee primary_contribution limit?"
 ```
 
 To run only tenant RAG:
 
 ```bash
 ENABLE_MCP=false AI_PROVIDER=ollama python hub.py --tenant acme \
-  "What is the 2026 HSA family contribution limit?"
+  "What is the 2026 savings account family contribution limit?"
 ```
 
 ## Optional FastAPI
@@ -52,7 +52,7 @@ uvicorn hub:app --reload --port 8080
 curl -X POST http://127.0.0.1:8080/chat \
   -H "Content-Type: application/json" \
   -H "X-API-Key: dev-acme-key" \
-  -d '{"question":"What is the 2026 employee 401k contribution limit?"}'
+  -d '{"question":"What is the 2026 employee primary_contribution contribution limit?"}'
 ```
 
 The API key map in `config/tenants.yaml` is a mock for learning. Production would

@@ -34,21 +34,21 @@ public class BenefitsMcpResources {
     }
 
     @McpResource(
-            uri = "benefits://401k/plan-summary",
-            name = "Mock 401(k) plan summary",
-            description = "Fictional 401(k) account and match summary.",
+            uri = "benefits://primary-contribution/plan-summary",
+            name = "Mock primary contribution plan summary",
+            description = "Fictional primary contribution account and match summary.",
             mimeType = "application/json")
-    public ReadResourceResult plan401k() {
-        return jsonResource("benefits://401k/plan-summary", benefitsData.plan401k());
+    public ReadResourceResult primaryContributionPlan() {
+        return jsonResource("benefits://primary-contribution/plan-summary", benefitsData.primaryContributionPlan());
     }
 
     @McpResource(
-            uri = "benefits://hsa/plan-summary",
-            name = "Mock HSA plan summary",
-            description = "Fictional HSA plan and election summary.",
+            uri = "benefits://savings-account/plan-summary",
+            name = "Mock savings account plan summary",
+            description = "Fictional savings account plan and election summary.",
             mimeType = "application/json")
-    public ReadResourceResult planHsa() {
-        return jsonResource("benefits://hsa/plan-summary", benefitsData.planHsa());
+    public ReadResourceResult savingsAccountPlan() {
+        return jsonResource("benefits://savings-account/plan-summary", benefitsData.savingsAccountPlan());
     }
 
     @McpResource(

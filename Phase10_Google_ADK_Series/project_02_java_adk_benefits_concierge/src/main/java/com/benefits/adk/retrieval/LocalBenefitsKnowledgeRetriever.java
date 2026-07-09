@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 
 public final class LocalBenefitsKnowledgeRetriever implements BenefitsKnowledgeRetriever {
     private static final Map<String, String> RESOURCES = Map.of(
-            "primary", "/benefits-kb/primary_contribution_reference.md",
-            "savings", "/benefits-kb/savings_contribution_reference.md"
+            "primary_contribution", "/benefits-kb/primary_contribution_reference.md",
+            "savings_account", "/benefits-kb/savings_account_reference.md"
     );
 
     private final List<KnowledgeSnippet> snippets;

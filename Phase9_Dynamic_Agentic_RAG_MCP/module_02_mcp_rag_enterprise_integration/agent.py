@@ -11,11 +11,11 @@
 ║  The model picks one of four paths per question:                               ║
 ║    direct     — answer without tools                                           ║
 ║    MCP-only   — ACCOUNT tool(s), e.g. "am I getting my full match?"           ║
-║    RAG-only   — search_benefits_docs, e.g. "2026 HSA family limit?"           ║
+║    RAG-only   — search_benefits_docs, e.g. "2026 savings account family limit?"           ║
 ║    MCP + RAG  — both, e.g. "I do 6% — maxing match? + the 2026 limit?"        ║
 ║                                                                                ║
 ║  An audit line (tools + documents used) is appended to audit_log.jsonl.        ║
-║  RUN:  python agent.py "What is the 2026 401(k) employee limit?"               ║
+║  RUN:  python agent.py "What is the 2026 primary contribution employee limit?"               ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 import asyncio
@@ -38,14 +38,14 @@ AUDIT_PATH = os.path.join(HERE, "audit_log.jsonl")
 
 SYSTEM = SystemMessage(content=(
     "You are an educational benefits assistant with two kinds of MCP tools:\n"
-    "- ACCOUNT tools (get_employee_profile, get_401k_summary, calculate_401k_match, "
-    "get_hsa_summary, estimate_hsa_tax_savings) for the user's own (mock) account numbers.\n"
-    "- RULES tools (search_benefits_docs, list_sources) for official IRS/Fidelity limits "
+    "- ACCOUNT tools (get_employee_profile, get_primary_contribution_summary, calculate_primary_contribution_match, "
+    "get_savings_account_summary, estimate_savings_account_adjustment) for the user's own (mock) account numbers.\n"
+    "- RULES tools (search_benefits_docs, list_sources) for fixture references limits "
     "and rules from real public documents.\n"
     "Choose the right tool(s) per question; use BOTH when a question mixes personal numbers "
     "with official rules. For any figure that came from search_benefits_docs, cite the source "
     "document and URL (call list_sources). Be clear that estimates are estimates. "
-    "This is educational only — not financial, tax, legal, or investment advice."
+    "This is educational only — not professional, adjustment, legal, or allocation advice."
 ))
 
 
@@ -86,8 +86,8 @@ def _audit(question: str, messages: list) -> dict:
         content = getattr(m, "content", "") or ""
         if isinstance(content, str):
             docs.update(re.findall(r"source:\s*([\w./-]+\.md)", content))
-    account_tools = {"get_employee_profile", "get_401k_summary", "calculate_401k_match",
-                     "get_hsa_summary", "estimate_hsa_tax_savings"}
+    account_tools = {"get_employee_profile", "get_primary_contribution_summary", "calculate_primary_contribution_match",
+                     "get_savings_account_summary", "estimate_savings_account_adjustment"}
     rag_tools = {"search_benefits_docs", "list_sources"}
     used_account = any(t in account_tools for t in tools_used)
     used_rag = any(t in rag_tools for t in tools_used)
@@ -123,5 +123,5 @@ async def ask(question: str) -> None:
 
 if __name__ == "__main__":
     q = " ".join(sys.argv[1:]) or \
-        "I contribute 6% to my 401(k). Am I getting the full match, and what's the 2026 employee limit?"
+        "I contribute 6% to my primary contribution. Am I getting the full match, and what's the 2026 employee limit?"
     asyncio.run(ask(q))

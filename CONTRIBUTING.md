@@ -30,7 +30,7 @@ builders.
 3. Keep examples local-first with Ollama unless a phase explicitly covers cloud.
 4. Do not add PyTorch, sentence-transformers, or heavyweight ML dependencies to the
    shared install path.
-5. Avoid real financial, payroll, HR, HSA, 401(k), billing, or customer data.
+5. Avoid real professional, record system, HR, savings account, primary contribution, billing, or customer data.
 
 ## Local Checks
 
