@@ -25,6 +25,8 @@ project_03_python_adk_grocery_platform/
 │   ├── grocery.py        # Catalog, A2UI, cart, UCP, AP2 helpers
 │   ├── security.py       # Identity, JIT, policy, Vibe-Diff, AgBOM
 │   ├── security_judge.py # Deterministic grader + Agent-as-a-Judge + guardian plugin
+│   ├── a2ui.py           # Trusted A2UI component catalog + server-side validation
+│   ├── a2ui_server.py    # Offline FastAPI A2UI backend for the React renderer
 │   ├── a2a_client.py     # Signed local A2A boundary simulation
 │   └── tools.py          # Tool functions exposed to ADK
 ├── delivery-scheduler/   # Remote A2A specialist scaffold
@@ -54,7 +56,7 @@ uv run pytest -q tests/unit tests/integration/test_agent.py
 Expected output:
 
 ```text
-18 passed
+28 passed
 ```
 
 ## Try the Tools Offline
@@ -98,15 +100,40 @@ the active Google Cloud project and retry after propagation.
 
 ## Dedicated A2UI Frontend
 
+The renderer is agent-driven and validated on both ends: the server only emits
+A2UI payloads whose component is in the trusted catalog
+(`app/a2ui.TRUSTED_COMPONENTS`), and the React app only renders components it
+finds in the *same* catalog — anything else is refused, not drawn. It runs
+**offline** (the payloads come from the deterministic grocery/security helpers,
+no Gemini call).
+
+Two processes — the A2UI server and the Vite dev server:
+
 ```bash
+# 1) A2UI server (serves validated payloads on :8000)
+uv run uvicorn app.a2ui_server:app --port 8000
+
+# 2) React renderer (Vite proxies /api -> :8000)
 cd frontend
 npm install
 npm run dev
 ```
 
-Open the Vite URL, usually `http://localhost:5174`. The renderer shows how an
-agent-returned A2UI payload becomes grocery cards with product images, add-to-cart
-actions, and visible security status chips.
+Open `http://localhost:5174` and walk the flow:
+
+1. **Catalog** (`GroceryCatalogGrid`) — grocery cards with dynamic product
+   imagery. Each `image_url` comes from the payload; a per-item SVG tile is
+   generated as a fallback when an image URL fails, so a card is never blank.
+2. **Cart** (`CartSummary`) — add items, see subtotal + service fee + total.
+3. **Checkout** (`CheckoutApproval`) — the **Vibe-Diff** gate: a plain-English
+   summary you must approve, with live security chips (signed A2A identity,
+   policy decision, JIT scope, approval state).
+4. **Approve** — the server issues a JIT token scoped to that exact cart and
+   creates the AP2 mandate; the chips flip to green and the mandate id, amount,
+   merchant category, and delivery window render.
+
+The whole `catalog → cart → Vibe-Diff → mandate` path is covered offline by
+`tests/unit/test_a2ui.py`.
 
 ## Remote Delivery Scheduler
 
@@ -186,7 +213,7 @@ rationale citing the tool that re-verified the breach.
 ### Offline vs. live
 
 - `uv run pytest tests/unit tests/integration` — deterministic grader, guardian
-  plugin, and security invariants, **no cloud** (18 passed).
+  plugin, and security invariants, **no cloud** (28 passed).
 - `agents-cli eval run` and `scripts/run_security_audit.py` — the LLM/agent judges,
   which call Gemini and therefore need ADC + the Agent Platform API enabled.
 

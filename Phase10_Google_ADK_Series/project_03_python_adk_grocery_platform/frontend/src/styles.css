@@ -121,6 +121,193 @@ h1 {
   gap: 8px;
 }
 
+button {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ── Tabs + search ─────────────────────────────────────────────── */
+.tabs {
+  align-items: center;
+  border-bottom: 1px solid #dce4dd;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+}
+
+.tabs button {
+  background: #e6efe8;
+  color: #1f5133;
+}
+
+.tabs button.active {
+  background: #1f6f43;
+  color: white;
+}
+
+.search {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.search input {
+  border: 1px solid #cbdccd;
+  border-radius: 8px;
+  font: inherit;
+  min-width: 260px;
+  padding: 0.6rem 0.8rem;
+}
+
+/* ── Notices ───────────────────────────────────────────────────── */
+.notice {
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  padding: 0.8rem 1rem;
+}
+
+.notice.error {
+  background: #fdeceb;
+  border: 1px solid #f3b7b2;
+  color: #8a1c14;
+}
+
+/* ── Cart ──────────────────────────────────────────────────────── */
+.cart-panel,
+.checkout-panel {
+  background: white;
+  border: 1px solid #dce4dd;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgb(31 61 40 / 8%);
+  margin: 0 auto;
+  max-width: 640px;
+  padding: 26px;
+}
+
+.cart-lines {
+  list-style: none;
+  margin: 18px 0;
+  padding: 0;
+}
+
+.cart-lines li {
+  border-bottom: 1px dashed #dce4dd;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.totals {
+  margin: 18px 0;
+}
+
+.totals div {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.totals dt,
+.totals dd {
+  margin: 0;
+}
+
+.totals .grand {
+  border-top: 2px solid #1f6f43;
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin-top: 8px;
+  padding-top: 10px;
+}
+
+/* ── Checkout / Vibe-Diff ──────────────────────────────────────── */
+.vibe-diff {
+  background: #f2f7f3;
+  border: 1px solid #cbdccd;
+  border-left: 4px solid #1f6f43;
+  border-radius: 8px;
+  margin: 16px 0;
+  padding: 16px;
+}
+
+.vibe-diff p + p {
+  margin-top: 8px;
+}
+
+.high-stakes code,
+.mandate code {
+  background: #e6efe8;
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+.sec-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.chip {
+  align-items: center;
+  border-radius: 8px;
+  display: inline-flex;
+  font-size: 0.92rem;
+  gap: 8px;
+  padding: 0.5rem 0.75rem;
+}
+
+.chip.ok {
+  background: #e6efe8;
+  border: 1px solid #9bc7a8;
+  color: #1f5133;
+}
+
+.chip.pending {
+  background: #fdf4e3;
+  border: 1px solid #e6c877;
+  color: #8a5a12;
+}
+
+.approve {
+  background: #1f6f43;
+  font-size: 1.05rem;
+  padding: 0.9rem 1.2rem;
+  width: 100%;
+}
+
+.mandate {
+  background: #eef7f0;
+  border: 1px solid #9bc7a8;
+  border-radius: 8px;
+  margin-top: 8px;
+  padding: 16px;
+}
+
+.mandate ul {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.mandate li {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  padding: 5px 0;
+}
+
 @media (max-width: 720px) {
   .toolbar {
     align-items: start;
@@ -129,5 +316,15 @@ h1 {
 
   .status-strip {
     justify-content: flex-start;
+  }
+
+  .search {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .search input {
+    flex: 1;
+    min-width: 0;
   }
 }
