@@ -7,6 +7,11 @@
 > custom agents, skills, hooks, and MCP working as one system** — the way an enterprise
 > platform team would actually roll it out.
 
+> **Disclaimer:** All companies, services, systems, log lines, and rules in this phase
+> are fictional and illustrative, created for educational purposes. Nothing here
+> describes, or is affiliated with, any real institution, including any past or present
+> employer of the author. Views are the author's own.
+
 ## Who this is for
 
 A developer inside a large regulated enterprise (think a major bank or asset manager) where:

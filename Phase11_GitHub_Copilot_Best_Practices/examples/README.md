@@ -1,5 +1,10 @@
 # Examples — the Realistic Layer (share this folder with your team)
 
+> **Disclaimer:** every company, service, system, incident, and rule in this folder is
+> fictional and illustrative, created for educational purposes. Nothing here describes,
+> or is affiliated with, any real institution, including any past or present employer
+> of the author. Views are the author's own.
+
 The [starter kit](../copilot_starter_kit/) is deliberately generic — templates with
 TODOs. **This folder is the opposite**: every file is fully written for a concrete,
 realistic enterprise scenario — a payments microservice, a banking portal, an
