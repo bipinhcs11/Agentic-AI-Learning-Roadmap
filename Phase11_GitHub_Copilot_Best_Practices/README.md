@@ -78,6 +78,7 @@ org-wide. Each **stack folder is an overlay** — a team drops the relevant
 | 07 | [Model selection & context engineering](docs/07_model_selection_and_context.md) | Which model class for which task; token conservation; small verifiable tasks. |
 | 08 | [Enterprise governance](docs/08_enterprise_governance.md) | Policy hierarchy, content exclusion, audit, IP indemnity, rollout, and measuring impact. |
 | 09 | [CI/CD & code review](docs/09_cicd_and_code_review.md) | Copilot code review on PRs, the coding agent, and keeping CI the source of truth. |
+| 10 | [The VS Code customizations panel](docs/10_vscode_customizations_panel.md) | The Agent Customizations editor section by section — Agents, Skills, Instructions, Hooks, MCP Servers, Plugins, Tools — mapped to the files in this repo. |
 
 ## Quick start (15 minutes, any repo)
 
@@ -86,7 +87,10 @@ org-wide. Each **stack folder is an overlay** — a team drops the relevant
    architecture in five lines.
 3. Drop in the overlay for your stack from `stacks/`.
 4. Open VS Code chat, type `/` and watch your team's prompts appear.
-5. Put the `.github/` folder under `CODEOWNERS` so prompt changes get reviewed like code.
+5. Open the **Agent Customizations** panel (Chat view → Agents) and verify every
+   section populated — agents, skills, instructions, hooks, MCP servers. What's not
+   listed there isn't loaded ([chapter 10](docs/10_vscode_customizations_panel.md)).
+6. Put the `.github/` folder under `CODEOWNERS` so prompt changes get reviewed like code.
 
 ## Sources & further reference
 
