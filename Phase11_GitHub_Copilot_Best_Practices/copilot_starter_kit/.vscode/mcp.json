@@ -1,0 +1,21 @@
+{
+  "$comment": "Approved MCP servers for this workspace. In an enterprise, this file is owned by the platform team and changes go through the same review as code. Placeholders only — no real hostnames or credentials belong in this file, ever. Secrets are referenced via ${input:...} prompts or environment variables, never inlined.",
+  "servers": {
+    "github": {
+      "$comment": "Official GitHub MCP server — issues, PRs, code search within org policy.",
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "internal-api-catalog": {
+      "$comment": "EXAMPLE of an internal enterprise server: replace with your platform team's approved endpoint. Auth flows through your IdP; the token is requested at connect time, not stored here.",
+      "type": "http",
+      "url": "https://TODO-your-internal-mcp-gateway.example.internal/catalog"
+    },
+    "local-docs": {
+      "$comment": "EXAMPLE of a stdio server running locally against checked-in docs.",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "TODO-your-approved-docs-mcp-package"]
+    }
+  }
+}

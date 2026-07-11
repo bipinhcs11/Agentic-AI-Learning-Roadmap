@@ -73,6 +73,7 @@ See [Getting Started](docs/getting-started.md) for the detailed version.
 | 8 | Integrations and shipping | Build Slack, GitHub, email, SaaS, billing, and launch flows |
 | 9 | Dynamic RAG + MCP | Combine MCP tools, tenant RAG, provider routing, Java, and Spring Boot |
 | 10 | Google ADK Series | Build cross-language ADK + A2A agent systems with Python, Go, and Java |
+| 11 | GitHub Copilot Best Practices | Enterprise Copilot blueprint: instructions, prompts, agents, skills, hooks, MCP |
 
 Full detail: [Roadmap Overview](docs/roadmap-overview.md).
 
@@ -87,6 +88,7 @@ Full detail: [Roadmap Overview](docs/roadmap-overview.md).
 | Startup builder | Phase 6 -> Phase 8 | Ship SaaS-style AI apps with integrations and metering |
 | Enterprise AI engineer | Phase 9 | Build an MCP gateway with tenant RAG and provider routing |
 | Google ADK learner | Phase 10 | Build a local ADK + A2A contract-compliance agent team |
+| Enterprise Copilot user | Phase 11 | Roll out a governed GitHub Copilot setup: starter kit + stack overlays |
 
 More focused guides:
 [RAG Path](docs/rag-path.md),
@@ -150,6 +152,7 @@ Phase7_Advanced_AI_Patterns/     # 6 advanced-pattern projects
 Phase8_Integrations_Shipping/    # 6 integration and launch projects
 Phase9_Dynamic_Agentic_RAG_MCP/  # MCP, enterprise RAG, Java, Spring Boot
 Phase10_Google_ADK_Series/       # Google ADK + A2A cross-language agent systems
+Phase11_GitHub_Copilot_Best_Practices/  # enterprise Copilot blueprint + starter kit + stack overlays
 docs/                            # shareable guides by path and topic
 scripts/                         # setup helper scripts
 ```

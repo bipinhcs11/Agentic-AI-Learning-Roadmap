@@ -92,3 +92,7 @@ Phase6_Production_Enterprise/project_06_capstone_product/data/
 
 # Claude Code local config
 .claude/
+
+# Phase 11 starter kit ships a template .vscode/ as committed content — un-ignore it
+!Phase11_GitHub_Copilot_Best_Practices/copilot_starter_kit/.vscode/
+!Phase11_GitHub_Copilot_Best_Practices/copilot_starter_kit/.vscode/**
