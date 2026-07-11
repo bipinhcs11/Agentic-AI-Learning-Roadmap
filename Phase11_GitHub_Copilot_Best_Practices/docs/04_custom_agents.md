@@ -30,6 +30,17 @@ The three starter-kit agents demonstrate the pattern:
 | `test-engineer` | + editFiles, runCommands, testFailure | Edits **test files only**; never production code |
 | `legacy-navigator` | search, usages, problems | Read-only; explains and maps blast radius |
 
+For agents with real operational teeth — the kind an SRE or lead actually reaches
+for during an incident or at sprint refinement — see
+[`examples/agents/`](../examples/agents/): a **production-issue analyzer** that
+reads the attached log, classifies the failure signature, and routes to a
+specialist; a **transaction-timeout analyst** that distinguishes pool exhaustion
+from downstream latency from missing timeouts from GC from lock contention (and
+tells you which modes it ruled out and why); and a **work-item analyst** that turns
+a Jira/ADO item into an implementation-readiness report with testability grades,
+blast radius, and slicing. Those files are the difference between an agent as a
+persona and an agent as a *procedure with judgment*.
+
 ## Designing an agent worth having
 
 1. **Start from a recurring conversation, not an org chart.** If your team keeps having

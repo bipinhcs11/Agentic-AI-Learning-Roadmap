@@ -55,6 +55,7 @@ That is the entire blueprint in one sentence.
 |---|---|
 | [`docs/`](docs/) | The blueprint chapters — one focused doc per customization layer, plus enterprise governance, model selection, and CI/CD integration. |
 | [`copilot_starter_kit/`](copilot_starter_kit/) | A **generic, stack-agnostic template** you can copy into any repository: `copilot-instructions.md`, scoped instructions, prompt files, custom agents, an example skill, MCP config. Works for microservices, frontend, mobile — anything. |
+| [`examples/`](examples/) | **The realistic layer — the folder to share with your team.** Zero TODOs: exact `copilot-instructions.md` files for five concrete scenarios (payments microservice, banking portal, ops dashboard, iOS banking app, overnight batch), operational agents (production-issue analyzer → transaction-timeout analyst, work-item analyst), and a working, tested PCI-aware security-scan hook (`hooks.json` + script). |
 | [`stacks/java_springboot_microservices/`](stacks/java_springboot_microservices/) | Stack overlay: Spring Boot microservice instructions + the flagship OWASP-aligned REST API prompt, K8s and Dockerfile prompts. |
 | [`stacks/angular/`](stacks/angular/) | Stack overlay: Angular instructions + Signals, typed Reactive Forms, functional interceptor prompts. |
 | [`stacks/react/`](stacks/react/) | Stack overlay: React instructions + component and hook-testing prompts. |
@@ -91,11 +92,22 @@ org-wide. Each **stack folder is an overlay** — a team drops the relevant
 
 - [github/awesome-copilot](https://github.com/github/awesome-copilot) — the community
   collection this phase borrows conventions from (instructions, prompts, agents, skills,
-  hooks, plugins, agentic workflows).
+  hooks, plugins, agentic workflows). The `hooks.json` format in `examples/hooks/` follows
+  its `secrets-scanner`/`tool-guardian` hooks exactly.
+- [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) (~77k stars) —
+  Addy Osmani's production-grade engineering skills for AI coding agents; the strongest
+  public example of senior-engineer judgment shipped as committed agent content.
+- [addyosmani/agent-engineer](https://github.com/addyosmani/agent-engineer) — his
+  practical agent-engineering course; the "small, verifiable tasks" and
+  context-engineering discipline echoed throughout these docs.
+- [addyosmani/git2txt](https://github.com/addyosmani/git2txt) — CLI that converts a repo
+  to LLM-ready text; useful for building context bundles in locked-down environments.
+- [bipinhcs11/Skill_Generator](https://github.com/bipinhcs11/Skill_Generator) — this
+  repo author's generator that turns a Java codebase into feature-based `SKILL.md` files
+  via a four-role agent pipeline (Generator → Tracker → Updater → Validator) with
+  confidence + dependency metadata; see chapter 05 for how it fits the skills layer.
 - [VS Code Copilot customization docs](https://code.visualstudio.com/docs/copilot/copilot-customization)
 - [GitHub Docs — repository custom instructions](https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot)
-- Addy Osmani's writing on AI-assisted engineering — the "small, verifiable tasks" and
-  context-engineering discipline echoed throughout these docs.
 - [Shubhamsaboo/awesome-llm-apps](https://github.com/Shubhamsaboo/awesome-llm-apps) —
   broader LLM app patterns; referenced only where they translate to Copilot-only environments.
 

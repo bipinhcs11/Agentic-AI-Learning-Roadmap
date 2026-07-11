@@ -37,19 +37,62 @@ Design rules that keep skills useful:
 - Good enterprise candidates: dependency audit, incident-postmortem format, release
   checklist, data-classification handling, accessibility audit.
 
+Two references that show where the skills layer is heading:
+
+- **[addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)** (~77k
+  stars) — production-grade engineering skills for AI coding agents; study it for
+  how senior-engineer checklists become skill content.
+- **[bipinhcs11/Skill_Generator](https://github.com/bipinhcs11/Skill_Generator)** —
+  hand-writing skills doesn't scale to a 500-repo enterprise; this generator walks a
+  Java repository and produces feature-based `SKILL.md` files through a four-role
+  agent pipeline (Generator → Tracker → Updater → Validator), each skill carrying
+  `confidence` and `review_required` frontmatter plus `depends_on`/`depended_on_by`
+  metadata so PR-impact detection can propagate updates. That is the industrial
+  pattern: skills as *generated, reviewed, dependency-tracked artifacts* — with
+  deterministic code confined to structural validation and semantic judgment left
+  to the agent.
+
 ## Hooks
 
-Hooks run **your commands** at fixed points in an agent session (session start/end,
-before/after each tool use) — and can block the action. They are deterministic:
-grep does not get persuaded.
+Hooks run **your commands** at fixed points in an agent session — and can block the
+action. They are deterministic: grep does not get persuaded.
+
+The concrete format (as used across the hooks in
+[github/awesome-copilot](https://github.com/github/awesome-copilot/tree/main/hooks)):
+a folder under `.github/hooks/<name>/` containing a `hooks.json` plus the script it
+wires. Events include `sessionStart`, `sessionEnd`, `preToolUse`, and `postToolUse`;
+the script receives the tool invocation as JSON on stdin (`toolName`, `toolInput`)
+and **a non-zero exit blocks the action**:
+
+```jsonc
+// .github/hooks/security-scan/hooks.json
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      { "type": "command",
+        "bash": ".github/hooks/security-scan/scan-changed-files.sh",
+        "cwd": ".",
+        "env": { "SCAN_MODE": "block", "SCAN_SCOPE": "diff" },
+        "timeoutSec": 30 }
+    ]
+  }
+}
+```
+
+A complete, tested implementation lives in this phase:
+[`examples/hooks/security-scan/`](../examples/hooks/security-scan/) — a PCI-aware
+scan (secrets, card numbers outside the approved test range, internal hostnames,
+curl-pipe-shell) that runs after every edit and again at session end, logs redacted
+JSONL findings for SIEM pickup, and blocks in `SCAN_MODE=block`.
 
 The canonical enterprise trio:
 
 | Hook point | Enforcement |
 |---|---|
-| Before file edit | Block edits to `.github/workflows/`, `CODEOWNERS`, migration files — protected paths stay protected even if the model is convinced otherwise |
-| Before terminal command | Allowlist: build/test/lint commands run; `curl` to arbitrary hosts, package publishes, `git push --force` are refused mechanically |
-| After file edit | Secret scan + lint the touched files immediately, so violations die in-session, not in CI 20 minutes later |
+| `preToolUse` | Block edits to `.github/workflows/`, `CODEOWNERS`, migration files; command allowlist — build/test/lint run, `curl \| sh`, package publishes, `git push --force` are refused mechanically (see awesome-copilot's `tool-guardian`) |
+| `postToolUse` | Secret/PCI scan + lint the touched files immediately, so violations die in-session, not in CI 20 minutes later (see `examples/hooks/security-scan/`) |
+| `sessionEnd` | Final scan of everything the session changed — the backstop (see awesome-copilot's `secrets-scanner`) |
 
 Why this matters more in an enterprise: agent mode reads repo content — code comments,
 README files, test fixtures. A malicious or compromised dependency README saying

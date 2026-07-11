@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/security-scan/scan-changed-files.sh",
+        "cwd": ".",
+        "env": {
+          "SCAN_MODE": "block",
+          "SCAN_SCOPE": "diff"
+        },
+        "timeoutSec": 30
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/security-scan/scan-changed-files.sh",
+        "cwd": ".",
+        "env": {
+          "SCAN_MODE": "block",
+          "SCAN_SCOPE": "diff",
+          "SCAN_FULL_REPORT": "true"
+        },
+        "timeoutSec": 60
+      }
+    ]
+  }
+}
