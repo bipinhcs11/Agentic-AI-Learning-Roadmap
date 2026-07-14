@@ -1,0 +1,23 @@
+{
+  "$comment": "Copilot-relevant workspace settings. Checked in so the whole team gets the same behavior.",
+
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false
+  },
+
+  "$comment_instructions": "Make sure instruction files are picked up from .github/instructions/",
+  "chat.promptFiles": true,
+
+  "$comment_commit": "Repo-specific guidance for generated commit messages.",
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    { "text": "Use conventional commits (feat/fix/refactor/test/docs). Subject <= 72 chars, imperative mood. Body explains WHY, references the ticket ID from the branch name." }
+  ],
+
+  "$comment_review": "Repo-specific guidance applied when Copilot reviews code in the editor.",
+  "github.copilot.chat.reviewSelection.instructions": [
+    { "file": ".github/instructions/code-review.instructions.md" }
+  ]
+}
