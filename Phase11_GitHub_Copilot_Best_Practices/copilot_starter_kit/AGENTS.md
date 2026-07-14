@@ -21,6 +21,10 @@ Work is complete only when build + test + lint pass.
 
 - Small, verifiable changes; propose a plan before touching more than ~5 files.
 - Follow existing repo patterns; name the pattern you followed in your summary.
+- Reuse-first ladder before any new code: needed at all → exists in this codebase →
+  in the stdlib/framework → in an installed dependency → only then write the minimum.
+  State the rung you stopped at. The ladder never prunes safety content (validation,
+  error handling, authorization, audit, tests, accessibility).
 - No new dependencies without an explicit callout (see the dependency-audit skill).
 - No secrets, tokens, or internal hostnames in code, tests, or config.
 - Never weaken or delete tests to make a change pass.
