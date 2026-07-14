@@ -17,8 +17,13 @@
 A developer inside a large regulated enterprise (think a major bank or asset manager) where:
 
 - **GitHub Copilot is the only sanctioned AI coding tool.** No Cursor, no Claude Code,
-  no personal API keys. Copilot Business/Enterprise, inside VS Code (and Xcode for iOS),
-  behind corporate policy.
+  no personal API keys. Copilot Business/Enterprise runs inside the IDEs developers
+  already use: IntelliJ IDEA for Spring Boot and VS Code for Angular/React, behind
+  corporate policy. The existing Xcode material remains available but is not required
+  for the Java/web path.
+- Developers may have no experience with terminal-first coding agents. This phase starts
+  from familiar IDE actions—select code, attach files, Ask, Edit, Agent, review the diff,
+  run tests—and then introduces repository customizations one layer at a time.
 - Code cannot leave approved boundaries — governance, audit, and content exclusions matter
   as much as productivity.
 - Hundreds of teams need **consistent** results from Copilot, not hero prompting by
@@ -44,7 +49,7 @@ flowchart TB
         HK["hooks<br/>deterministic guardrails"]
         MCP[".vscode/mcp.json<br/>approved MCP servers"]
     end
-    DEV["Developer in VS Code<br/>(Ask / Edit / Agent mode)"] --> CI
+    DEV["Developer in IntelliJ or VS Code<br/>(Ask / Edit / Agent mode)"] --> CI
     CI --> SI --> PF --> AG
     AG --> SK --> HK --> MCP
     MCP --> OUT["Consistent, reviewable,<br/>policy-compliant output"]
@@ -84,18 +89,30 @@ org-wide. Each **stack folder is an overlay** — a team drops the relevant
 | 08 | [Enterprise governance](docs/08_enterprise_governance.md) | Policy hierarchy, content exclusion, audit, IP indemnity, rollout, and measuring impact. |
 | 09 | [CI/CD & code review](docs/09_cicd_and_code_review.md) | Copilot code review on PRs, the coding agent, and keeping CI the source of truth. |
 | 10 | [The VS Code customizations panel](docs/10_vscode_customizations_panel.md) | The Agent Customizations editor section by section — Agents, Skills, Instructions, Hooks, MCP Servers, Plugins, Tools — mapped to the files in this repo. |
+| 11 | [IntelliJ + VS Code enterprise playbook](docs/11_intellij_vscode_enterprise_playbook.md) | IDE-specific onboarding, feature-support differences, daily workflow, safe operating model, and rollout checklist for developers new to coding agents. |
+| 12 | [Spring Boot, Angular & React use cases](docs/12_enterprise_use_cases_spring_angular_react.md) | Four end-to-end, fictional enterprise scenarios with context, prompts, human decisions, tests, security checks, and expected outcomes. |
+| 13 | [Enterprise resource and adoption guide](docs/13_enterprise_resources_and_adoption_guide.md) | Curated official resources translated into actions for developers, platform teams, security, engineering leaders, and auditors, plus a 30/60/90-day adoption backlog. |
 
-## Quick start (15 minutes, any repo)
+## Quick start (15 minutes, IntelliJ or VS Code)
 
 1. Copy `copilot_starter_kit/.github/` and `copilot_starter_kit/.vscode/` into your repo root.
 2. Fill in the `TODO` markers in `copilot-instructions.md` — build command, test command,
    architecture in five lines.
 3. Drop in the overlay for your stack from `stacks/`.
-4. Open VS Code chat, type `/` and watch your team's prompts appear.
-5. Open the **Agent Customizations** panel (Chat view → Agents) and verify every
-   section populated — agents, skills, instructions, hooks, MCP servers. What's not
-   listed there isn't loaded ([chapter 10](docs/10_vscode_customizations_panel.md)).
+4. Open Copilot Chat in your IDE and confirm that a response lists
+   `.github/copilot-instructions.md` under **References**. In VS Code, type `/` to
+   inspect prompt files. In IntelliJ, open Copilot Chat → settings →
+   **Customizations** and inspect what the installed plugin and enterprise policy expose.
+5. VS Code users can open the **Agent Customizations** panel and verify agents,
+   skills, instructions, hooks, and MCP servers. IntelliJ support is not identical;
+   use the [IDE support matrix and fallback pattern](docs/11_intellij_vscode_enterprise_playbook.md)
+   before depending on a preview customization in a shared workflow.
 6. Put the `.github/` folder under `CODEOWNERS` so prompt changes get reviewed like code.
+7. Run one bounded scenario from [chapter 12](docs/12_enterprise_use_cases_spring_angular_react.md)
+   and require a human-reviewed diff plus the repository's normal test gates.
+8. Use the [enterprise resource guide](docs/13_enterprise_resources_and_adoption_guide.md)
+   to turn the pilot into an owned rollout backlog covering policy, network, MCP,
+   monitoring, audit, training, and outcome measurement.
 
 ## Sources & further reference
 
@@ -115,8 +132,15 @@ org-wide. Each **stack folder is an overlay** — a team drops the relevant
   repo author's generator that turns a Java codebase into feature-based `SKILL.md` files
   via a four-role agent pipeline (Generator → Tracker → Updater → Validator) with
   confidence + dependency metadata; see chapter 05 for how it fits the skills layer.
+- [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) — the
+  "write less code" prompt framework whose reuse-first decision ladder (with its
+  safety carve-out) is distilled into the starter kit's instructions and explained in
+  chapter 07. We take the ladder, not the framework — its plugin machinery targets
+  multi-tool environments this blueprint deliberately doesn't assume.
 - [VS Code Copilot customization docs](https://code.visualstudio.com/docs/copilot/copilot-customization)
 - [GitHub Docs — repository custom instructions](https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot)
+- [GitHub Docs — Copilot customization cheat sheet and IDE support matrix](https://docs.github.com/en/copilot/reference/customization-cheat-sheet)
+- [GitHub Docs — Copilot Chat in JetBrains IDEs](https://docs.github.com/en/copilot/how-tos/chat-with-copilot/chat-in-ide?tool=jetbrains)
 - [Shubhamsaboo/awesome-llm-apps](https://github.com/Shubhamsaboo/awesome-llm-apps) —
   broader LLM app patterns; referenced only where they translate to Copilot-only environments.
 

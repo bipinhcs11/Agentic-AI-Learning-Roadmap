@@ -25,13 +25,17 @@ PR-reviewable.
 
 ## The five controls auditors ask about
 
-1. **Data boundaary — what leaves.** Copilot Business/Enterprise: prompts and
+1. **Data boundary — what leaves.** Copilot Business/Enterprise: prompts and
    suggestions are not retained for model training; traffic is TLS; the IDE sends
    context, not the whole repo. Know this cold, because "does our code train the
    model?" is always the first question, and the answer for Business/Enterprise is no.
-2. **Content exclusion — what's never sent.** Repos and path patterns (key material,
-   pricing engines, M&A folders) configured at org level; excluded content never
-   reaches the model. Excluded ≠ secret, but it's the coarse-grained tourniquet.
+2. **Content exclusion — what a supported surface omits.** Repositories and path
+   patterns can be configured at organization or enterprise level, but this is not a
+   universal data-loss-prevention boundary. GitHub currently documents that Copilot
+   coding agent and IDE Agent mode do **not** support content exclusion. Treat this as
+   a defense-in-depth setting for supported surfaces, verify it in each IDE, and keep
+   secrets/restricted repositories outside an agent's reachable workspace. See the
+   current [content-exclusion behavior and limitations](https://docs.github.com/en/copilot/how-tos/configure-content-exclusion/exclude-content-from-copilot).
 3. **Public-code matching — what comes back.** Regulated orgs set "block" so
    suggestions matching public code get suppressed, plus code referencing for the rest.
    Pair with normal license scanning in CI — Copilot output is code like any other.
@@ -85,3 +89,7 @@ PR-reviewable.
   (if enabled) opens draft PRs only, never pushes to protected branches.
 - Generated code follows the same secure-SDLC gates as human code — SAST, SCA,
   secret scanning. No AI exemptions in either direction.
+- Feature policy is recorded per surface (IntelliJ, VS Code, GitHub.com, CLI), because
+  a control being enabled in one surface does not prove equivalent behavior in another.
+- Agent mode is prohibited for repositories whose safety case relies on content
+  exclusion until the platform/security owner approves an alternative isolation model.

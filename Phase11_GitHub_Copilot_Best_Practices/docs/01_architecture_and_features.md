@@ -13,6 +13,12 @@ inside a locked-down enterprise.
 | **Chat: Ask / Edit** | Ask = questions, explanations, plans — no file changes. Edit = scoped multi-file edits you review hunk by hunk. | "Explain this", "change these 3 files this way". |
 | **Chat: Agent mode** | Copilot plans, edits, runs terminal commands, reads failures, iterates — until build/test pass. Governed by your instructions files and hooks. | A small verifiable feature slice, a test-fix loop, a mechanical migration. |
 
+In IntelliJ IDEA, **Ask**, **Edit**, and **Agent** cover the same decision pattern:
+Ask to understand without changing files, Edit when you want to choose the working set
+and accept/reject edits, and Agent when Copilot may discover files and iterate with tools.
+The labels and exact UI can move between plugin versions, but the risk boundary does not.
+See the [IntelliJ + VS Code playbook](11_intellij_vscode_enterprise_playbook.md).
+
 The discipline that makes agent mode safe is the same one in this repo's
 [starter kit](../copilot_starter_kit/): committed instructions + small tasks +
 build/test/lint as the definition of done.
@@ -28,8 +34,13 @@ build/test/lint as the definition of done.
 - **Copilot CLI / terminal assist** — command suggestion and explanation in the shell.
 - **Commit message & PR description generation** — worth standardizing via the
   workspace settings (see the starter kit's `.vscode/settings.json`).
-- **Copilot for Xcode** — completions, chat, agent mode, code review and MCP for
-  Swift/Objective-C teams. Details in [`../stacks/ios_swift/`](../stacks/ios_swift/).
+- **JetBrains IDEs** — IntelliJ IDEA developers have completions, inline/chat flows,
+  Ask/Edit/Agent workflows, code review, MCP, and a Customizations editor. Several
+  repository customization types remain preview features or differ from VS Code;
+  consult GitHub's current [customization support matrix](https://docs.github.com/en/copilot/reference/customization-cheat-sheet)
+  before making one a mandatory control.
+- **Copilot for Xcode** — retained in this roadmap for Swift/Objective-C teams but
+  outside the Spring Boot, Angular, and React learning path requested here.
 
 ## Feeding it context (the part most developers skip)
 
@@ -54,8 +65,12 @@ actively degrades output (see [chapter 07](07_model_selection_and_context.md)).
 
 - **The model list is curated.** The model picker shows what your org enabled, not
   what the marketing page shows. Chapter 07 covers choosing among what you have.
-- **Content exclusions are active.** Repos/paths your org excluded never reach the
-  model — if Copilot seems blind to a folder, that may be policy, not a bug.
+- **Content exclusion is surface-dependent.** Exclusions can keep configured content
+  out of supported Copilot features, but GitHub documents important exceptions:
+  Copilot coding agent and IDE Agent mode do not support content exclusion. Never use
+  exclusion as the only control protecting secrets or restricted source. Confirm the
+  current behavior for the exact IDE surface before enabling Agent mode; see
+  [GitHub's content-exclusion documentation](https://docs.github.com/en/copilot/how-tos/configure-content-exclusion/exclude-content-from-copilot).
 - **Public-code matching is typically set to block**, so occasionally a completion
   is suppressed; that's the filter working, not Copilot failing.
 - **Feedback loops route internally.** "Copilot gave a bad answer" goes to your
