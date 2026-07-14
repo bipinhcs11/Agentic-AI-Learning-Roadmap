@@ -32,6 +32,15 @@ A task is not complete until build, tests, and lint pass locally.
   propose a plan first and wait for confirmation.
 - Follow the existing patterns in this repo before inventing new ones. When in doubt,
   find the closest existing implementation and match it.
+- **Before writing new code, walk this ladder and stop at the first rung that holds**:
+  1. Does this need to exist at all? (If the requirement doesn't demand it, don't build it.)
+  2. Does this codebase already do it? Reuse or extend that.
+  3. Does the standard library or framework already do it? Use that.
+  4. Does an already-installed dependency do it? Use that.
+  5. Only then write new code — the minimum that satisfies the acceptance criteria.
+  State which rung you stopped at when proposing non-trivial changes.
+- The ladder never prunes safety: input validation, error handling, authorization,
+  audit events, tests, and accessibility are requirements, not optional verbosity.
 - Never hardcode secrets, tokens, connection strings, or internal hostnames.
   Configuration comes from the environment or the approved secret store.
 - Every new public behavior needs a test: success, failure, and empty/edge case.

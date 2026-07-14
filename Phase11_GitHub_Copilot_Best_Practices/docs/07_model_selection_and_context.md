@@ -62,6 +62,21 @@ why chapter 02 caps them at ~60 lines. Skills load only on match — that's why 
 procedure lives there. Prompt files cost only when invoked. Put content in the cheapest
 layer that still guarantees it's present when needed.
 
+**Generate less: the reuse-first ladder.** The most expensive Copilot output isn't
+wrong code — it's *unnecessary* code: a hand-rolled utility the framework already
+ships, a new abstraction for one call site, three defensive layers nobody asked for.
+Every surplus line is review burden, attack surface, and future migration cost. The
+starter kit's instructions therefore include an ordered ladder the model must walk
+before writing anything new: needed at all? → already in this codebase? → in the
+stdlib/framework? → in an installed dependency? → only then write the minimum. Two
+guardrails make this safe in a regulated org: the ladder never prunes validation,
+error handling, authorization, audit, tests, or accessibility (those are
+requirements, not verbosity), and for non-trivial changes the model states which
+rung it stopped at — making "why does this code exist" a reviewable claim. (Pattern
+distilled from [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail),
+which reports large reductions in generated-code volume from exactly this
+discipline; we take the ladder and the safety carve-out, not the framework.)
+
 ## The pairing that makes agent mode reliable
 
 Small task + pinned verification (build/test/lint commands in the instructions) +
