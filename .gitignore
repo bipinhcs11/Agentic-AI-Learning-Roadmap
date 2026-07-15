@@ -99,3 +99,6 @@ Phase6_Production_Enterprise/project_06_capstone_product/data/
 
 # Personal blog/newsletter drafts — keep local, never commit
 **/blog/
+
+# Generated post-pack assets (carousel PDFs, teaser videos) — keep local, never commit
+/output/

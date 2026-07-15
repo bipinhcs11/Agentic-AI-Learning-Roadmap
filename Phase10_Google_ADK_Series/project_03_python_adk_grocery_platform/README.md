@@ -16,6 +16,52 @@ It uses a fictional grocery delivery platform to teach:
 
 All data is fictional and educational.
 
+## Kaggle 5-Day AI Agents Intensive Alignment
+
+This module is also a suggested local-first capstone for Kaggle and Google's
+[5-Day AI Agents: Intensive Vibe Coding Course](https://www.kaggle.com/competitions/5-day-ai-agents-intensive-vibecoding-course-with-google/overview/how-does-the-intensive-work)
+(June 15-19, 2026). This mapping is project guidance, not an official Kaggle
+submission or endorsement.
+
+| Kaggle day | Course topic | Evidence in this module |
+|---|---|---|
+| Day 1 | Introduction to agents and vibe coding | `app/agent.py`: ADK root concierge, specialist agents, and natural-language tool orchestration |
+| Day 2 | Agent tools and interoperability | `app/tools.py`, `app/a2a_client.py`, and `delivery-scheduler/`: deterministic tools and an A2A-capable boundary |
+| Day 3 | Agent skills | `app/grocery.py` and `app/security.py`: stateful cart/checkout helpers, scoped capabilities, and reusable security skills |
+| Day 4 | Vibe coding agent security and evaluation | `app/security_judge.py`, `tests/eval/`, and `scripts/run_security_audit.py`: guardrails, evaluation, and grounded judges |
+| Day 5 | Spec-driven production-grade development | `specs/`, `Dockerfile`, telemetry helpers, manifests, and the documented network/deployment boundary |
+
+The Kaggle capstone submission shape calls for a write-up, explanatory video,
+rationale, and code link. The generated carousel PDF and short teaser video
+(kept in the local, uncommitted repository-level `output/` directory) can be
+reused as the visual explanation; add your Kaggle write-up and final repository
+URL before submitting.
+
+Remaining course-alignment gaps are intentionally visible: persistent long-term
+memory/context engineering, a live network call from the concierge to the remote
+A2A scheduler, and a governed production deployment with operational telemetry.
+
+### Course Citation Contributors
+
+The official Kaggle course citation credits the following contributors:
+
+- Brenda Flynn
+- Fran Hinkelmann
+- Polong Lin
+- Nikita Namjoshi
+- Anant Nawalgaria
+- Kinjal Parekh
+- Kanchana Patlolla
+- Jim Plotts
+- María Cruz
+- Tania Rodriguez Fuentes
+- Frank Guan
+- Melissa Nalubwama-Mukasa
+- Sara Wolley
+
+These names are reproduced for acknowledgement from the official course
+citation; this independent educational project does not imply endorsement.
+
 ## Project Structure
 
 ```text
