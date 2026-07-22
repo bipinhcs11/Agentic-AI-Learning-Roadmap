@@ -9,9 +9,10 @@
 ![Stars](https://img.shields.io/github/stars/bipinhcs11/Agentic-AI-Learning-Roadmap?style=social)
 
 Build production-style Agentic AI systems locally, from your first RAG pipeline
-to MCP-powered enterprise assistants and Google ADK agent teams.
+to MCP-powered enterprise assistants, Google ADK agent teams, and governed AI
+identities with task-scoped access.
 
-- 50+ hands-on projects across 10 phases
+- 60+ hands-on projects across 12 phases
 - Local-first with Ollama and RAM-aware examples
 - RAG, agents, multi-agent systems, MCP, Google ADK, A2A, FastAPI, Docker, AWS, and observability
 - Beginner-to-production path for Python, backend, and Java/Spring developers
@@ -74,6 +75,7 @@ See [Getting Started](docs/getting-started.md) for the detailed version.
 | 9 | Dynamic RAG + MCP | Combine MCP tools, tenant RAG, provider routing, Java, and Spring Boot |
 | 10 | Google ADK Series | Build cross-language ADK + A2A agent systems with Python, Go, and Java |
 | 11 | GitHub Copilot Best Practices | Enterprise Copilot blueprint: instructions, prompts, agents, skills, hooks, MCP |
+| 12 | Enterprise AI Identity & Security | Agent identity, task credentials, delegation, secure MCP, policy, audit, and optional live cloud deployment |
 
 Full detail: [Roadmap Overview](docs/roadmap-overview.md).
 
@@ -89,6 +91,7 @@ Full detail: [Roadmap Overview](docs/roadmap-overview.md).
 | Enterprise AI engineer | Phase 9 | Build an MCP gateway with tenant RAG and provider routing |
 | Google ADK learner | Phase 10 | Build a local ADK + A2A contract-compliance agent team |
 | Enterprise Copilot user | Phase 11 | Roll out a governed GitHub Copilot setup: starter kit + stack overlays |
+| Enterprise AI security engineer | Phase 12 | Build agent identity, scoped delegation, protected MCP, an auditable access gateway, and an optional cloud deployment |
 
 More focused guides:
 [RAG Path](docs/rag-path.md),
@@ -107,6 +110,7 @@ More focused guides:
 | GitHub review bot | `Phase8_Integrations_Shipping/project_02_github_review_bot/` | Practical integration pattern for developer workflows |
 | Enterprise Assistant Hub | `Phase9_Dynamic_Agentic_RAG_MCP/capstone_enterprise_assistant_hub/` | MCP gateway + tenant RAG + provider abstraction |
 | Contract Compliance ADK Team | `Phase10_Google_ADK_Series/` | Google ADK + A2A orchestration across Python, Go, and Java |
+| Enterprise AI Access Gateway | `Phase12_Enterprise_AI_Identity_Security/module_10_enterprise_ai_access_gateway/` | Keycloak + task credentials + OPA + protected MCP + revocation + traces |
 
 See [Showcase](docs/showcase.md) for runnable demos.
 
@@ -138,6 +142,7 @@ See [Showcase](docs/showcase.md) for runnable demos.
 | Integrations | Slack, GitHub, Stripe, Email |
 | MCP | Model Context Protocol tools, resources, prompts |
 | ADK + A2A | Google Agent Development Kit with cross-language agent handoffs |
+| AI identity & authorization | Spring Boot, Keycloak, JWT/JWKS, OAuth/OIDC, OPA, PostgreSQL, Redis |
 
 ## Repository Structure
 
@@ -153,6 +158,7 @@ Phase8_Integrations_Shipping/    # 6 integration and launch projects
 Phase9_Dynamic_Agentic_RAG_MCP/  # MCP, enterprise RAG, Java, Spring Boot
 Phase10_Google_ADK_Series/       # Google ADK + A2A cross-language agent systems
 Phase11_GitHub_Copilot_Best_Practices/  # enterprise Copilot blueprint + starter kit + stack overlays
+Phase12_Enterprise_AI_Identity_Security/ # agent IAM, delegation, secure MCP, cloud mappings, capstone
 docs/                            # shareable guides by path and topic
 scripts/                         # setup helper scripts
 ```

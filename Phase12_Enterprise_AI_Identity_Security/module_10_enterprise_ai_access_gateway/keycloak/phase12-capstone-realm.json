@@ -1,0 +1,61 @@
+{
+  "realm": "phase12",
+  "enabled": true,
+  "displayName": "Phase 12 Fictional Enterprise Capstone",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "roles": {
+    "realm": [
+      {"name": "invoice-reader", "description": "May delegate fictional invoice reads"},
+      {"name": "email-drafter", "description": "May delegate fictional email drafts"}
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "phase12-gateway",
+      "name": "Phase 12 Enterprise AI Access Gateway",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://gateway.localhost:8084/login/oauth2/code/keycloak",
+        "http://localhost:8084/login/oauth2/code/keycloak"
+      ],
+      "webOrigins": ["http://gateway.localhost:8084", "http://localhost:8084"],
+      "attributes": {"pkce.code.challenge.method": "S256"},
+      "defaultClientScopes": ["profile", "email", "roles"],
+      "protocolMappers": [
+        {
+          "name": "tenant-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "tenant_id",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "demo.user",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "demo.user@example.invalid",
+      "firstName": "Demo",
+      "lastName": "User",
+      "attributes": {"tenant_id": ["fictional-acme"]},
+      "credentials": [
+        {"type": "password", "value": "demo-only-password", "temporary": false}
+      ],
+      "realmRoles": ["invoice-reader", "email-drafter"]
+    }
+  ]
+}

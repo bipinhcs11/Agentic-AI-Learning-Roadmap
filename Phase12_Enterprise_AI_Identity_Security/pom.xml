@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example.phase12</groupId>
+    <artifactId>enterprise-ai-identity-security</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>Phase 12 Enterprise AI Identity and Security</name>
+    <modules>
+        <module>module_02_agent_identity_service</module>
+        <module>module_03_task_scoped_credentials</module>
+        <module>module_04_user_delegation</module>
+        <module>module_06_mcp_security</module>
+    </modules>
+</project>

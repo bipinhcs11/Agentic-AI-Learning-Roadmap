@@ -1,0 +1,29 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  attributes/security-redaction:
+    actions:
+      - key: http.request.header.authorization
+        action: delete
+      - key: http.request.header.x_identity_token
+        action: delete
+      - key: token
+        action: delete
+  batch: {}
+
+exporters:
+  otlphttp/jaeger:
+    endpoint: http://jaeger:4318
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [attributes/security-redaction, batch]
+      exporters: [otlphttp/jaeger]

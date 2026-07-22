@@ -1,0 +1,21 @@
+{
+  "platform": "Google Cloud Vertex AI and IAM",
+  "principal": "Dedicated service account, federated workload principal, or managed workload identity per agent role",
+  "delegated_actor": "Authenticated user or workload that impersonates the privilege-bearing service account",
+  "credential_strategy": "Workload Identity Federation and service-account impersonation produce short-lived OAuth access tokens",
+  "audience_binding": "OIDC audience during federation and target Google resource scopes/permissions",
+  "revocation": "Remove IAM bindings, disable the service account, or deny the federated principal",
+  "audit": "Cloud Audit Logs plus application task_id, agent role, original caller, and audit_id",
+  "no_long_lived_keys": true,
+  "limitations": [
+    "General IAM and workload identity constructs are not an agent-specific directory object",
+    "Not every Google API supports every federation or downscoping pattern; verify the target service"
+  ],
+  "official_sources": [
+    "https://docs.cloud.google.com/iam/docs/workload-identities",
+    "https://docs.cloud.google.com/iam/docs/workload-identity-federation",
+    "https://docs.cloud.google.com/iam/docs/service-account-creds",
+    "https://docs.cloud.google.com/iam/docs/create-short-lived-credentials-direct"
+  ],
+  "last_verified": "2026-07-20"
+}

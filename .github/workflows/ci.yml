@@ -48,3 +48,30 @@ jobs:
       - name: Run offline Phase 9 tests
         working-directory: Phase9_Dynamic_Agentic_RAG_MCP/capstone_enterprise_assistant_hub
         run: python -m pytest -q tests
+
+      - name: Run offline Phase 12 Python tests
+        working-directory: Phase12_Enterprise_AI_Identity_Security
+        run: |
+          python -m unittest discover -s module_01_identity_fundamentals -p 'test_*.py' -q
+          python -m unittest discover -s module_05_agent_to_agent_trust -p 'test_*.py' -q
+          python -m unittest discover -s docs -p 'test_*.py' -q
+          python docs/validate_provider_mapping.py module_07_aws_bedrock_agentcore_identity/provider-mapping.json
+          python docs/validate_provider_mapping.py module_08_microsoft_entra_agent_id/provider-mapping.json
+          python docs/validate_provider_mapping.py module_09_google_cloud_vertex_ai_iam/provider-mapping.json
+
+  phase12-java:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Run Phase 12 Spring Boot tests
+        working-directory: Phase12_Enterprise_AI_Identity_Security
+        run: mvn -q test

@@ -1,0 +1,29 @@
+server:
+  port: ${SERVER_PORT:8084}
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: phase12-gateway
+            client-authentication-method: none
+            authorization-grant-type: authorization_code
+            scope: openid,profile,email
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_ISSUER:http://localhost:8080/realms/phase12}
+
+identity:
+  base-url: ${IDENTITY_BASE_URL:http://localhost:8081}
+  broker-token: ${IDENTITY_BROKER_TOKEN:local-broker-only}
+  status-token: ${IDENTITY_STATUS_TOKEN:local-status-only}
+
+policy:
+  decision-url: ${POLICY_DECISION_URL:}
+
+management:
+  endpoints.web.exposure.include: health,info
+  tracing.sampling.probability: ${TRACING_SAMPLE_RATE:1.0}
+  otlp.tracing.endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://localhost:4318/v1/traces}

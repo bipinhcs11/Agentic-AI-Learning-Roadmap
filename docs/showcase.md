@@ -71,6 +71,26 @@ What to capture:
 - Java professional risk scoring response
 - Generated legal parameter sheet and compliance certificate
 
+## Demo 5: Enterprise AI Access Gateway
+
+```bash
+cd Phase12_Enterprise_AI_Identity_Security/module_10_enterprise_ai_access_gateway
+cp .env.example .env
+docker compose up --build
+./demo/seed_agents.sh
+```
+
+What to capture:
+
+- Keycloak login and the fictional user's delegable scopes
+- Separate Finance and Email agent registrations
+- OPA allow decision for a tenant-matched task
+- successful scoped MCP tool call
+- cross-tenant, wrong-tool, and revoked-task denials
+- correlated trace in Jaeger or Langfuse
+
+All displayed identities and records must remain fictional.
+
 ## Asset Backlog
 
 When real recordings are available, add them under `assets/` and link them from
@@ -82,6 +102,7 @@ assets/
   documind-demo.gif
   phase9-mcp-demo.gif
   phase10-google-adk-demo.gif
+  phase12-enterprise-ai-iam-demo.gif
   architecture-documind.png
   architecture-mcp-hub.png
 ```

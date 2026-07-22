@@ -1,0 +1,16 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+identity:
+  issuer: ${IDENTITY_ISSUER:http://localhost:8081}
+  jwk-set-uri: ${IDENTITY_JWKS_URI:http://localhost:8081/.well-known/jwks.json}
+  status-base-url: ${IDENTITY_STATUS_URL:http://localhost:8081}
+  status-token: ${IDENTITY_STATUS_TOKEN:local-status-only}
+
+resource:
+  audience: ${RESOURCE_AUDIENCE:fictional-invoice-api}
+
+management:
+  endpoints.web.exposure.include: health,info
+  tracing.sampling.probability: ${TRACING_SAMPLE_RATE:1.0}
+  otlp.tracing.endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://localhost:4318/v1/traces}

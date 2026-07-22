@@ -1,0 +1,20 @@
+{
+  "platform": "Microsoft Entra Agent ID",
+  "principal": "Tenant-local agent identity created from an agent identity blueprint",
+  "delegated_actor": "Interactive flow represents the user as subject and the agent identity as actor",
+  "credential_strategy": "Blueprint uses federation or protected credentials to acquire tokens on behalf of credential-less agent identities",
+  "audience_binding": "Microsoft identity platform access-token audience and resource permissions",
+  "revocation": "Disable the agent identity or revoke grants and blueprint-scoped access",
+  "audit": "Correlate Entra agent sign-ins, identity/sponsor metadata, task_id, and application audit_id",
+  "no_long_lived_keys": true,
+  "limitations": [
+    "Agent identities remain single-tenant even when a blueprint is multitenant",
+    "Product availability, licensing, roles, and preview behavior must be checked before a live lab"
+  ],
+  "official_sources": [
+    "https://learn.microsoft.com/en-us/entra/agent-id/",
+    "https://learn.microsoft.com/en-us/entra/agent-id/agent-identities",
+    "https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts"
+  ],
+  "last_verified": "2026-07-20"
+}

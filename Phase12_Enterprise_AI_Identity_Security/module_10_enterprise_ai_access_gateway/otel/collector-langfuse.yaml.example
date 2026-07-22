@@ -1,0 +1,33 @@
+# Copy to a private, ignored file and follow the current Langfuse OTLP docs.
+# Do not commit the real endpoint authorization value.
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  attributes/security-redaction:
+    actions:
+      - key: http.request.header.authorization
+        action: delete
+      - key: http.request.header.x_identity_token
+        action: delete
+      - key: token
+        action: delete
+  batch: {}
+
+exporters:
+  otlphttp/langfuse:
+    endpoint: ${env:LANGFUSE_OTEL_ENDPOINT}
+    headers:
+      Authorization: ${env:LANGFUSE_OTEL_AUTHORIZATION}
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [attributes/security-redaction, batch]
+      exporters: [otlphttp/langfuse]
