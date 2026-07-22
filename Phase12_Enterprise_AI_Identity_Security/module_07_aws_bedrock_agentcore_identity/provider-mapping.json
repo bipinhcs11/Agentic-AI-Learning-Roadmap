@@ -1,0 +1,20 @@
+{
+  "platform": "AWS Bedrock AgentCore Identity",
+  "principal": "AgentCore workload identity for each deployed agent role",
+  "delegated_actor": "End-user identity associated with the workload access context",
+  "credential_strategy": "Workload access token authorizes retrieval from a credential provider backed by the token vault",
+  "audience_binding": "Inbound JWT authorizer plus resource and provider-specific authorization",
+  "revocation": "Disable or remove workload/provider authorization and revoke the upstream provider grant",
+  "audit": "Correlate AWS identity events with application task_id, actor_id, agent identity ARN, and audit_id",
+  "no_long_lived_keys": true,
+  "limitations": [
+    "AgentCore objects are provider-specific and are not interchangeable with the local JWT schema",
+    "Application policy must still enforce task purpose, tenant data access, and tool selection"
+  ],
+  "official_sources": [
+    "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity.html",
+    "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/understanding-agent-identities.html",
+    "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/obtain-credentials.html"
+  ],
+  "last_verified": "2026-07-20"
+}

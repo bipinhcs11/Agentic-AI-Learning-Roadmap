@@ -1,0 +1,149 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: phase12_identity
+      POSTGRES_USER: phase12
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-phase12-local-database-only}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U phase12 -d phase12_identity"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7.4-alpine
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  keycloak:
+    image: ${KEYCLOAK_IMAGE:-quay.io/keycloak/keycloak:26.3.1}
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-phase12-local-keycloak-only}
+      KC_HOSTNAME: http://keycloak.localhost:8080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "false"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/phase12-capstone-realm.json:/opt/keycloak/data/import/phase12-capstone-realm.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  opa:
+    image: ${OPA_IMAGE:-openpolicyagent/opa:1.7.1-static}
+    command: ["run", "--server", "--addr=0.0.0.0:8181", "/policy/phase12.rego"]
+    ports:
+      - "8181:8181"
+    volumes:
+      - ./policy:/policy:ro
+    healthcheck:
+      test: ["CMD", "/opa", "eval", "1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  jaeger:
+    image: ${JAEGER_IMAGE:-jaegertracing/all-in-one:1.69.0}
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+
+  otel-collector:
+    image: ${OTEL_COLLECTOR_IMAGE:-otel/opentelemetry-collector-contrib:0.130.1}
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otel/collector.yaml:/etc/otelcol/config.yaml:ro
+    depends_on:
+      - jaeger
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+
+  identity-service:
+    build:
+      context: ../module_02_agent_identity_service
+    environment:
+      SERVER_PORT: 8081
+      DATABASE_URL: jdbc:postgresql://postgres:5432/phase12_identity
+      DATABASE_USERNAME: phase12
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-phase12-local-database-only}
+      REDIS_HOST: redis
+      IDENTITY_REDIS_ENABLED: "true"
+      IDENTITY_ISSUER: http://identity.localhost:8081
+      IDENTITY_ADMIN_TOKEN: ${IDENTITY_ADMIN_TOKEN:-phase12-local-admin-token}
+      IDENTITY_BROKER_TOKEN: ${IDENTITY_BROKER_TOKEN:-phase12-local-broker-token}
+      IDENTITY_STATUS_TOKEN: ${IDENTITY_STATUS_TOKEN:-phase12-local-status-token}
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:8081/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  delegation-gateway:
+    build:
+      context: ../module_04_user_delegation
+    environment:
+      SERVER_PORT: 8084
+      KEYCLOAK_ISSUER: http://keycloak.localhost:8080/realms/phase12
+      IDENTITY_BASE_URL: http://identity-service:8081
+      IDENTITY_BROKER_TOKEN: ${IDENTITY_BROKER_TOKEN:-phase12-local-broker-token}
+      IDENTITY_STATUS_TOKEN: ${IDENTITY_STATUS_TOKEN:-phase12-local-status-token}
+      POLICY_DECISION_URL: http://opa:8181/v1/data/phase12/delegation
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+    extra_hosts:
+      - "keycloak.localhost:host-gateway"
+    ports:
+      - "8084:8084"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+
+  secure-mcp:
+    build:
+      context: ../module_06_mcp_security
+    environment:
+      SERVER_PORT: 8086
+      IDENTITY_ISSUER: http://identity.localhost:8081
+      IDENTITY_JWKS_URI: http://identity-service:8081/.well-known/jwks.json
+      IDENTITY_STATUS_URL: http://identity-service:8081
+      IDENTITY_STATUS_TOKEN: ${IDENTITY_STATUS_TOKEN:-phase12-local-status-token}
+      MCP_RESOURCE: http://mcp.localhost:8086/mcp
+      AUTHORIZATION_SERVER: http://keycloak.localhost:8080/realms/phase12
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+    ports:
+      - "8086:8086"
+    depends_on:
+      identity-service:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  redis-data:

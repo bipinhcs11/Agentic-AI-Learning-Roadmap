@@ -1,0 +1,45 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: agent-identity-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:agent_identity;MODE=PostgreSQL;DB_CLOSE_DELAY=-1}
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      repositories:
+        enabled: false
+
+identity:
+  issuer: ${IDENTITY_ISSUER:http://localhost:8081}
+  signing-key-id: ${IDENTITY_SIGNING_KEY_ID:phase12-local-key}
+  admin-token: ${IDENTITY_ADMIN_TOKEN:local-admin-only}
+  broker-token: ${IDENTITY_BROKER_TOKEN:local-broker-only}
+  status-token: ${IDENTITY_STATUS_TOKEN:local-status-only}
+  redis:
+    enabled: ${IDENTITY_REDIS_ENABLED:false}
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss} %-5level [%X{auditId:-no-audit-id}] %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLE_RATE:1.0}
+  otlp:
+    tracing:
+      endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://localhost:4318/v1/traces}

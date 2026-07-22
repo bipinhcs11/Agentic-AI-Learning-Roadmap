@@ -1,0 +1,42 @@
+server:
+  port: ${SERVER_PORT:8086}
+
+spring:
+  application:
+    name: secure-enterprise-mcp-server
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: phase12-secure-enterprise-mcp
+        version: 1.0.0
+        type: SYNC
+        protocol: STREAMABLE
+        instructions: >
+          Fictional enterprise tools for learning identity boundaries. Every
+          tool call is authorized server-side. No tool performs a real action.
+        annotation-scanner:
+          enabled: true
+        capabilities:
+          tool: true
+          resource: false
+          prompt: false
+          completion: false
+        streamable-http:
+          mcp-endpoint: /mcp
+
+identity:
+  issuer: ${IDENTITY_ISSUER:http://localhost:8081}
+  jwk-set-uri: ${IDENTITY_JWKS_URI:http://localhost:8081/.well-known/jwks.json}
+  status-base-url: ${IDENTITY_STATUS_URL:http://localhost:8081}
+  status-token: ${IDENTITY_STATUS_TOKEN:local-status-only}
+
+mcp-security:
+  resource: ${MCP_RESOURCE:http://localhost:8086/mcp}
+  authorization-server: ${AUTHORIZATION_SERVER:http://localhost:8081}
+  max-delegation-depth: ${MAX_DELEGATION_DEPTH:2}
+
+management:
+  endpoints.web.exposure.include: health,info
+  tracing.sampling.probability: ${TRACING_SAMPLE_RATE:1.0}
+  otlp.tracing.endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://localhost:4318/v1/traces}
