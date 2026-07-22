@@ -38,3 +38,5 @@ and a verdict: ship / ship-after-fixes / needs-manual-audit-with-VoiceOver.
 
 **Reference**: The repo's most accessible existing screen:
 ${input:reference:Path, or "none — this review sets the pattern"}
+For the agent-based variant of this review, see `../agents/ios-accessibility-auditor.agent.md`
+and [Community-Access/accessibility-agents](https://github.com/Community-Access/accessibility-agents).

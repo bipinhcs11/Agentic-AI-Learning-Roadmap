@@ -69,6 +69,8 @@ instead of per prompt.
 | `agents/legacy-estate-analyst.agent.md` | Read-only ObjC-estate agent: header honesty, interop risk, migration-readiness scoring |
 | `agents/ios-accessibility-auditor.agent.md` | Read-only accessibility audit agent — the security-reviewer pattern applied to VoiceOver/Dynamic Type |
 | `mcp.json` | iOS MCP overlay: XcodeBuildMCP + simulator control, allowlist-scoped — lets agent mode actually build and test |
+| `ci_ios.yml` | Actions workflow enforcing the instructions file's own commands (macOS runner, xcodebuild test, SwiftLint strict, xcresult artifact) |
+| `skills/privacy-manifest-audit/` | Skill: audits `PrivacyInfo.xcprivacy` against actual required-reason API usage, collected data, SDK manifests |
 
 That is the full set of iOS prompt categories worth standardizing — eleven files
 covering twelve jobs (memory-leak / retain-cycle review lives inside
@@ -140,6 +142,27 @@ model narrates and becomes a tool call it executes: scheme discovery, builds,
 test runs, and simulator control from agent mode, in Xcode or VS Code. `mcp.json`
 in this folder holds the reviewed overlay entries (pin versions; start with
 xcodebuild alone, add the simulator server when a workflow needs it).
+
+## CI: where "done" is decided
+
+`ci_ios.yml` is the enforcement half of the instructions file: the same
+`xcodebuild test` + `swiftlint --strict` the agent must run locally, re-run on a
+macOS runner with the `.xcresult` uploaded as the reviewable evidence. Lint is a
+separate fast job; snapshot tests are a deliberate, visible step.
+
+Two governance notes that are easy to get wrong:
+
+- **The cloud coding agent cannot build your app.** GitHub's cloud Copilot
+  coding agent executes on Linux — no `xcodebuild`, no simulators. Assign it
+  SPM-package, lint, docs, and Linux-testable work; the app target's authority
+  is this workflow on a macOS runner. Burning cloud-agent runs on Mac-only
+  verification produces confident PRs with unverified builds.
+- **The security-scan hook speaks iOS too.** The blueprint's
+  [security-scan hook](../../examples/hooks/security-scan/) now carries iOS
+  rules: ATS weakening (`NSAllowsArbitraryLoads`), debuggable entitlements
+  (`get-task-allow`), and credential-shaped keys landing in plists or xcconfig
+  instead of the Keychain — caught mechanically at edit time, before CI ever
+  sees the diff.
 
 ## Objective-C deserves its own strategy
 

@@ -1,0 +1,83 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# iOS CI — the same commands the instructions file names, enforced in Actions.
+# Copy to .github/workflows/ci_ios.yml and replace the TODO placeholders.
+#
+# Why this file is part of the Copilot blueprint: the instructions files tell
+# the agent "a task is complete only when xcodebuild test and swiftlint pass."
+# CI is where that stops being a request and becomes a gate — AI can author,
+# AI can advise, CI and a human decide.
+#
+# Cloud coding agent caveat: GitHub's cloud Copilot coding agent executes in a
+# LINUX environment — xcodebuild does not exist there. Assign it SPM-package
+# work, lint/docs/test-only changes it can validate with the Linux Swift
+# toolchain — and let THIS workflow (macOS runner) be the authority on the app
+# target. Do not burn cloud-agent runs on tasks only a Mac can verify.
+# ═══════════════════════════════════════════════════════════════════════════
+name: ios-ci
+
+on:
+  pull_request:
+    paths:
+      - "**/*.swift"
+      - "**/*.m"
+      - "**/*.h"
+      - "**/*.xcodeproj/**"
+      - "**/*.xcworkspace/**"
+      - "**/*.xcconfig"
+      - "**/*.plist"
+      - ".github/workflows/ci_ios.yml"
+
+concurrency:
+  group: ios-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    # Lint is split from build so style failures report in seconds, not after
+    # a 15-minute compile — and it runs fine on Linux if macOS minutes are dear.
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: SwiftLint (strict — warnings fail, matching the instructions file)
+        run: |
+          brew install swiftlint
+          swiftlint --strict --reporter github-actions-logging
+
+  test:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        # Pin the same version the instructions file names — agent, dev machine,
+        # and CI must agree on the toolchain or "works locally" is meaningless.
+        run: sudo xcode-select -s "/Applications/Xcode_TODO-version.app"
+
+      - name: Unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace "TODO-YourApp.xcworkspace" \
+            -scheme "TODO-YourScheme" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -testPlan "Unit" \
+            -resultBundlePath TestResults.xcresult \
+            | xcbeautify --renderer github-actions
+
+      - name: Upload result bundle (evidence, not vibes)
+        # The .xcresult is the artifact reviewers and agents cite — the same
+        # "show the evidence" rule the prompt files end with.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.run_number }}
+          path: TestResults.xcresult
+
+      # Optional: snapshot tests as a separate, deliberate step — re-recorded
+      # snapshots must never slip through inside a red-green blur.
+      # - name: Snapshot tests
+      #   run: xcodebuild test -workspace "TODO-YourApp.xcworkspace" \
+      #     -scheme "TODO-YourScheme" \
+      #     -destination "platform=iOS Simulator,name=iPhone 16" \
+      #     -testPlan "Snapshots"

@@ -41,6 +41,16 @@ The reason every later step is short is that the context is already in the repo:
 Copilot reads all of it automatically. The per-step prompts only add what is
 unique to MB-4721.
 
+## Step 0.5 — Wire the build loop (optional, recommended)
+
+With this overlay's `mcp.json` entries approved (XcodeBuildMCP, per the MCP
+governance rules), agent mode stops narrating `xcodebuild` and runs it: scheme
+discovery, builds, test runs, simulator control. Every "run the tests and show
+the evidence" in the steps below then ends with an actual result bundle, not a
+transcript of what the command would probably print. Without MCP the walkthrough
+still works — you run the commands yourself and paste results — but the loop is
+slower and the evidence is secondhand.
+
 ## Step 1 — Work-item analysis (before any code)
 
 **Agent**: [`work-item-analyst`](../../examples/agents/work-item-analyst.agent.md)
