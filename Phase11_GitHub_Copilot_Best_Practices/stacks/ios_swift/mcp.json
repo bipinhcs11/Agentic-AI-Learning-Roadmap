@@ -1,0 +1,17 @@
+{
+  "$comment": "iOS overlay for the starter kit's .vscode/mcp.json — copy these entries into that file (or configure the same servers via Xcode's MCP settings; Copilot for Xcode supports MCP in agent mode). Same governance as the generic kit: this file is owned by the platform team, changes go through code review, no credentials ever live here. These servers run LOCALLY against your own machine's Xcode toolchain — still allowlist them deliberately: a build/run/test tool in agent hands is exactly the kind of capability docs/06 says to scope, not sprawl.",
+  "servers": {
+    "xcodebuild": {
+      "$comment": "getsentry/XcodeBuildMCP (formerly cameroncooke/) — lets agent mode discover schemes, build, run tests, and drive simulators via xcodebuild instead of guessing at command lines. The single highest-leverage iOS MCP: it turns 'run the tests and show me the evidence' from an instruction into something the agent does. Pin a reviewed version; do not float on latest.",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "xcodebuildmcp@TODO-pin-reviewed-version"]
+    },
+    "ios-simulator": {
+      "$comment": "joshuayoes/ios-simulator-mcp — screenshot, inspect, and interact with the booted simulator. Useful for accessibility and UI verification loops (pair with the ios-accessibility-auditor agent). Overlaps partially with xcodebuild's sim tools — start with one, add the second only when a workflow needs it.",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "ios-simulator-mcp@TODO-pin-reviewed-version"]
+    }
+  }
+}
