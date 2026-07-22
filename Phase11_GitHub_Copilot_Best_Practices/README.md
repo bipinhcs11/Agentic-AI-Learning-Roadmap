@@ -92,6 +92,7 @@ org-wide. Each **stack folder is an overlay** — a team drops the relevant
 | 11 | [IntelliJ + VS Code enterprise playbook](docs/11_intellij_vscode_enterprise_playbook.md) | IDE-specific onboarding, feature-support differences, daily workflow, safe operating model, and rollout checklist for developers new to coding agents. |
 | 12 | [Spring Boot, Angular & React use cases](docs/12_enterprise_use_cases_spring_angular_react.md) | Four end-to-end, fictional enterprise scenarios with context, prompts, human decisions, tests, security checks, and expected outcomes. |
 | 13 | [Enterprise resource and adoption guide](docs/13_enterprise_resources_and_adoption_guide.md) | Curated official resources translated into actions for developers, platform teams, security, engineering leaders, and auditors, plus a 30/60/90-day adoption backlog. |
+| 14 | [Enterprise presentation deck (500–800 audience)](docs/14_enterprise_presentation_deck_500_800_people.md) | Keynote slide deck, speaker notes, live demo script, and Q&A handbook for presenting GitHub Copilot + Claude Code agentic workflows to 500–800 enterprise engineers. |
 
 ## Quick start (15 minutes, IntelliJ or VS Code)
 
