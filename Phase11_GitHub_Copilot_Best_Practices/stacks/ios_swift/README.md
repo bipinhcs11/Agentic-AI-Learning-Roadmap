@@ -7,12 +7,30 @@ small verifiable tasks — applies to iOS unchanged. This overlay covers only wh
 
 **Copilot surface**: [GitHub Copilot for Xcode](https://github.com/github/CopilotForXcode)
 supports Swift and Objective-C with completions, chat, agent mode (including MCP
-tools), code review, next-edit suggestions, and Copilot Vision. Xcode also reads
-repository custom instructions — so the committed-files blueprint works for iOS
-teams too, and mixed teams (VS Code for services, Xcode for the app) share one
-`.github/` setup. Don't confuse the official extension with
+tools), code review, next-edit suggestions, Copilot Vision, BYOK — and, as of the
+recent agentic releases, custom agents, subagents, and Plan Mode. Don't confuse
+the official extension with
 [intitni/CopilotForXcode](https://github.com/intitni/CopilotForXcode), the earlier
 community project it grew out of — enterprise installs want the `github/` one.
+
+### What actually works in Xcode (the part everyone gets wrong)
+
+The general Copilot docs lag the extension. Per the extension's own
+[Docs/CustomInstructions.md](https://github.com/github/CopilotForXcode/blob/main/Docs/CustomInstructions.md)
+and [Docs/PromptFiles.md](https://github.com/github/CopilotForXcode/blob/main/Docs/PromptFiles.md):
+
+| Surface | In Xcode? | Notes |
+|---|---|---|
+| `.github/copilot-instructions.md` | ✅ | auto-applies to all chat requests |
+| `*.instructions.md` with `applyTo` | ✅ | path-scoped — this overlay's two files work as-is |
+| `.github/prompts/*.prompt.md` | ✅ (experimental) | workspace prompt files — all 11 prompts here run in Xcode |
+| Custom agents / subagents / Plan Mode | ✅ | recent agentic releases |
+| MCP servers | ✅ | agent mode; see `mcp.json` below |
+| Skills, hooks, `AGENTS.md` | not documented for Xcode | treat as VS Code / CLI surfaces for now |
+
+So the committed-files blueprint works for iOS teams in full, and mixed teams
+(VS Code for services, Xcode for the app) share one `.github/` setup — nothing in
+this overlay is "VS Code-only".
 
 One more reason this overlay exists: the community library
 ([github/awesome-copilot](https://github.com/github/awesome-copilot)) has, as of
@@ -48,6 +66,9 @@ instead of per prompt.
 | `prompts/ios-performance-review.prompt.md` | App-startup + scrolling review — main-thread work, `body` cost, list hygiene, named Instruments experiments |
 | `prompts/privacy-secure-storage-review.prompt.md` | Keychain discipline, logging redaction, privacy manifest, data-at-rest |
 | `prompts/ios-pr-review.prompt.md` | Whole-diff PR review: scope, boundaries, edge states, tests — the last machine pass before a human |
+| `agents/legacy-estate-analyst.agent.md` | Read-only ObjC-estate agent: header honesty, interop risk, migration-readiness scoring |
+| `agents/ios-accessibility-auditor.agent.md` | Read-only accessibility audit agent — the security-reviewer pattern applied to VoiceOver/Dynamic Type |
+| `mcp.json` | iOS MCP overlay: XcodeBuildMCP + simulator control, allowlist-scoped — lets agent mode actually build and test |
 
 That is the full set of iOS prompt categories worth standardizing — eleven files
 covering twelve jobs (memory-leak / retain-cycle review lives inside
@@ -59,7 +80,7 @@ covering twelve jobs (memory-leak / retain-cycle review lives inside
 
 Point Copilot's **Reference** line at these when asking for a specific pattern —
 "follow the layering in clean-architecture-swiftui" beats paragraphs of description.
-All ten verified live and unarchived; star counts as of 2026-07.
+All verified live and unarchived via the GitHub API; star counts as of 2026-07.
 
 **Architecture references**
 
@@ -74,9 +95,25 @@ All ten verified live and unarchived; star counts as of 2026-07.
 | Repo | Stars | Why |
 |---|---|---|
 | [realm/SwiftLint](https://github.com/realm/SwiftLint) | 19.7k | Enforce repo conventions deterministically — the linter, not instructions, owns style |
-| [Quick/Quick](https://github.com/Quick/Quick) | 9.8k | BDD tests for Swift & Objective-C |
+| [nicklockwood/SwiftFormat](https://github.com/nicklockwood/SwiftFormat) | 8.9k | Deterministic formatting — pair with SwiftLint so style never reaches review |
+| [airbnb/swift](https://github.com/airbnb/swift) | 2.7k | A citable style guide — "follow airbnb/swift" is one Reference line, not forty rules |
 | [krzysztofzablocki/Sourcery](https://github.com/krzysztofzablocki/Sourcery) | 8k | Codegen for mocks/boilerplate — pair with Copilot instead of hand-generating |
 | [ochococo/Design-Patterns-In-Swift](https://github.com/ochococo/Design-Patterns-In-Swift) | 15.3k | Canonical Swift pattern implementations to cite by name |
+
+**Testing references**
+
+| Repo | Stars | Why |
+|---|---|---|
+| [Quick/Quick](https://github.com/Quick/Quick) | 9.8k | BDD tests for Swift & Objective-C |
+| [pointfreeco/swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) | 4.3k | The snapshot harness the walkthrough's UIKit migration step leans on |
+| [swiftlang/swift-testing](https://github.com/swiftlang/swift-testing) | 2.2k | The modern `@Test` framework `/xctest-generation` auto-detects |
+
+**Toolchain & release references**
+
+| Repo | Stars | Why |
+|---|---|---|
+| [fastlane/fastlane](https://github.com/fastlane/fastlane) | 41.8k | Release automation — the lanes are the "exact validation commands" your instructions should cite |
+| [tuist/tuist](https://github.com/tuist/tuist) | 5.7k | Project generation at scale — one source of truth for targets Copilot can read |
 
 **Framework implementation references**
 
@@ -84,6 +121,25 @@ All ten verified live and unarchived; star counts as of 2026-07.
 |---|---|---|
 | [Alamofire/Alamofire](https://github.com/Alamofire/Alamofire) | 42.4k | Networking patterns, request handling, concurrency |
 | [ReactiveX/RxSwift](https://github.com/ReactiveX/RxSwift) | 24.6k | Maintaining existing reactive codebases (legacy estates) |
+
+**Agent tooling — MCP servers** (see `mcp.json`)
+
+| Repo | Stars | Why |
+|---|---|---|
+| [getsentry/XcodeBuildMCP](https://github.com/getsentry/XcodeBuildMCP) | 6.1k | Build/run/test + simulator control for agent mode — the highest-leverage iOS MCP |
+| [mobile-next/mobile-mcp](https://github.com/mobile-next/mobile-mcp) | 5.5k | Cross-platform device/simulator automation (iOS + Android) |
+| [joshuayoes/ios-simulator-mcp](https://github.com/joshuayoes/ios-simulator-mcp) | 2.1k | Simulator inspection/interaction — pairs with the accessibility auditor |
+
+## MCP: make the agent build and test, not describe building and testing
+
+The generic kit's MCP governance (docs/06) applies unchanged: allowlisted servers,
+platform-team ownership, no credentials in config. What's iOS-specific is the
+payoff — with [XcodeBuildMCP](https://github.com/getsentry/XcodeBuildMCP) wired
+in, "run `xcodebuild test` and show the evidence" stops being an instruction the
+model narrates and becomes a tool call it executes: scheme discovery, builds,
+test runs, and simulator control from agent mode, in Xcode or VS Code. `mcp.json`
+in this folder holds the reviewed overlay entries (pin versions; start with
+xcodebuild alone, add the simulator server when a workflow needs it).
 
 ## Objective-C deserves its own strategy
 
