@@ -47,10 +47,19 @@ PATTERNS=(
   # Enterprise hygiene
   'internal-hostname|[a-z0-9-]+\.(corp|internal|intranet)\.[a-z0-9.-]+'
   'curl-pipe-shell|curl[^|;&]*\|[[:space:]]*(ba)?sh'
+  # iOS/mobile estate: plists, entitlements, xcconfig. These flag *reviewable*
+  # changes, not always violations — weakening ATS or enabling get-task-allow
+  # is exactly the diff that must page a human, per the iOS instructions.
+  'ios-ats-disabled|NSAllowsArbitraryLoads'
+  'ios-get-task-allow|get-task-allow'
+  'ios-plist-credential|<key>[^<]*(secret|api[_-]?key|token|password)[^<]*</key>'
+  'ios-xcconfig-secret|^[A-Z0-9_]*(SECRET|API_KEY|TOKEN|PASSWORD)[A-Z0-9_]*[[:space:]]*=[[:space:]]*[^$[:space:]]+'
 )
 
 # Default allowlist: canonical test PANs + obvious placeholders. Extend via env.
-ALLOWLIST='4111[ -]?1111[ -]?1111[ -]?1111,5555[ -]?5555[ -]?5555[ -]?4444,37828224631000[5],YOUR_|EXAMPLE|PLACEHOLDER|CHANGEME|<[a-z-]+>|TODO'
+# Placeholder tags must be hyphenated (<your-token>) — a bare <[a-z-]+> would
+# match structural XML (<key>, <string>) and exempt entire plists from scanning.
+ALLOWLIST='4111[ -]?1111[ -]?1111[ -]?1111,5555[ -]?5555[ -]?5555[ -]?4444,37828224631000[5],YOUR_|EXAMPLE|PLACEHOLDER|CHANGEME|<[a-z]+(-[a-z]+)+>|TODO'
 [[ -n "${SCAN_ALLOWLIST:-}" ]] && ALLOWLIST="$ALLOWLIST,${SCAN_ALLOWLIST}"
 
 FINDINGS=0

@@ -22,6 +22,8 @@ to behave; this hook removes the choice.
 | `pci-pan` | 16-digit card numbers (Visa/MC/Amex/Discover shapes) outside the approved test range — the PCI-DSS non-negotiable |
 | `internal-hostname` | `*.corp.* / *.internal.*` hostnames leaking topology into code |
 | `curl-pipe-shell` | `curl … \| sh` supply-chain patterns |
+| `ios-ats-disabled`, `ios-get-task-allow` | ATS weakened or debuggable entitlement — legitimate sometimes, silently never |
+| `ios-plist-credential`, `ios-xcconfig-secret` | Credential-shaped keys landing in plists / xcconfig instead of the Keychain or CI secrets |
 
 Canonical test PANs (4111 1111 1111 1111 etc.) and obvious placeholders are
 allowlisted by default; extend with `SCAN_ALLOWLIST` (comma-separated regexes)
