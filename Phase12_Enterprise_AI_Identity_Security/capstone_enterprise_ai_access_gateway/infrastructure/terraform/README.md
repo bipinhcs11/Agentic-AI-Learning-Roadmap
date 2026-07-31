@@ -1,13 +1,15 @@
-# Module 11 — Live Cloud Deployment
+# Multi-Cloud Terraform Deployment
 
-Module 11 is the optional cloud extension to the local Enterprise AI Access
-Gateway capstone. Module 10 remains the reproducible Docker Compose reference;
-this module deploys the same identity and authorization contract to one real
-cloud environment.
+This directory is the optional cloud extension to the local Enterprise AI
+Access Gateway capstone. The capstone root remains the reproducible Docker
+Compose reference; these tracks deploy the same identity and authorization
+contract to one real cloud environment.
 
-This module is currently a **deployment specification**. It deliberately does
-not include placeholder Terraform that appears runnable. Provider
-implementations should be added and verified one track at a time.
+The capstone includes **validated Terraform foundations** for AWS, Azure,
+and Google Cloud. They create no runtime compute by default. The foundations
+have been formatted, schema-validated against pinned official providers, and
+tested with Terraform mock providers, but they have not been applied to live
+cloud accounts.
 
 > **Educational safety boundary:** Use only a dedicated sandbox account,
 > subscription, or project and fictional data. Never use an employer tenant,
@@ -29,16 +31,60 @@ By completing one cloud track, you will be able to:
 
 ## Completion model
 
-One provider track is required to complete Module 11. The other two are
-optional comparison labs.
+One provider track is required to complete the optional cloud extension. The
+other two are comparison labs.
 
 | Track | Deployment target | Native identity focus | Status |
 |---|---|---|---|
-| [AWS](aws/) | AgentCore Runtime and/or managed container compute | IAM roles and AgentCore workload identity | Specification |
-| [Azure](azure/) | Azure Container Apps | Managed Identity and Microsoft Entra Agent ID | Specification |
-| [Google Cloud](gcp/) | Cloud Run | IAM service accounts and Workload Identity Federation | Specification |
+| [AWS](aws/) | AgentCore Runtime | IAM roles and AgentCore workload identity | Foundation validated; apply pending |
+| [Azure](azure/) | Azure Container Apps | Managed Identity and Microsoft Entra Agent ID | Foundation validated; apply pending |
+| [Google Cloud](gcp/) | Cloud Run | IAM service accounts and Workload Identity Federation | Foundation validated; apply pending |
 
 The goal is equivalent security behavior, not identical cloud service names.
+
+## Current implementation boundary
+
+Implemented and tested without cloud credentials:
+
+- pinned official providers and committed dependency lock files
+- mandatory bounded budgets and fictional ownership/cost labels
+- immutable container registries and digest-only runtime gates
+- distinct service identities and Planner, Finance, and Email identities
+- repository-and-branch-bound GitHub OIDC federation
+- AWS AgentCore MCP runtime, Azure Container Apps, and Google Cloud Run runtime
+  templates guarded by `enable_runtime = false`
+- mock-provider tests for safe defaults, rejected mutable inputs, and enabled
+  runtime topology
+- a cross-cloud static safety contract and CI validation entry point
+
+Still required before a live cloud deployment is complete:
+
+- build and publish reviewed service images
+- connect managed PostgreSQL, task/revocation cache, signing keys, and runtime
+  secret versions
+- finish provider-specific private networking and telemetry wiring
+- apply one track in a dedicated sandbox and run all security acceptance tests
+- verify normal and partial-failure teardown with provider inventory
+
+Nothing in these Terraform configurations has been applied to AWS, Azure, or
+Google Cloud.
+
+## Offline and schema verification
+
+Terraform provider initialization downloads plugins but does not authenticate
+or create cloud resources:
+
+```bash
+cd Phase12_Enterprise_AI_Identity_Security/capstone_enterprise_ai_access_gateway/infrastructure/terraform
+./scripts/validate-all.sh
+```
+
+Expected final output for each provider includes:
+
+```text
+Success! The configuration is valid.
+Success! 3 passed, 0 failed.
+```
 
 ## Target architecture
 
@@ -80,9 +126,13 @@ It must not create permanent access keys.
 
 Every implementation must follow the [Terraform delivery contract](terraform-delivery-contract.md).
 
+The checked-in foundations cover identity, registry, budget, logging, keyless
+CI publishing, and guarded runtime topology. The managed data and full private
+network layers in the target list remain deliberately documented as pending.
+
 ## Deployment sequence
 
-1. Complete Module 10 locally and save the successful denial-test results.
+1. Run the capstone locally and save the successful denial-test results.
 2. Choose exactly one cloud track and create an isolated lab environment.
 3. Configure keyless CI/CD federation with repository and branch restrictions.
 4. Run formatting, validation, security scanning, and a reviewed plan.

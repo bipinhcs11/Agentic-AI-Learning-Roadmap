@@ -75,3 +75,19 @@ jobs:
       - name: Run Phase 12 Spring Boot tests
         working-directory: Phase12_Enterprise_AI_Identity_Security
         run: mvn -q test
+
+  phase12-terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.5
+          terraform_wrapper: false
+
+      - name: Validate the safe cloud foundations
+        working-directory: Phase12_Enterprise_AI_Identity_Security/capstone_enterprise_ai_access_gateway/infrastructure/terraform
+        run: ./scripts/validate-all.sh

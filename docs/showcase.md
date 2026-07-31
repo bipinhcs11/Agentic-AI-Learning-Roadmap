@@ -74,7 +74,7 @@ What to capture:
 ## Demo 5: Enterprise AI Access Gateway
 
 ```bash
-cd Phase12_Enterprise_AI_Identity_Security/module_10_enterprise_ai_access_gateway
+cd Phase12_Enterprise_AI_Identity_Security/capstone_enterprise_ai_access_gateway
 cp .env.example .env
 docker compose up --build
 ./demo/seed_agents.sh

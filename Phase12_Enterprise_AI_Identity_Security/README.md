@@ -27,7 +27,7 @@ By the end of this phase, you will be able to:
 - trace an end-to-end agent tool call through identity, policy, and MCP layers
 - plan a keyless, least-privilege live deployment to one cloud sandbox
 
-## Modules
+## Modules and capstone
 
 | # | Module | What you build | Core or optional |
 |---|---|---|---|
@@ -40,8 +40,7 @@ By the end of this phase, you will be able to:
 | 07 | [AWS Bedrock AgentCore Identity](module_07_aws_bedrock_agentcore_identity/) | Map local identities to AgentCore workload identity and credentials | Optional cloud lab |
 | 08 | [Microsoft Entra Agent ID](module_08_microsoft_entra_agent_id/) | Map blueprints, agent identities, sponsors, and delegated access | Optional cloud lab |
 | 09 | [Google Cloud Vertex AI IAM](module_09_google_cloud_vertex_ai_iam/) | Map agents to workload federation and service-account impersonation | Optional cloud lab |
-| 10 | [Enterprise AI Access Gateway](module_10_enterprise_ai_access_gateway/) | Keycloak + Spring Boot + OPA + MCP + PostgreSQL + Redis + telemetry | Capstone |
-| 11 | [Live cloud deployment](module_11_live_cloud_deployment/) | Terraform-first AWS, Azure, and GCP deployment tracks with security tests and teardown | Optional cloud capstone extension |
+| Final | [Enterprise AI Access Gateway Capstone](capstone_enterprise_ai_access_gateway/) | Keycloak + Spring Boot + OPA + MCP + PostgreSQL + Redis, with Docker and guarded AWS, Azure, and GCP Terraform paths | Capstone |
 
 ## Progression
 
@@ -54,8 +53,9 @@ flowchart LR
     P --> M["Protected MCP tool"]
     M --> R["Tenant-scoped resource"]
     A --> V["Cloud identity mapping"]
-    R --> C["Capstone audit and traces"]
-    C --> L["Optional live cloud deployment"]
+    R --> C["Capstone: local Docker, audit, and traces"]
+    V --> C
+    C --> L["Optional AWS, Azure, or GCP deployment"]
 ```
 
 The main invariant is **monotonic attenuation**:
@@ -92,8 +92,8 @@ mvn spring-boot:run
 ```
 
 Each module README contains its own commands and expected output. The capstone
-README provides the final Docker Compose workflow. Module 11 preserves that
-local baseline and defines the separate opt-in cloud deployment path.
+README provides the final Docker Compose workflow and the nested, opt-in
+Terraform deployment paths for AWS, Azure, and Google Cloud.
 
 ## Shared credential contract
 

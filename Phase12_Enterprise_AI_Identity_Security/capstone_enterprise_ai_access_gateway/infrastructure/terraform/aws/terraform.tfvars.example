@@ -1,0 +1,18 @@
+aws_region          = "us-east-1"
+environment         = "dev"
+owner               = "phase12-learning"
+monthly_budget_usd  = 25
+budget_alert_emails = []
+
+# Leave false for the first reviewed plan. Runtime creation requires both
+# values below and an image that already exists in ECR.
+enable_runtime    = false
+mcp_image_uri     = ""
+oidc_discovery_url = ""
+oidc_audience     = "phase12-secure-mcp"
+
+# Create the account-level GitHub OIDC provider separately and supply its ARN.
+create_ci_role             = false
+github_oidc_provider_arn   = ""
+github_repository          = "bipinhcs11/Agentic-AI-Learning-Roadmap"
+github_branch              = "main"

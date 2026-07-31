@@ -1,0 +1,15 @@
+subscription_id       = "00000000-0000-0000-0000-000000000000"
+location              = "centralus"
+environment           = "dev"
+name_suffix           = "replace01"
+owner                 = "phase12-learning"
+monthly_budget_usd    = 25
+budget_start_date     = "2026-07-01T00:00:00Z"
+budget_contact_emails = ["replace-with-verified-contact@example.com"]
+
+# The safe initial plan creates the identity and hosting foundation only.
+enable_runtime = false
+service_images = {}
+
+github_repository = "bipinhcs11/Agentic-AI-Learning-Roadmap"
+github_branch     = "main"

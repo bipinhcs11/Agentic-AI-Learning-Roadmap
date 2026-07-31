@@ -110,7 +110,7 @@ More focused guides:
 | GitHub review bot | `Phase8_Integrations_Shipping/project_02_github_review_bot/` | Practical integration pattern for developer workflows |
 | Enterprise Assistant Hub | `Phase9_Dynamic_Agentic_RAG_MCP/capstone_enterprise_assistant_hub/` | MCP gateway + tenant RAG + provider abstraction |
 | Contract Compliance ADK Team | `Phase10_Google_ADK_Series/` | Google ADK + A2A orchestration across Python, Go, and Java |
-| Enterprise AI Access Gateway | `Phase12_Enterprise_AI_Identity_Security/module_10_enterprise_ai_access_gateway/` | Keycloak + task credentials + OPA + protected MCP + revocation + traces |
+| Enterprise AI Access Gateway | `Phase12_Enterprise_AI_Identity_Security/capstone_enterprise_ai_access_gateway/` | Keycloak + task credentials + OPA + protected MCP + revocation, traces, and multi-cloud Terraform |
 
 See [Showcase](docs/showcase.md) for runnable demos.
 

@@ -1,8 +1,21 @@
 # Google Cloud Live Deployment Track
 
 This track deploys the Phase 12 security contract to a dedicated Google Cloud
-project. It is a specification until its Terraform and automated tests are
-added.
+project. Its Terraform foundation and mock tests are implemented. No Google
+Cloud plan or apply has been run with real credentials.
+
+## Implemented foundation
+
+- mandatory billing-account budget filtered to the sandbox project
+- required API enablement and Artifact Registry cleanup policies
+- separate service accounts for all four services and three fictional agents
+- empty Secret Manager containers, with no secret material in Terraform
+- GitHub Workload Identity Federation restricted by immutable owner ID,
+  repository, and branch
+- optional Cloud Run services gated by four immutable image digests
+- only the gateway receives `allUsers`; internal invoker roles are limited to
+  the gateway service account
+- Terraform tests for safe defaults, rejected mutable inputs, and IAM shape
 
 ## Target mapping
 
@@ -22,6 +35,26 @@ added.
 Use Workload Identity Federation rather than downloading a service-account key.
 Attribute conditions must restrict the repository, owner, branch or protected
 environment, and expected token audience.
+
+## Validate without Google credentials
+
+```bash
+terraform init -backend=false
+terraform validate
+terraform test
+```
+
+The safe default creates no Cloud Run services in the mock plan. Copy
+`terraform.tfvars.example`, replace the project, billing account, and immutable
+GitHub owner ID, publish all four digest-addressed images, and review the real
+plan before setting `enable_runtime = true`.
+
+## Remaining live work
+
+- wire authenticated internal service URLs and ID-token audiences
+- add Cloud SQL, revocation cache, KMS signing, and secret versions
+- restrict network ingress further after validating Cloud Run service-to-service routing
+- run the shared denial, trace-correlation, and Cloud Asset teardown suite
 
 ## Required demonstrations
 

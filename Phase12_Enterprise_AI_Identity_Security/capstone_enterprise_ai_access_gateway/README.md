@@ -1,4 +1,4 @@
-# Module 10 — Enterprise AI Access Gateway Capstone
+# Enterprise AI Access Gateway Capstone
 
 The capstone composes the Phase 12 services into one local, fictional enterprise
 flow:
@@ -31,6 +31,37 @@ User login (Keycloak)
 
 All data and credentials are local fixtures. No component sends a real email,
 approves a payment, or accesses a real invoice.
+
+## Deployment paths
+
+The capstone keeps one application and security contract with two deployment
+paths:
+
+| Path | Location | Intended use |
+|---|---|---|
+| Local Docker Compose | This directory | Required reproducible learning and security baseline |
+| Multi-cloud Terraform | [`infrastructure/terraform/`](infrastructure/terraform/) | Optional AWS, Azure, or Google Cloud sandbox deployment |
+
+The Terraform directory contains separate provider implementations:
+
+```text
+infrastructure/terraform/
+├── aws/
+├── azure/
+├── gcp/
+├── scripts/
+└── tests/
+```
+
+Validate all three cloud foundations without cloud credentials:
+
+```bash
+./infrastructure/terraform/scripts/validate-all.sh
+```
+
+Runtime compute is disabled by default. A real cloud plan or apply requires
+reviewed immutable images, a dedicated sandbox, and the provider-specific
+prerequisites documented in the Terraform README.
 
 ## Prerequisites
 
