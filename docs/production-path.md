@@ -17,8 +17,8 @@ real products.
 | 8 | `Phase10_Google_ADK_Series/` | Study a containerized ADK + A2A multi-service demo |
 | 9 | `Phase12_Enterprise_AI_Identity_Security/module_02_agent_identity_service/` | Register governed agents and issue signed short-lived credentials |
 | 10 | `Phase12_Enterprise_AI_Identity_Security/module_06_mcp_security/` | Enforce scope, audience, tenant, task, and revocation at MCP tools |
-| 11 | `Phase12_Enterprise_AI_Identity_Security/module_10_enterprise_ai_access_gateway/` | Compose Keycloak, OPA, PostgreSQL, Redis, MCP, and traces |
-| 12 | `Phase12_Enterprise_AI_Identity_Security/module_11_live_cloud_deployment/` | Plan a keyless Terraform-first deployment to one isolated cloud sandbox |
+| 11 | `Phase12_Enterprise_AI_Identity_Security/capstone_enterprise_ai_access_gateway/` | Compose Keycloak, OPA, PostgreSQL, Redis, MCP, and traces |
+| 12 | `Phase12_Enterprise_AI_Identity_Security/capstone_enterprise_ai_access_gateway/infrastructure/terraform/` | Validate a keyless AWS, Azure, or GCP foundation, then deploy to one isolated cloud sandbox |
 
 ## Production Checklist
 
@@ -39,5 +39,5 @@ real products.
 
 Run DocuMind and the Phase 12 Enterprise AI Access Gateway locally. Explain how
 identity, delegation, policy, tenant isolation, revocation, and audit work across
-the complete agent tool-call path. Then design or complete one Module 11 cloud
-track and demonstrate the same controls with native workload identity.
+the complete agent tool-call path. Then complete one nested cloud track and
+demonstrate the same controls with native workload identity.

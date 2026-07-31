@@ -1,0 +1,14 @@
+project_id                 = "replace-with-sandbox-project"
+billing_account_id         = "000000-000000-000000"
+region                     = "us-central1"
+environment                = "dev"
+owner                      = "phase12-learning"
+monthly_budget_usd         = 25
+github_repository          = "bipinhcs11/Agentic-AI-Learning-Roadmap"
+github_repository_owner_id = "00000000"
+github_branch              = "main"
+
+# The safe initial plan creates identity, registry, budget, and secret
+# containers, but no secret versions and no Cloud Run services.
+enable_runtime = false
+service_images = {}

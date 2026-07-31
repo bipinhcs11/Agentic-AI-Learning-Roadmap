@@ -48,4 +48,4 @@ By the end of the full path you will have built:
 - MCP servers and clients with tenant-aware RAG and provider routing
 - Google ADK and A2A agent handoffs across local Python, Go, and Java services
 - Enterprise agent identities, task-scoped delegation, revocation, protected MCP tools, policy decisions, and correlated audits
-- A Terraform-first specification for deploying the Phase 12 security contract to an isolated AWS, Azure, or Google Cloud sandbox
+- Validated Terraform foundations for deploying the Phase 12 security contract to an isolated AWS, Azure, or Google Cloud sandbox

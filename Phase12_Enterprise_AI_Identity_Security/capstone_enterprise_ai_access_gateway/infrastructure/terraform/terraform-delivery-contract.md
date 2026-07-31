@@ -1,9 +1,9 @@
 # Terraform Delivery Contract
 
-Every Module 11 provider implementation must meet this contract before it is
-described as deployable.
+Every capstone cloud-provider implementation must meet this contract before it
+is described as deployable.
 
-## Required layout
+## Foundation layout
 
 ```text
 <provider>/
@@ -13,16 +13,18 @@ described as deployable.
 ├── variables.tf
 ├── main.tf
 ├── outputs.tf
+├── .terraform.lock.hcl
 ├── terraform.tfvars.example
-├── policies/
-├── tests/
-└── scripts/
-    ├── smoke-test.sh
-    └── verify-destroy.sh
+└── tests/
+    └── foundation.tftest.hcl
 ```
 
 Real `.tfvars`, Terraform state, plans, credentials, evidence, and crash logs
 must remain ignored.
+
+A track is not live-complete until it additionally provides provider-specific
+policy checks, `scripts/smoke-test.sh`, and `scripts/verify-destroy.sh`. The
+checked-in foundations intentionally stop before claiming those live checks.
 
 ## Infrastructure requirements
 

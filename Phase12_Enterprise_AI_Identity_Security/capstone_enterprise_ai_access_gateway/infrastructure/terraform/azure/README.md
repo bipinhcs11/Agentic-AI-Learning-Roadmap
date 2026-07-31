@@ -1,8 +1,20 @@
 # Azure Live Deployment Track
 
 This track deploys the Phase 12 security contract to a dedicated Azure sandbox
-subscription. It is a specification until its Terraform and automated tests
-are added.
+subscription. Its Terraform foundation and mock tests are implemented. No
+Azure plan or apply has been run with real credentials.
+
+## Implemented foundation
+
+- dedicated resource group and mandatory resource-group budget
+- Log Analytics and a Container Apps environment with mTLS enabled
+- ACR with administrator and anonymous access disabled
+- separate managed identities for all four services and three agent roles
+- identity-based ACR pull assignments
+- repository-and-branch-bound GitHub federated credential with ACR push only
+- optional gateway, identity, MCP, and OPA Container Apps gated by four image
+  digests; only the gateway receives external ingress
+- Terraform tests for safe defaults, rejected mutable inputs, and ingress shape
 
 ## Target mapping
 
@@ -24,6 +36,26 @@ Managed Identity must replace local workload tokens for Azure resource access.
 Agent ID objects may require Microsoft Graph operations if the current
 Terraform providers do not expose the required agent subtype. Such operations
 must be idempotent and use only the documented Agent ID permissions.
+
+## Validate without Azure credentials
+
+```bash
+terraform init -backend=false
+terraform validate
+terraform test
+```
+
+The safe default creates no Container Apps in the mock plan. Copy
+`terraform.tfvars.example`, use a dedicated subscription and current first-day
+budget date, publish all four immutable images, and review the real plan before
+setting `enable_runtime = true`.
+
+## Remaining live work
+
+- wire internal service URLs and token audiences into the four revisions
+- add Microsoft Entra Agent ID blueprint/identity Graph automation
+- add PostgreSQL, revocation cache, Key Vault secret versions, and private endpoints
+- run the shared denial, audit-correlation, and Resource Graph teardown suite
 
 ## Required demonstrations
 

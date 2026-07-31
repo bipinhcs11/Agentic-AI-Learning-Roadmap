@@ -1,7 +1,19 @@
 # AWS Live Deployment Track
 
 This track deploys the Phase 12 security contract to a dedicated AWS sandbox.
-It is a specification until its Terraform and automated tests are added.
+Its Terraform foundation and mock tests are implemented. No AWS plan or apply
+has been run with real credentials.
+
+## Implemented foundation
+
+- mandatory AWS Budget with a learning-size upper bound
+- immutable, scan-on-push ECR repositories for the three Java services
+- short-retention CloudWatch log groups
+- distinct native AgentCore workload identities for Planner, Finance, and Email
+- minimum AgentCore runtime role for ECR image pull and MCP logs
+- optional JWT-protected AgentCore MCP runtime gated by an immutable image digest
+- optional GitHub OIDC role restricted to one repository and branch
+- Terraform tests for safe defaults, rejected mutable inputs, and runtime shape
 
 ## Target mapping
 
@@ -18,10 +30,29 @@ It is a specification until its Terraform and automated tests are added.
 | Audit and traces | CloudTrail, CloudWatch, and OpenTelemetry export |
 | Keyless CI/CD | GitHub OIDC to a restricted IAM deployment role |
 
-AgentCore supports workload identities and managed agent runtimes. Current AWS
-guidance exposes identity management through the AWS CLI and AgentCore SDK, so
-the implementation must verify Terraform coverage at build time and isolate
-any required native bootstrap behind a narrow IAM policy.
+The official AWS provider now supports AgentCore workload identities and agent
+runtimes directly. This track therefore does not need a CLI bootstrap for those
+objects.
+
+## Validate without AWS credentials
+
+```bash
+terraform init -backend=false
+terraform validate
+terraform test
+```
+
+The safe default creates no AgentCore runtime in the mock plan. Copy
+`terraform.tfvars.example`, replace its sandbox values, publish an immutable
+MCP image, and set `enable_runtime = true` only after reviewing a real plan.
+
+## Remaining live work
+
+- add the identity gateway and policy service runtime topology
+- add managed PostgreSQL, revocation state, secret versions, and KMS integration
+- decide between public JWT-protected or VPC AgentCore networking after teardown
+  testing; service-managed network interfaces can delay VPC cleanup
+- run the shared denial, audit-correlation, and destroy inventory suite
 
 ## Required demonstrations
 
