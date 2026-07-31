@@ -88,7 +88,12 @@ class InfrastructureContractTest(unittest.TestCase):
             "(?i)\\b" + "f" + "mr\\b",
         )
         for path in ROOT.rglob("*"):
-            if not path.is_file() or ".terraform" in path.parts:
+            if (
+                not path.is_file()
+                or ".terraform" in path.parts
+                or "__pycache__" in path.parts
+                or path.suffix in {".pyc", ".pyo"}
+            ):
                 continue
             text = path.read_text(errors="ignore")
             for pattern in forbidden:
