@@ -109,10 +109,15 @@ intermediary behavior continues to evolve.
 | [Example server manifest](examples/build-intelligence-server.json) | Fictional approved server and tool metadata |
 | [Presentation deck](presentation/enterprise-mcp-ecosystem-poc-v10.pptx) | Constraint-aligned enterprise POC with one governed Azure MCP endpoint, API Center registry, API Management gateway, Container Apps runtime, private internal API access, managed identity, and end-to-end traceability |
 | [Azure ecosystem diagram](diagrams/azure-mcp-ecosystem.png) | Presentation-ready view of the client, registry, gateway, MCP runtime, internal API path, identity controls, and correlated tracing |
+| [Simplified MCP ecosystem diagram](diagrams/simplified-mcp-ecosystem.png) ([Mermaid source](diagrams/simplified-mcp-ecosystem.mmd)) | Engineering and domain MCP paths, PR/Sonar automation, and the governed skill lifecycle |
 
 ### Azure ecosystem diagram
 
 ![Azure MCP ecosystem interaction and hosting diagram](diagrams/azure-mcp-ecosystem.png)
+
+### Simplified MCP ecosystem
+
+![Simplified enterprise MCP ecosystem diagram](diagrams/simplified-mcp-ecosystem.png)
 
 ## Team and prerequisites
 

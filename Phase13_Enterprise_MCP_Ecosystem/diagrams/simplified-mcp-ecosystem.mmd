@@ -1,0 +1,27 @@
+flowchart LR
+    DEV["Developer"] --> COP["GitHub Copilot<br/>VS Code / JetBrains"]
+    COP --> GW["MCP Gateway<br/>Identity • Policy • Trace"]
+
+    REG["Approved MCP Registry"] -. "approved catalog" .-> COP
+    REG -. "tool policy" .-> GW
+
+    GW --> ENG["Engineering MCP Servers<br/>Sonar • Coding Standards • Skills Catalog"]
+    GW --> DOM["Domain MCP Servers<br/>Work Item Analysis • Config Check"]
+
+    ENG --> SQ["SonarQube"]
+    ENG --> KNOW["Standards and<br/>Approved Skills"]
+
+    DOM --> APIGW["Internal API Gateway"]
+    APIGW --> WORK["Participant • Enrollment<br/>Rate • Life Events APIs"]
+    APIGW --> CONFIG["Configuration APIs"]
+
+    PR["Pull Request"] --> CI["Existing CI/CD"]
+    CI --> SCAN["Sonar Scan"]
+    SCAN --> SQ
+    SQ --> RESULT["PR Quality Gate<br/>and annotations"]
+
+    GEN["Skill Generator / Updater"] --> BRANCH["Feature branch<br/>.github/skills"]
+    BRANCH --> VALID["Skill Validator"]
+    VALID --> SPR["Reviewed PR"]
+    SPR --> TRACK["Skill Tracker"]
+    TRACK --> KNOW
