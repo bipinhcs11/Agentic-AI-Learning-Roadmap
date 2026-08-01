@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/enterprise-mcp-manifest-v0.1.json",
+  "title": "Enterprise MCP Server Manifest v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "serverId",
+    "displayName",
+    "version",
+    "owner",
+    "hosting",
+    "capabilities",
+    "classification",
+    "approvedClients",
+    "tools",
+    "lifecycle"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "0.1" },
+    "serverId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)+$",
+      "maxLength": 100
+    },
+    "displayName": { "type": "string", "minLength": 3, "maxLength": 100 },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["team", "contact"],
+      "properties": {
+        "team": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "contact": { "type": "string", "minLength": 2, "maxLength": 100 }
+      }
+    },
+    "hosting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "environment", "endpoint", "transport"],
+      "properties": {
+        "type": { "const": "internal" },
+        "environment": { "enum": ["local", "sandbox"] },
+        "endpoint": {
+          "type": "string",
+          "pattern": "^https?://[A-Za-z0-9.-]+(?::[0-9]{1,5})?/[-A-Za-z0-9._~%!$&'()*+,;=:@/]*$",
+          "maxLength": 300
+        },
+        "transport": { "const": "streamable-http" }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tools", "resources", "prompts", "sampling"],
+      "properties": {
+        "tools": { "const": true },
+        "resources": { "const": false },
+        "prompts": { "const": false },
+        "sampling": { "const": false }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["internalOnly", "customerData", "readOnly", "riskTier"],
+      "properties": {
+        "internalOnly": { "const": true },
+        "customerData": { "const": false },
+        "readOnly": { "const": true },
+        "riskTier": { "enum": ["tier-0", "tier-1", "tier-2"] }
+      }
+    },
+    "approvedClients": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{2,63}$"
+      }
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 25,
+      "items": { "$ref": "#/$defs/tool" }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "approvalStatus", "expiresOn"],
+      "properties": {
+        "status": { "enum": ["sandbox", "disabled"] },
+        "approvalStatus": { "enum": ["approved", "revoked"] },
+        "expiresOn": { "type": "string", "format": "date" }
+      }
+    }
+  },
+  "$defs": {
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description",
+        "operationType",
+        "dataClassification",
+        "timeoutMs",
+        "maxResponseBytes",
+        "inputSchema"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{2,63}$"
+        },
+        "description": { "type": "string", "minLength": 10, "maxLength": 200 },
+        "operationType": { "const": "READ" },
+        "dataClassification": { "enum": ["INTERNAL", "INTERNAL_SENSITIVE"] },
+        "timeoutMs": { "type": "integer", "minimum": 100, "maximum": 5000 },
+        "maxResponseBytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 262144
+        },
+        "inputSchema": {
+          "type": "object",
+          "required": ["type", "additionalProperties", "properties"],
+          "properties": {
+            "type": { "const": "object" },
+            "additionalProperties": { "const": false },
+            "properties": { "type": "object" },
+            "required": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

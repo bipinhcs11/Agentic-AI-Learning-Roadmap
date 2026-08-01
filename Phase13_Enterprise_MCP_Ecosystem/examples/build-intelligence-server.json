@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "0.1",
+  "serverId": "devassist.build-intelligence",
+  "displayName": "Build Intelligence MCP Server",
+  "version": "0.1.0",
+  "owner": {
+    "team": "Fictional Developer Productivity",
+    "contact": "devassist-example"
+  },
+  "hosting": {
+    "type": "internal",
+    "environment": "sandbox",
+    "endpoint": "http://build-intelligence:8082/mcp",
+    "transport": "streamable-http"
+  },
+  "capabilities": {
+    "tools": true,
+    "resources": false,
+    "prompts": false,
+    "sampling": false
+  },
+  "classification": {
+    "internalOnly": true,
+    "customerData": false,
+    "readOnly": true,
+    "riskTier": "tier-1"
+  },
+  "approvedClients": ["vscode-devassist"],
+  "tools": [
+    {
+      "name": "get_build_status",
+      "description": "Return the latest fictional build status for an approved application.",
+      "operationType": "READ",
+      "dataClassification": "INTERNAL",
+      "timeoutMs": 2000,
+      "maxResponseBytes": 32768,
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "pattern": "^APP-FICTION-[0-9]{3}$",
+            "maxLength": 19
+          }
+        },
+        "required": ["applicationId"]
+      }
+    },
+    {
+      "name": "get_test_failures",
+      "description": "Return bounded fictional test failures for an approved application build.",
+      "operationType": "READ",
+      "dataClassification": "INTERNAL",
+      "timeoutMs": 3000,
+      "maxResponseBytes": 131072,
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "pattern": "^APP-FICTION-[0-9]{3}$",
+            "maxLength": 19
+          },
+          "buildId": {
+            "type": "string",
+            "pattern": "^BUILD-[0-9]{6}$",
+            "maxLength": 12
+          }
+        },
+        "required": ["applicationId"]
+      }
+    },
+    {
+      "name": "get_application_owner",
+      "description": "Return the fictional owner and support alias for an approved application.",
+      "operationType": "READ",
+      "dataClassification": "INTERNAL",
+      "timeoutMs": 1000,
+      "maxResponseBytes": 16384,
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "applicationId": {
+            "type": "string",
+            "pattern": "^APP-FICTION-[0-9]{3}$",
+            "maxLength": 19
+          }
+        },
+        "required": ["applicationId"]
+      }
+    }
+  ],
+  "lifecycle": {
+    "status": "sandbox",
+    "approvalStatus": "approved",
+    "expiresOn": "2026-08-14"
+  }
+}
