@@ -1,0 +1,24 @@
+runtime:
+  environment: local
+  log_level: DEBUG
+
+secret_provider: environment
+
+vault:
+  address: http://127.0.0.1:8200
+  verify_tls: false
+  aws_role: enterprise-mcp-local
+  iam_server_id_header: null
+
+oauth:
+  token_url: http://127.0.0.1:9000/oauth2/token
+
+api_gateway:
+  base_url: http://127.0.0.1:9000
+  verify_tls: false
+
+gateway:
+  inbound_jwt:
+    issuer: enterprise-mcp-local
+    algorithm: HS256
+    jwks_url: null

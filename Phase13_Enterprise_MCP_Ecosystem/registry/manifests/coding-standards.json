@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "0.1",
+  "serverId": "devassist.coding-standards",
+  "displayName": "Coding Standards MCP Server",
+  "version": "0.1.0",
+  "owner": { "team": "Fictional Engineering Standards", "contact": "standards-example" },
+  "hosting": {
+    "type": "internal",
+    "environment": "sandbox",
+    "endpoint": "https://coding-standards.mcp.example.invalid/mcp",
+    "transport": "streamable-http"
+  },
+  "capabilities": { "tools": true, "resources": false, "prompts": false, "sampling": false },
+  "classification": { "internalOnly": true, "customerData": false, "readOnly": true, "riskTier": "tier-0" },
+  "approvedClients": ["vscode-devassist", "jetbrains-devassist"],
+  "tools": [
+    {
+      "name": "standards_get_rule",
+      "description": "Return one fictional approved and versioned engineering standard by rule ID.",
+      "operationType": "READ",
+      "dataClassification": "INTERNAL",
+      "timeoutMs": 2000,
+      "maxResponseBytes": 32768,
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "rule_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9_-]{2,31}$" } },
+        "required": ["rule_id"]
+      }
+    }
+  ],
+  "lifecycle": { "status": "sandbox", "approvalStatus": "approved", "expiresOn": "2027-07-31" }
+}

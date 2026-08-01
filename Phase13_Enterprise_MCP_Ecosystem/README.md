@@ -27,6 +27,19 @@ VS Code -> MCP Gateway -> Build Intelligence MCP Server -> fictional CI API
 The registry is the **control plane**. The gateway is the **runtime enforcement
 plane**. The registry is not queried synchronously for every tool invocation.
 
+## Implemented Python vertical slice
+
+The repository now includes a runnable Python MVP with one governed gateway and
+five separately deployable, read-only scenario MCP servers: Work Item Analysis,
+Config Check, Sonar Analysis, Coding Standards, and Skills Catalog. It includes
+AWS-IAM-authenticated HashiCorp Vault integration, per-scenario credentials,
+OAuth client-credentials token acquisition, fixed internal API-gateway calls,
+multi-environment configuration, metadata-only tracing, Docker Compose, and
+offline tests.
+
+See the [implementation and run guide](docs/implementation-guide.md). All local
+identity, API, and domain records are explicitly fictional.
+
 ## North-star ecosystem
 
 The MVP is the first vertical slice of a larger, platform-neutral ecosystem:
@@ -51,8 +64,8 @@ for deployment, domain-server, trace, and A2A requirements.
 | One VS Code client configuration | Custom VS Code or IntelliJ plugin |
 | One gateway endpoint | Highly available or multi-region gateway |
 | Git-backed registry manifests and validation | Portal, database, approval workflow, or search |
-| One Build Intelligence MCP server | Oracle, PostgreSQL, Work Item, Sonar, coding-standards, and security-review servers |
-| Three fictional read-only tools | Write tools, resources, prompts, sampling, autonomous agents, or A2A delegation |
+| Five scenario-specific MCP servers | Oracle, PostgreSQL, security-review, and agent-delegation servers |
+| Five fictional read-only tools | Write tools, resources, prompts, sampling, autonomous agents, or A2A delegation |
 | Local JWT issuer, or enterprise test IdP if ready on day 1 | Full production SSO onboarding and entitlement integration |
 | Schema checks, allowlist, timeout, audit metadata | Full DLP, SIEM, WAF, canary routing, and disaster recovery |
 | Docker Compose sandbox | Kubernetes/OpenShift production deployment |
@@ -105,6 +118,7 @@ intermediary behavior continues to evolve.
 | [Security profile](docs/security-profile.md) | Enforceable guardrails, threat controls, logging, and stop conditions |
 | [MVP acceptance plan](docs/mvp-acceptance-plan.md) | Functional, security, protocol, and demo acceptance tests |
 | [Decision log](docs/decision-log.md) | Architecture decisions required before and after the MVP |
+| [Python MVP implementation guide](docs/implementation-guide.md) | Code structure, Vault/JWT/API flow, environment overlays, local demo, and production substitutions |
 | [Registry manifest schema](contracts/enterprise-mcp-manifest.schema.json) | Machine-checkable MVP registration contract |
 | [Example server manifest](examples/build-intelligence-server.json) | Fictional approved server and tool metadata |
 | [Presentation deck](presentation/enterprise-mcp-ecosystem-poc-v10.pptx) | Constraint-aligned enterprise POC with one governed Azure MCP endpoint, API Center registry, API Management gateway, Container Apps runtime, private internal API access, managed identity, and end-to-end traceability |
@@ -167,17 +181,20 @@ Useful primary references:
 - [Oracle SQLcl MCP server](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/26.1/sqcug/sqlcl-mcp-server.html)
 - [SonarQube MCP Server](https://docs.sonarsource.com/sonarqube-mcp-server)
 
-## Next build step
-
-After architecture, security, and product owners approve the scope, implement the
-MVP as four independently testable modules under this folder:
+## Implementation structure
 
 ```text
-registry/                  # manifests, schema validation, snapshot API
-gateway/                   # MCP protocol adapter, auth, policy, routing, audit
-build-intelligence-server/ # read-only MCP tools and fictional CI adapter
-demo/                      # VS Code config, tokens, fixtures, and test script
+registry/manifests/          # approved scenario and tool contracts
+src/enterprise_mcp/gateway/ # MCP auth, registry policy, routing
+src/enterprise_mcp/servers/ # isolated scenario-specific MCP servers
+src/enterprise_mcp/shared/  # Vault, JWT, API, config, and trace adapters
+src/enterprise_mcp/mock_enterprise/ # fictional local IdP and API gateway
+config/                     # base plus local/test/dev/prod overlays
+scripts/                    # local token and end-to-end demo clients
+tests/                      # offline security and interaction checks
 ```
 
-Do not start the second server or IntelliJ path until the vertical slice passes
-the acceptance plan.
+The next engineering decision is which one scenario should be connected to an
+approved non-production identity, Vault, and internal API gateway for an
+enterprise integration test. Do not add arbitrary REST, arbitrary SQL, write
+operations, or agent delegation to that test.

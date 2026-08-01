@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "0.1",
+  "serverId": "devassist.work-item-analysis",
+  "displayName": "Work Item Analysis MCP Server",
+  "version": "0.1.0",
+  "owner": { "team": "Fictional Domain Engineering", "contact": "domain-example" },
+  "hosting": {
+    "type": "internal",
+    "environment": "sandbox",
+    "endpoint": "https://work-item-analysis.mcp.example.invalid/mcp",
+    "transport": "streamable-http"
+  },
+  "capabilities": { "tools": true, "resources": false, "prompts": false, "sampling": false },
+  "classification": { "internalOnly": true, "customerData": false, "readOnly": true, "riskTier": "tier-1" },
+  "approvedClients": ["vscode-devassist", "jetbrains-devassist"],
+  "tools": [
+    {
+      "name": "work_item_analyze",
+      "description": "Aggregate bounded fictional work-item evidence from approved read-only APIs.",
+      "operationType": "READ",
+      "dataClassification": "INTERNAL",
+      "timeoutMs": 5000,
+      "maxResponseBytes": 131072,
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "work_item_id": { "type": "string", "pattern": "^WI-DEMO-[0-9]{3}$" } },
+        "required": ["work_item_id"]
+      }
+    }
+  ],
+  "lifecycle": { "status": "sandbox", "approvalStatus": "approved", "expiresOn": "2027-07-31" }
+}

@@ -1,0 +1,1 @@
+"""Configuration Check MCP server."""

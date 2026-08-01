@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "0.1",
+  "serverId": "devassist.sonar-analysis",
+  "displayName": "Sonar Analysis MCP Server",
+  "version": "0.1.0",
+  "owner": { "team": "Fictional Developer Productivity", "contact": "sonar-example" },
+  "hosting": {
+    "type": "internal",
+    "environment": "sandbox",
+    "endpoint": "https://sonar-analysis.mcp.example.invalid/mcp",
+    "transport": "streamable-http"
+  },
+  "capabilities": { "tools": true, "resources": false, "prompts": false, "sampling": false },
+  "classification": { "internalOnly": true, "customerData": false, "readOnly": true, "riskTier": "tier-1" },
+  "approvedClients": ["vscode-devassist", "jetbrains-devassist"],
+  "tools": [
+    {
+      "name": "sonar_get_issues",
+      "description": "Return bounded fictional Sonar issues without source snippets or write actions.",
+      "operationType": "READ",
+      "dataClassification": "INTERNAL",
+      "timeoutMs": 5000,
+      "maxResponseBytes": 131072,
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "project_key": { "type": "string", "minLength": 3, "maxLength": 100 },
+          "severity": { "type": "string", "enum": ["INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"] }
+        },
+        "required": ["project_key"]
+      }
+    }
+  ],
+  "lifecycle": { "status": "sandbox", "approvalStatus": "approved", "expiresOn": "2027-07-31" }
+}

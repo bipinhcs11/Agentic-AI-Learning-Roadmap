@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "0.1",
+  "serverId": "devassist.skills-catalog",
+  "displayName": "Skills Catalog MCP Server",
+  "version": "0.1.0",
+  "owner": { "team": "Fictional Developer Productivity", "contact": "skills-example" },
+  "hosting": {
+    "type": "internal",
+    "environment": "sandbox",
+    "endpoint": "https://skills-catalog.mcp.example.invalid/mcp",
+    "transport": "streamable-http"
+  },
+  "capabilities": { "tools": true, "resources": false, "prompts": false, "sampling": false },
+  "classification": { "internalOnly": true, "customerData": false, "readOnly": true, "riskTier": "tier-0" },
+  "approvedClients": ["vscode-devassist", "jetbrains-devassist"],
+  "tools": [
+    {
+      "name": "skills_list_approved",
+      "description": "List fictional approved skills without creating branches or modifying repositories.",
+      "operationType": "READ",
+      "dataClassification": "INTERNAL",
+      "timeoutMs": 2000,
+      "maxResponseBytes": 65536,
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "domain": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}$" } },
+        "required": ["domain"]
+      }
+    }
+  ],
+  "lifecycle": { "status": "sandbox", "approvalStatus": "approved", "expiresOn": "2027-07-31" }
+}

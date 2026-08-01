@@ -1,0 +1,33 @@
+runtime:
+  environment: dev
+  service_host: 0.0.0.0
+
+vault:
+  address: https://vault.dev.example.invalid
+  namespace: enterprise/devassist
+  aws_role: enterprise-mcp-dev
+  iam_server_id_header: vault.dev.example.invalid
+
+oauth:
+  token_url: https://identity.dev.example.invalid/oauth2/token
+
+api_gateway:
+  base_url: https://api-gateway.dev.example.invalid
+
+gateway:
+  host: 0.0.0.0
+  inbound_jwt:
+    issuer: https://identity.dev.example.invalid
+    jwks_url: https://identity.dev.example.invalid/.well-known/jwks.json
+
+scenarios:
+  work_item_analysis:
+    server_url: https://work-item-analysis.dev.mcp.example.invalid/mcp
+  config_check:
+    server_url: https://config-check.dev.mcp.example.invalid/mcp
+  sonar_analysis:
+    server_url: https://sonar-analysis.dev.mcp.example.invalid/mcp
+  coding_standards:
+    server_url: https://coding-standards.dev.mcp.example.invalid/mcp
+  skills_catalog:
+    server_url: https://skills-catalog.dev.mcp.example.invalid/mcp

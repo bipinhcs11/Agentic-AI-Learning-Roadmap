@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "0.1",
+  "serverId": "devassist.config-check",
+  "displayName": "Config Check MCP Server",
+  "version": "0.1.0",
+  "owner": { "team": "Fictional Configuration Engineering", "contact": "config-example" },
+  "hosting": {
+    "type": "internal",
+    "environment": "sandbox",
+    "endpoint": "https://config-check.mcp.example.invalid/mcp",
+    "transport": "streamable-http"
+  },
+  "capabilities": { "tools": true, "resources": false, "prompts": false, "sampling": false },
+  "classification": { "internalOnly": true, "customerData": false, "readOnly": true, "riskTier": "tier-1" },
+  "approvedClients": ["vscode-devassist", "jetbrains-devassist"],
+  "tools": [
+    {
+      "name": "config_check",
+      "description": "Read fictional participant configuration and identify missing approved values.",
+      "operationType": "READ",
+      "dataClassification": "INTERNAL",
+      "timeoutMs": 3000,
+      "maxResponseBytes": 32768,
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "participant_id": { "type": "string", "pattern": "^P-DEMO-[0-9]{3}$" } },
+        "required": ["participant_id"]
+      }
+    }
+  ],
+  "lifecycle": { "status": "sandbox", "approvalStatus": "approved", "expiresOn": "2027-07-31" }
+}

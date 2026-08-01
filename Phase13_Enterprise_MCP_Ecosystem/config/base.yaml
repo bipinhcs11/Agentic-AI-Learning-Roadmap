@@ -1,0 +1,83 @@
+runtime:
+  log_level: INFO
+  service_host: 127.0.0.1
+
+secret_provider: vault
+
+vault:
+  address: https://vault.example.invalid
+  namespace: null
+  verify_tls: true
+  auth_mount: aws
+  aws_role: enterprise-mcp-sandbox
+  aws_region: us-east-1
+  iam_server_id_header: vault.example.invalid
+  kv_mount: secret
+  cache_ttl_seconds: 300
+
+oauth:
+  token_url: https://identity.example.invalid/oauth2/token
+  audience: internal-api-gateway
+  request_timeout_seconds: 5
+  reuse_access_tokens: false
+  cache_skew_seconds: 30
+
+api_gateway:
+  base_url: https://api-gateway.example.invalid
+  request_timeout_seconds: 5
+  verify_tls: true
+  max_response_bytes: 262144
+
+gateway:
+  host: 127.0.0.1
+  port: 8080
+  registry_dir: registry/manifests
+  approved_clients:
+    - vscode-devassist
+    - jetbrains-devassist
+  inbound_jwt:
+    issuer: https://identity.example.invalid
+    audience: enterprise-mcp-gateway
+    algorithm: RS256
+    jwks_url: https://identity.example.invalid/.well-known/jwks.json
+    local_secret_env: MCP_GATEWAY_JWT_SECRET
+  internal_assertion_audience_prefix: enterprise-mcp
+  internal_assertion_secret_env: MCP_INTERNAL_ASSERTION_SECRET
+  internal_assertion_ttl_seconds: 60
+
+scenarios:
+  work_item_analysis:
+    display_name: Work Item Analysis MCP
+    secret_path: mcp/{environment}/work-item-analysis/api-client
+    credential_env_prefix: MCP_WORK_ITEM
+    scope: work-item.read
+    server_url: http://127.0.0.1:8101/mcp
+    port: 8101
+  config_check:
+    display_name: Config Check MCP
+    secret_path: mcp/{environment}/config-check/api-client
+    credential_env_prefix: MCP_CONFIG_CHECK
+    scope: configuration.read
+    server_url: http://127.0.0.1:8102/mcp
+    port: 8102
+  sonar_analysis:
+    display_name: Sonar Analysis MCP
+    secret_path: mcp/{environment}/sonar-analysis/api-client
+    credential_env_prefix: MCP_SONAR
+    scope: sonar.read
+    server_url: http://127.0.0.1:8103/mcp
+    port: 8103
+  coding_standards:
+    display_name: Coding Standards MCP
+    secret_path: mcp/{environment}/coding-standards/api-client
+    credential_env_prefix: MCP_STANDARDS
+    scope: standards.read
+    server_url: http://127.0.0.1:8104/mcp
+    port: 8104
+  skills_catalog:
+    display_name: Skills Catalog MCP
+    secret_path: mcp/{environment}/skills-catalog/api-client
+    credential_env_prefix: MCP_SKILLS
+    scope: skills.read
+    server_url: http://127.0.0.1:8105/mcp
+    port: 8105

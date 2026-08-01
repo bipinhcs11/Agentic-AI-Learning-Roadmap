@@ -1,0 +1,37 @@
+runtime:
+  environment: prod
+  log_level: INFO
+  service_host: 0.0.0.0
+
+vault:
+  address: https://vault.prod.example.invalid
+  namespace: enterprise/devassist
+  aws_role: enterprise-mcp-prod
+  iam_server_id_header: vault.prod.example.invalid
+  cache_ttl_seconds: 120
+
+oauth:
+  token_url: https://identity.prod.example.invalid/oauth2/token
+  request_timeout_seconds: 3
+
+api_gateway:
+  base_url: https://api-gateway.prod.example.invalid
+  request_timeout_seconds: 3
+
+gateway:
+  host: 0.0.0.0
+  inbound_jwt:
+    issuer: https://identity.prod.example.invalid
+    jwks_url: https://identity.prod.example.invalid/.well-known/jwks.json
+
+scenarios:
+  work_item_analysis:
+    server_url: https://work-item-analysis.prod.mcp.example.invalid/mcp
+  config_check:
+    server_url: https://config-check.prod.mcp.example.invalid/mcp
+  sonar_analysis:
+    server_url: https://sonar-analysis.prod.mcp.example.invalid/mcp
+  coding_standards:
+    server_url: https://coding-standards.prod.mcp.example.invalid/mcp
+  skills_catalog:
+    server_url: https://skills-catalog.prod.mcp.example.invalid/mcp

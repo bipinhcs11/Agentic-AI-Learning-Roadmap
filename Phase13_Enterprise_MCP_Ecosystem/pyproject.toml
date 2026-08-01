@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "enterprise-mcp-ecosystem"
+version = "0.1.0"
+description = "Fictional enterprise MCP gateway and scenario-server vertical slice"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "boto3>=1.35,<2",
+  "httpx>=0.27,<1",
+  "hvac>=2.3,<3",
+  "jsonschema>=4.23,<5",
+  "mcp[cli]>=1.23,<2",
+  "pydantic>=2.10,<3",
+  "PyJWT[crypto]>=2.10,<3",
+  "PyYAML>=6.0,<7",
+  "starlette>=0.45,<1",
+  "uvicorn>=0.34,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+  "pytest-asyncio>=0.25,<2",
+  "respx>=0.22,<1",
+  "ruff>=0.11,<1",
+]
+
+[project.scripts]
+enterprise-mcp-gateway = "enterprise_mcp.gateway.server:main"
+mcp-work-item-analysis = "enterprise_mcp.servers.work_item_analysis.server:main"
+mcp-config-check = "enterprise_mcp.servers.config_check.server:main"
+mcp-sonar-analysis = "enterprise_mcp.servers.sonar_analysis.server:main"
+mcp-coding-standards = "enterprise_mcp.servers.coding_standards.server:main"
+mcp-skills-catalog = "enterprise_mcp.servers.skills_catalog.server:main"
+enterprise-mcp-mock-api = "enterprise_mcp.mock_enterprise.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/enterprise_mcp"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = [
+  "S101", # pytest assertions are intentional
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/enterprise_mcp/mock_enterprise/*" = ["S105"] # explicitly fictional local fixture
+"tests/*" = ["S105"] # explicitly fictional test credentials and expected config values
