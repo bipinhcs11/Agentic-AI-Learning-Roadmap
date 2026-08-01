@@ -108,6 +108,11 @@ intermediary behavior continues to evolve.
 | [Registry manifest schema](contracts/enterprise-mcp-manifest.schema.json) | Machine-checkable MVP registration contract |
 | [Example server manifest](examples/build-intelligence-server.json) | Fictional approved server and tool metadata |
 | [Presentation deck](presentation/enterprise-mcp-ecosystem-poc-v10.pptx) | Constraint-aligned enterprise POC with one governed Azure MCP endpoint, API Center registry, API Management gateway, Container Apps runtime, private internal API access, managed identity, and end-to-end traceability |
+| [Azure ecosystem diagram](diagrams/azure-mcp-ecosystem.png) | Presentation-ready view of the client, registry, gateway, MCP runtime, internal API path, identity controls, and correlated tracing |
+
+### Azure ecosystem diagram
+
+![Azure MCP ecosystem interaction and hosting diagram](diagrams/azure-mcp-ecosystem.png)
 
 ## Team and prerequisites
 
