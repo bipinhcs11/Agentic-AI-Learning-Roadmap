@@ -3,17 +3,6 @@ x-common-environment: &common-environment
   MCP_SERVICE_HOST: 0.0.0.0
   MCP_TOKEN_URL: http://mock-enterprise:9000/oauth2/token
   MCP_API_GATEWAY_BASE_URL: http://mock-enterprise:9000
-  MCP_INTERNAL_ASSERTION_SECRET: fictional-local-internal-assertion-key-at-least-32-bytes
-  MCP_WORK_ITEM_CLIENT_ID: work-item-local
-  MCP_WORK_ITEM_CLIENT_SECRET: fictional-work-item-secret
-  MCP_CONFIG_CHECK_CLIENT_ID: config-check-local
-  MCP_CONFIG_CHECK_CLIENT_SECRET: fictional-config-check-secret
-  MCP_SONAR_CLIENT_ID: sonar-local
-  MCP_SONAR_CLIENT_SECRET: fictional-sonar-secret
-  MCP_STANDARDS_CLIENT_ID: standards-local
-  MCP_STANDARDS_CLIENT_SECRET: fictional-standards-secret
-  MCP_SKILLS_CLIENT_ID: skills-local
-  MCP_SKILLS_CLIENT_SECRET: fictional-skills-secret
 
 services:
   mock-enterprise:
@@ -34,55 +23,24 @@ services:
     command: mcp-work-item-analysis
     environment:
       <<: *common-environment
+      MCP_WORK_ITEM_CLIENT_ID: work-item-local
+      MCP_WORK_ITEM_CLIENT_SECRET: fictional-work-item-secret
+      MCP_WORK_ITEM_ASSERTION_SECRET: fictional-work-item-assertion-key-at-least-32-bytes
     depends_on:
       mock-enterprise:
         condition: service_healthy
-    ports:
-      - "127.0.0.1:8101:8101"
 
   config-check:
     build: .
     command: mcp-config-check
     environment:
       <<: *common-environment
+      MCP_CONFIG_CHECK_CLIENT_ID: config-check-local
+      MCP_CONFIG_CHECK_CLIENT_SECRET: fictional-config-check-secret
+      MCP_CONFIG_CHECK_ASSERTION_SECRET: fictional-config-check-assertion-key-at-least-32-bytes
     depends_on:
       mock-enterprise:
         condition: service_healthy
-    ports:
-      - "127.0.0.1:8102:8102"
-
-  sonar-analysis:
-    build: .
-    command: mcp-sonar-analysis
-    environment:
-      <<: *common-environment
-    depends_on:
-      mock-enterprise:
-        condition: service_healthy
-    ports:
-      - "127.0.0.1:8103:8103"
-
-  coding-standards:
-    build: .
-    command: mcp-coding-standards
-    environment:
-      <<: *common-environment
-    depends_on:
-      mock-enterprise:
-        condition: service_healthy
-    ports:
-      - "127.0.0.1:8104:8104"
-
-  skills-catalog:
-    build: .
-    command: mcp-skills-catalog
-    environment:
-      <<: *common-environment
-    depends_on:
-      mock-enterprise:
-        condition: service_healthy
-    ports:
-      - "127.0.0.1:8105:8105"
 
   mcp-gateway:
     build: .
@@ -91,16 +49,12 @@ services:
       <<: *common-environment
       MCP_GATEWAY_HOST: 0.0.0.0
       MCP_GATEWAY_JWT_SECRET: fictional-local-gateway-signing-key-at-least-32-bytes
+      MCP_WORK_ITEM_ASSERTION_SECRET: fictional-work-item-assertion-key-at-least-32-bytes
+      MCP_CONFIG_CHECK_ASSERTION_SECRET: fictional-config-check-assertion-key-at-least-32-bytes
       MCP_WORK_ITEM_SERVER_URL: http://work-item-analysis:8101/mcp
       MCP_CONFIG_CHECK_SERVER_URL: http://config-check:8102/mcp
-      MCP_SONAR_SERVER_URL: http://sonar-analysis:8103/mcp
-      MCP_STANDARDS_SERVER_URL: http://coding-standards:8104/mcp
-      MCP_SKILLS_SERVER_URL: http://skills-catalog:8105/mcp
     depends_on:
       - work-item-analysis
       - config-check
-      - sonar-analysis
-      - coding-standards
-      - skills-catalog
     ports:
       - "127.0.0.1:8080:8080"

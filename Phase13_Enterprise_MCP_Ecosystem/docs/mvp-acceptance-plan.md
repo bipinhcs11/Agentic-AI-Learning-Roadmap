@@ -2,101 +2,73 @@
 
 ## Evidence policy
 
-All tests use fictional identities, applications, builds, and failures. Evidence
-contains trace IDs, status codes, policy reason codes, timing, and registry
-digests—not prompts, arguments, results, credentials, source code, or real
-enterprise identifiers.
+All tests use fictional identities and diagnostic records. Evidence may contain
+trace IDs, status, reason codes, timing, server/tool identifiers, and a registry
+digest. It must not contain prompts, tool arguments/results, tokens, secrets,
+source code, personal data, or real enterprise identifiers.
 
-## Mandatory functional scenarios
+## Functional acceptance
 
 | ID | Scenario | Expected result |
 |---|---|---|
-| F-01 | VS Code initializes through the gateway | negotiated tools capability; no other server capability |
-| F-02 | VS Code requests `tools/list` | exactly three registry-approved tools |
-| F-03 | allowed user calls `get_build_status` for `APP-FICTION-001` | deterministic successful result and trace ID |
-| F-04 | allowed user calls `get_test_failures` | at most 20 sanitized fictional failures |
-| F-05 | allowed user calls `get_application_owner` | fictional team and support alias |
-| F-06 | server becomes disabled in approved snapshot | subsequent discovery/calls fail closed |
-| F-07 | upstream exceeds timeout | bounded sanitized tool error; no retry storm |
+| F-01 | client initializes through the gateway | tools capability is available |
+| F-02 | client requests `tools/list` | exactly `work_item_analyze` and `config_check` |
+| F-03 | approved call for `WI-DEMO-001` | missing enrollment evidence and `config_check` recommendation |
+| F-04 | approved call for `P-DEMO-001` | `MISSING_ENROLLMENT_CONFIGURATION` |
+| F-05 | each server calls its fixed read-only APIs | new backend token for each API operation |
+| F-06 | trace is reviewed | one trace ID correlates the full request path |
+| F-07 | registry entry is disabled or expired | discovery/call fails closed after snapshot reload |
 
-## Mandatory authorization and schema denials
+## Required denials
 
-| ID | Attempt | Expected reason |
+| ID | Attempt | Expected outcome |
 |---|---|---|
-| D-01 | missing token | `AUTHENTICATION_REQUIRED` |
-| D-02 | expired token | `TOKEN_EXPIRED` |
-| D-03 | wrong audience | `INVALID_AUDIENCE` |
-| D-04 | unapproved client ID | `CLIENT_NOT_APPROVED` |
-| D-05 | unknown tool | `TOOL_NOT_APPROVED` |
-| D-06 | write-classified manifest/tool | `OPERATION_NOT_ALLOWED` |
-| D-07 | other application ID | `APPLICATION_NOT_AUTHORIZED` |
-| D-08 | unknown argument | `SCHEMA_VALIDATION_FAILED` |
-| D-09 | oversized application ID or request | `REQUEST_LIMIT_EXCEEDED` |
-| D-10 | stale registry snapshot | `REGISTRY_SNAPSHOT_EXPIRED` |
-| D-11 | direct client-to-server call | connection or server identity rejection |
-| D-12 | invalid Origin header | HTTP 403 |
+| D-01 | missing gateway token | HTTP 401 and protected-resource metadata pointer |
+| D-02 | expired token or wrong audience | HTTP 401 with sanitized error |
+| D-03 | unapproved client | HTTP 401 with sanitized error |
+| D-04 | missing `mcp.diagnostic.read` role | policy denial |
+| D-05 | resource outside the two fictional allowlists | policy denial |
+| D-06 | unregistered tool or server | registry/policy denial |
+| D-07 | unknown or malformed argument | schema validation error before proxying |
+| D-08 | direct call to an MCP server | gateway assertion required |
+| D-09 | assertion used for another server/tool | invalid gateway assertion |
+| D-10 | slow or oversized upstream response | bounded sanitized error |
+| D-11 | invalid Host or Origin | request rejected by transport protection |
+| D-12 | backend token replay | rejected by the fictional fixture |
 
-## Protocol checks
+## Automated evidence
 
-- initialization uses the pinned MCP protocol version;
-- only `tools` is declared by the server/gateway profile;
-- `tools/list` pagination behavior is deterministic for the small catalog;
-- JSON-RPC request IDs and errors are preserved correctly;
-- tool input validation errors are returned in the form expected by the pinned
-  MCP client/SDK;
-- response content type works with the selected VS Code host;
-- stateless or session behavior is recorded in the compatibility matrix;
-- an unsupported method fails clearly rather than being routed as a tool.
+Run:
 
-## Security checks
+```bash
+uv sync --locked --extra dev
+uv run ruff format --check .
+uv run ruff check .
+uv run pytest -q
+docker compose config --quiet
+```
 
-- inbound user token is absent from gateway-to-server and server-to-CI calls;
-- gateway assertion cannot be replayed against another server or tool;
-- CI credential cannot call a write endpoint;
-- log scan finds no token, fictional secret canary, prompt, tool arguments, or
-  tool result;
-- invalid snapshot digest is rejected;
-- emergency denylist overrides the last-known-good snapshot;
-- response cap prevents unbounded pipeline log retrieval;
-- upstream error body and infrastructure URL are not returned to the client.
+CI runs the same checks using `uv.lock`. Tests cover configuration fail-closed
+rules, JWT validation, gateway authentication middleware, registry enforcement,
+manifest-bound schemas, role/resource policy, per-server assertions, fixed API
+calls, response limits, token non-reuse, and sensitive-log suppression.
 
-## Performance sanity targets
+## Manual demonstration
 
-These are engineering guardrails, not service-level objectives:
+1. Show the two registry manifests and snapshot digest.
+2. Connect the client only to the gateway URL.
+3. Show that only two tools are discoverable.
+4. Run the Work Item Analysis call for `WI-DEMO-001`.
+5. Run Config Check for the returned fictional participant.
+6. Show the diagnosis and correlated metadata-only events.
+7. Attempt an unapproved ID and a direct MCP-server call; show both denials.
+8. State which enterprise identity, secret, network, and telemetry integrations
+   remain unproven.
 
-| Measure | Sandbox target |
-|---|---:|
-| Gateway policy and routing overhead, p95 | under 100 ms excluding upstream |
-| Successful fictional tool call, p95 | under 2 seconds |
-| Hard upstream timeout | 5 seconds |
-| Tool result cap | 256 KiB and 20 records |
-| Concurrent demo calls | 10 without errors |
+## Decision rule
 
-If the sandbox misses a target, capture the measurement and cause. Do not tune a
-five-day MVP into an unmeasured production SLA.
-
-## Demo script
-
-1. Show the registry manifest and its digest.
-2. Connect VS Code to the gateway URL.
-3. Show that only three tools are discoverable.
-4. Ask why `APP-FICTION-001` failed and allow the visible tool call.
-5. Open the correlated metadata-only audit event.
-6. attempt `delete_build` and show `TOOL_NOT_APPROVED`.
-7. attempt the same read for `APP-RESTRICTED-999` and show
-   `APPLICATION_NOT_AUTHORIZED`.
-8. disable the server in the registry snapshot and show new calls fail closed.
-9. State the unproven enterprise dependencies and the next decision.
-
-## Go/no-go decision
-
-**Go to pilot discovery** only when every mandatory functional, denial,
-protocol, and security check passes and the security reviewer accepts the
-recorded residual risks.
-
-**Extend the sandbox** when the core controls work but IDE compatibility,
-enterprise IdP, or CI sandbox integration remains unproven.
-
-**Stop** when gateway-only routing, separate credential boundaries,
-application-level authorization, read-only enforcement, or metadata-only audit
-cannot be demonstrated.
+Proceed to an enterprise integration test only when the functional path and
+mandatory denials pass, the logs contain no sensitive payloads, and architecture
+and security reviewers accept the residual risks. The next test should connect
+this same two-server flow to approved non-production identity, secret, API
+gateway, and telemetry services. It must not add another business capability.

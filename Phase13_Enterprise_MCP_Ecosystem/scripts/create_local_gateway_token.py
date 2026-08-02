@@ -31,6 +31,7 @@ def main() -> None:
                 "sub": args.subject,
                 "aud": settings.gateway.inbound_jwt.audience,
                 "client_id": args.client_id,
+                "roles": [settings.gateway.required_role],
                 "iat": now,
                 "exp": now + 300,
             },

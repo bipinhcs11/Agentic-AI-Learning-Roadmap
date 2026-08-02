@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import secrets
@@ -62,6 +63,14 @@ class AuditEvent:
     outcome: str
     duration_ms: int
     timestamp: str
+    subject_ref: str | None = None
+    client_id: str | None = None
+    server_id: str | None = None
+    server_version: str | None = None
+    tool: str | None = None
+    resource_ref: str | None = None
+    registry_digest: str | None = None
+    reason_code: str | None = None
 
 
 class AuditSink(Protocol):
@@ -75,7 +84,8 @@ class JsonLogAuditSink:
         self._logger = logger or logging.getLogger("enterprise_mcp.audit")
 
     def emit(self, event: AuditEvent) -> None:
-        self._logger.info(json.dumps(asdict(event), separators=(",", ":"), sort_keys=True))
+        payload = {key: value for key, value in asdict(event).items() if value is not None}
+        self._logger.info(json.dumps(payload, separators=(",", ":"), sort_keys=True))
 
 
 class NullAuditSink:
@@ -103,3 +113,15 @@ def completed_event(
         duration_ms=max(0, int((time.monotonic() - started_at) * 1000)),
         timestamp=datetime.now(UTC).isoformat(),
     )
+
+
+def subject_reference(subject: str) -> str:
+    return f"sha256:{hashlib.sha256(subject.encode('utf-8')).hexdigest()}"
+
+
+def configure_safe_logging() -> None:
+    """Prevent URLs containing business identifiers from reaching default logs."""
+
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)

@@ -1,155 +1,105 @@
-# Enterprise MCP Security Profile — MVP
+# Enterprise MCP Security Profile — POC
 
 ## Allowed profile
 
-| Dimension | MVP rule |
+| Dimension | POC rule |
 |---|---|
-| Users | internal test users only |
-| Clients | pinned VS Code host only |
-| Hosting | local or internal sandbox only |
-| Servers | internally built and registered only |
-| Capabilities | tools only |
-| Operations | read-only only |
-| Data | fictional internal engineering metadata |
-| Agents | no autonomous execution |
-| Human control | visible invocation with the host's confirmation controls |
-| Backends | fictional CI adapter or separately approved sandbox API |
+| users | fictional internal test identity only |
+| clients | approved VS Code or JetBrains client ID |
+| hosting | local or internal non-production runtime |
+| servers | Work Item Analysis and Config Check only |
+| capabilities | tools only |
+| operations | fixed read-only API calls |
+| data | two allowlisted fictional identifiers |
+| agents | none |
+| external exposure | MCP gateway only |
 
-## Enforcement layers
+## Enforcement chain
 
-“Read-only” is true only when every layer agrees:
+“Read-only” is accepted only when the registry classification, gateway policy,
+server implementation, fixed GET operation, backend API scope, and negative
+tests agree. MCP annotations are descriptive and are not authorization.
 
-```text
-registry classification
-  AND gateway allow policy
-  AND server implementation
-  AND backend API method allowlist
-  AND backend read-only credential
-  AND negative test evidence
-```
+### Gateway checks
 
-MCP `readOnlyHint` and similar annotations describe behavior to clients. They do
-not prove that the implementation is read-only and must not be treated as an
-authorization decision.
+Before a call reaches a scenario server, the gateway:
 
-## Required gateway checks
+1. validates JWT signature, issuer, audience, time, and required claims;
+2. verifies the client ID is approved globally and for the target server;
+3. requires `mcp.diagnostic.read`;
+4. resolves an active, unexpired manifest and exact registered tool;
+5. validates arguments against the manifest JSON Schema;
+6. authorizes `WI-DEMO-001` or `P-DEMO-001` as appropriate;
+7. enforces the registered timeout and response size;
+8. creates a short-lived assertion signed with that scenario's key; and
+9. emits an allow or deny event with a registry digest and hashed subject and
+   resource references.
 
-Before routing a call, the gateway must:
+### Scenario-server checks
 
-1. validate token signature, issuer, audience, expiry, and not-before time;
-2. identify the approved client application separately from the user;
-3. require an approved and non-expired registry snapshot;
-4. allow only an active, internally hosted, tools-only server;
-5. allow only an approved `READ` tool;
-6. authorize the requested fictional application ID;
-7. validate arguments against JSON Schema and reject unknown fields;
-8. enforce string length, list cardinality, request size, timeout, and response
-   size limits;
-9. attach a new correlation ID and a short-lived target-server assertion; and
-10. fail closed on ambiguous identity, policy, route, or classification state.
+Each server:
 
-## Required server checks
+- accepts the gateway assertion only for its own audience, scenario, and tool;
+- has a separate assertion secret, Vault path, API client, and API scope;
+- exposes one tool and fixed read-only paths;
+- obtains a backend token before each API operation by default;
+- streams and caps the backend response before JSON parsing;
+- rejects redirects and uses bounded timeouts; and
+- returns sanitized errors without credentials or upstream bodies.
 
-The MCP server must:
+The local fixture also rejects a second use of the same backend token ID.
 
-- accept requests only from the gateway network and identity;
-- validate the internal assertion's issuer, audience, expiry, tool, application
-  scope, and trace ID;
-- map tools to explicit GET-only backend operations;
-- use its own read-only workload credential;
-- parameterize backend requests and normalize application IDs;
-- sanitize upstream errors and cap returned records;
-- never expose configuration, environment variables, credentials, or raw
-  pipeline logs; and
-- log decision metadata only.
+## Audit event policy
 
-## Token rules
+Events may contain:
 
-- Inbound tokens are audience-bound to the gateway.
-- Gateway assertions are audience-bound to one MCP server and expire quickly.
-- Backend tokens are audience-bound to the CI API.
-- The gateway never passes the IDE/user token to the MCP server or CI API.
-- Tokens never appear in URLs, tool arguments, logs, traces, or error messages.
-- Local demo secrets are generated and ignored by Git.
+- trace/span IDs;
+- service, operation, server, version, and tool;
+- approved client ID;
+- hashed subject and resource references;
+- registry digest, decision, reason, outcome, duration, and timestamp.
 
-The MCP authorization specification explicitly requires protected MCP servers to
-validate tokens intended for themselves and prohibits token passthrough to
-upstream APIs. See [MCP authorization](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization)
-and [security best practices](https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices).
+Events must not contain prompts, tool arguments/results, API payloads, source
+code, personal identifiers, tokens, secrets, authorization headers, Vault
+responses, or stack traces. Default `httpx`, `httpcore`, and access logging is
+suppressed to avoid recording request paths that include fictional business IDs.
 
-## Audit event
+## Threats and POC controls
 
-Minimum event shape:
-
-```json
-{
-  "eventVersion": "1.0",
-  "traceId": "mcp-example-001",
-  "subjectRef": "sha256:fictional-user-ref",
-  "clientId": "vscode-devassist",
-  "serverId": "devassist.build-intelligence",
-  "serverVersion": "0.1.0",
-  "tool": "get_test_failures",
-  "applicationRef": "APP-FICTION-001",
-  "registryDigest": "sha256:example",
-  "decision": "ALLOW",
-  "reasonCode": "POLICY_MATCH",
-  "durationMs": 84,
-  "outcome": "SUCCESS",
-  "timestamp": "2026-07-31T13:24:00-05:00"
-}
-```
-
-Do not record prompts, source code, tool inputs, tool outputs, stack traces,
-tokens, employee IDs, or CI credentials. If protected diagnostics become
-necessary later, design a separate access-controlled workflow with explicit
-retention.
-
-## Threats and controls
-
-| Threat | MVP control | Required negative evidence |
+| Threat | Control | Evidence |
 |---|---|---|
-| Unapproved server | gateway-only URL and private server network | direct connection fails |
-| Unapproved tool | registry-derived allowlist | unknown tool is denied |
-| Repository/application overreach | application scope in policy and server assertion | other app is denied |
-| Confused deputy/token passthrough | separate audiences and credentials | CI adapter never sees user token |
-| Schema smuggling | JSON Schema and `additionalProperties: false` | unknown field is denied |
-| Oversized or slow response | record, byte, and timeout caps | timeout and oversize paths fail safely |
-| Secret leakage in logs | metadata allowlist | scan test finds no sensitive fixture values |
-| Stale approval | snapshot age and emergency denylist | disabled server fails closed |
-| DNS rebinding/local exposure | Origin validation and localhost binding | invalid Origin is denied |
+| unapproved client/server/tool | JWT client allowlist and manifest policy | negative tests |
+| direct server access | unpublished port plus required gateway assertion | middleware/Compose tests |
+| confused deputy | separate audiences and no inbound-token forwarding | token flow tests |
+| assertion blast radius | separate scenario secrets and tool binding | wrong-tool/key denial |
+| resource overreach | gateway allowlists | unapproved-ID denial |
+| schema smuggling | advertised and enforced manifest schema | unknown-field denial |
+| DNS rebinding | exact Host/Origin transport protection | configuration test |
+| slow/oversized upstream | timeout and streaming byte cap | API client tests |
+| credential leakage | environment/Vault adapter and safe logs | log scan tests |
+| stale approval | startup snapshot validation and lifecycle checks | registry tests |
 
-The Streamable HTTP specification requires Origin validation and recommends
-localhost-only binding for local servers. See [MCP transports](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports).
+## POC limits requiring a later decision
+
+- Local HS256 identity and assertion keys are demonstration mechanisms. A shared
+  enterprise environment should use its approved IdP/JWKS and decide whether
+  server assertions move to asymmetric workload identity.
+- The registry snapshot is loaded at process startup. Signed publication,
+  bounded staleness, hot reload, and emergency revocation are production-pilot
+  work.
+- The included Vault adapter uses AWS IAM. An Azure deployment must approve how
+  Container Apps authenticate to Vault or replace the adapter with Azure Key
+  Vault/managed identity.
+- JSON audit output proves the event contract, not SIEM integration, retention,
+  alerting, or operational ownership.
+- Network isolation is represented by Docker Compose. Cloud network policies,
+  certificates, private DNS, rate limits, circuit breakers, and availability
+  require environment-specific implementation.
 
 ## Stop conditions
 
-Do not present the MVP as successful if any of these is true:
-
-- the client can reach the MCP server directly;
-- a user token is forwarded downstream;
-- an unknown or write-classified tool executes;
-- application-level authorization is absent;
-- tool inputs or results appear in default logs;
-- registry disablement does not stop new calls;
-- the chosen IDE requires bypassing the intended identity or gateway boundary;
-- the demo requires real customer, account, portfolio, employee, or source-code
-  data.
-
-## Future domain controls
-
-- Oracle and PostgreSQL servers use named query templates, schema-limited
-  read-only roles, timeouts, row/byte caps, and private network placement. A
-  generic SQL tool is prohibited.
-- API-backed tools use fixed destinations, methods, and operation templates;
-  arbitrary URLs, redirects, credentials in arguments, and caller-supplied
-  headers are prohibited.
-- Sonar, coding-standards, and security-review servers expose only inventoried
-  read tools. Source code and snippets require a separate data-classification,
-  retention, model-boundary, and DLP decision.
-- Agent-to-agent calls use a separate A2A Gateway/Broker, audience-bound target
-  credentials, monotonic scope reduction, depth/fan-out/budget limits, loop
-  detection, cancellation, kill switch, and an auditable delegation chain.
-
-See the [Architecture Requirements Document](architecture-requirements-document.md)
-for the full target-state controls.
+Do not connect real data or present the POC as production-ready if the client
+can bypass the gateway, a developer token reaches a downstream service, an
+unknown resource/tool/field executes, server credentials are shared, sensitive
+payloads appear in logs, or a clear deny decision cannot be reconstructed from
+the trace.

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import time
 from typing import Any
 
@@ -51,7 +52,8 @@ class GatewayApiClient:
         outcome = "ERROR"
         try:
             token = await self._tokens.get_token()
-            response = await self._http.get(
+            async with self._http.stream(
+                "GET",
                 f"{self._config.base_url.rstrip('/')}{path}",
                 params=query,
                 headers={
@@ -62,12 +64,17 @@ class GatewayApiClient:
                 },
                 timeout=self._config.request_timeout_seconds,
                 follow_redirects=False,
-            )
-            response.raise_for_status()
-            if len(response.content) > self._config.max_response_bytes:
-                raise UpstreamApiError("Downstream API response exceeded the configured limit")
+            ) as response:
+                response.raise_for_status()
+                body = bytearray()
+                async for chunk in response.aiter_bytes():
+                    body.extend(chunk)
+                    if len(body) > self._config.max_response_bytes:
+                        raise UpstreamApiError(
+                            "Downstream API response exceeded the configured limit"
+                        )
             outcome = "SUCCESS"
-            return response.json()
+            return json.loads(body)
         except UpstreamApiError:
             raise
         except Exception as exc:

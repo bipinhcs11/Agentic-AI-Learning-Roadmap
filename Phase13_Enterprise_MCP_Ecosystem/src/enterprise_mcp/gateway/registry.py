@@ -22,6 +22,7 @@ class RegisteredTool:
     timeout_ms: int
     max_response_bytes: int
     input_schema: dict[str, Any]
+    approved_clients: frozenset[str]
 
 
 class RegistrySnapshot:
@@ -60,6 +61,7 @@ class RegistrySnapshot:
                     timeout_ms=tool["timeoutMs"],
                     max_response_bytes=tool["maxResponseBytes"],
                     input_schema=tool["inputSchema"],
+                    approved_clients=frozenset(manifest["approvedClients"]),
                 )
 
         if not manifests:
@@ -67,11 +69,24 @@ class RegistrySnapshot:
         canonical = json.dumps(manifests, separators=(",", ":"), sort_keys=True).encode()
         return cls(tools, f"sha256:{hashlib.sha256(canonical).hexdigest()}")
 
-    def require(self, server_id: str, tool_name: str) -> RegisteredTool:
+    def require(
+        self,
+        server_id: str,
+        tool_name: str,
+        client_id: str | None = None,
+    ) -> RegisteredTool:
         tool = self._tools.get((server_id, tool_name))
         if tool is None:
             raise PolicyDeniedError(f"Tool is not approved: {server_id}/{tool_name}")
+        if client_id is not None and client_id not in tool.approved_clients:
+            raise PolicyDeniedError("Client is not approved for this MCP server")
         return tool
+
+    def by_name(self, tool_name: str) -> RegisteredTool:
+        matches = [tool for tool in self._tools.values() if tool.name == tool_name]
+        if len(matches) != 1:
+            raise ConfigurationError(f"Registered tool name must be unique: {tool_name}")
+        return matches[0]
 
     def catalog(self) -> list[RegisteredTool]:
         return sorted(self._tools.values(), key=lambda tool: (tool.server_id, tool.name))

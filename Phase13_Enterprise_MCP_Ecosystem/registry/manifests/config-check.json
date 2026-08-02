@@ -24,7 +24,7 @@
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
-        "properties": { "participant_id": { "type": "string", "pattern": "^P-DEMO-[0-9]{3}$" } },
+        "properties": { "participant_id": { "type": "string", "pattern": "^P-DEMO-[0-9]{3}$", "maxLength": 10 } },
         "required": ["participant_id"]
       }
     }

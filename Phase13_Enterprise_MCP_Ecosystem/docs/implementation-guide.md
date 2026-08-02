@@ -40,9 +40,6 @@ and threat-model review.
 gateway                             :8080
 work_item_analysis MCP server       :8101
 config_check MCP server             :8102
-sonar_analysis MCP server           :8103
-coding_standards MCP server         :8104
-skills_catalog MCP server           :8105
 fictional local identity/API fixture:9000
 ```
 
@@ -91,7 +88,7 @@ Start the isolated services:
 docker compose up --build
 ```
 
-In another shell, create a five-minute fictional IDE token and run the gateway
+In another shell, create a short-lived fictional IDE token and run the gateway
 demo:
 
 ```bash

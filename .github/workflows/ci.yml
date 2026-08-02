@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - phase9-capstone-hub
+      - codex/phase13-enterprise-mcp-ecosystem
 
 jobs:
   offline-checks:
@@ -91,3 +92,26 @@ jobs:
       - name: Validate the safe cloud foundations
         working-directory: Phase12_Enterprise_AI_Identity_Security/capstone_enterprise_ai_access_gateway/infrastructure/terraform
         run: ./scripts/validate-all.sh
+
+  phase13-python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.3"
+
+      - name: Install locked Phase 13 environment
+        working-directory: Phase13_Enterprise_MCP_Ecosystem
+        run: uv sync --locked --extra dev
+
+      - name: Validate Phase 13 code and registry
+        working-directory: Phase13_Enterprise_MCP_Ecosystem
+        run: |
+          uv run ruff format --check .
+          uv run ruff check .
+          uv run pytest -q
+          docker compose config --quiet

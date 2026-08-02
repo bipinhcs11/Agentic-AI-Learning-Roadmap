@@ -16,6 +16,7 @@ api_gateway:
 
 gateway:
   host: 0.0.0.0
+  public_url: https://gateway.dev.mcp.example.invalid
   inbound_jwt:
     issuer: https://identity.dev.example.invalid
     jwks_url: https://identity.dev.example.invalid/.well-known/jwks.json
@@ -25,9 +26,3 @@ scenarios:
     server_url: https://work-item-analysis.dev.mcp.example.invalid/mcp
   config_check:
     server_url: https://config-check.dev.mcp.example.invalid/mcp
-  sonar_analysis:
-    server_url: https://sonar-analysis.dev.mcp.example.invalid/mcp
-  coding_standards:
-    server_url: https://coding-standards.dev.mcp.example.invalid/mcp
-  skills_catalog:
-    server_url: https://skills-catalog.dev.mcp.example.invalid/mcp

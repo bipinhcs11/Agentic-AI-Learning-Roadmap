@@ -24,7 +24,7 @@
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,
-        "properties": { "work_item_id": { "type": "string", "pattern": "^WI-DEMO-[0-9]{3}$" } },
+        "properties": { "work_item_id": { "type": "string", "pattern": "^WI-DEMO-[0-9]{3}$", "maxLength": 11 } },
         "required": ["work_item_id"]
       }
     }

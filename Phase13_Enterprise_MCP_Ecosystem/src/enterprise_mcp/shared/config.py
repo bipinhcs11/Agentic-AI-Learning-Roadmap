@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .errors import ConfigurationError
 
@@ -69,11 +69,13 @@ class GatewayConfig(BaseModel):
 
     host: str = "127.0.0.1"
     port: int = Field(default=8080, ge=1, le=65535)
+    public_url: str
     registry_dir: str = "registry/manifests"
+    required_role: str
+    resource_allowlists: dict[str, list[str]]
     approved_clients: list[str]
     inbound_jwt: JwtConfig
     internal_assertion_audience_prefix: str = "enterprise-mcp"
-    internal_assertion_secret_env: str = "MCP_INTERNAL_ASSERTION_SECRET"  # noqa: S105
     internal_assertion_ttl_seconds: int = Field(default=60, ge=10, le=300)
 
 
@@ -84,6 +86,7 @@ class ScenarioConfig(BaseModel):
     secret_path: str
     credential_env_prefix: str
     scope: str
+    assertion_secret_env: str
     server_url: str
     port: int = Field(ge=1, le=65535)
 
@@ -92,6 +95,13 @@ class ScenarioConfig(BaseModel):
     def validate_prefix(cls, value: str) -> str:
         if not value.startswith("MCP_") or not value.replace("_", "").isalnum():
             raise ValueError("credential_env_prefix must be an MCP_* environment prefix")
+        return value
+
+    @field_validator("assertion_secret_env")
+    @classmethod
+    def validate_assertion_secret_env(cls, value: str) -> str:
+        if not value.startswith("MCP_") or not value.endswith("_ASSERTION_SECRET"):
+            raise ValueError("assertion_secret_env must name an MCP_*_ASSERTION_SECRET variable")
         return value
 
 
@@ -106,6 +116,24 @@ class Settings(BaseModel):
     gateway: GatewayConfig
     scenarios: dict[str, ScenarioConfig]
 
+    @model_validator(mode="after")
+    def validate_shared_environment_security(self) -> Settings:
+        if self.runtime.environment in {"dev", "prod"}:
+            if self.secret_provider != "vault":  # noqa: S105 - provider type
+                raise ValueError("Shared environments must use the Vault secret provider")
+            if self.vault.verify_tls is False or self.api_gateway.verify_tls is False:
+                raise ValueError("TLS verification cannot be disabled in shared environments")
+            protected_urls = [
+                self.vault.address,
+                self.oauth.token_url,
+                self.api_gateway.base_url,
+                self.gateway.public_url,
+                *(scenario.server_url for scenario in self.scenarios.values()),
+            ]
+            if any(not url.startswith("https://") for url in protected_urls):
+                raise ValueError("Shared-environment service URLs must use HTTPS")
+        return self
+
 
 ENVIRONMENT_OVERRIDES: dict[str, tuple[str, ...]] = {
     "MCP_SERVICE_HOST": ("runtime", "service_host"),
@@ -114,13 +142,11 @@ ENVIRONMENT_OVERRIDES: dict[str, tuple[str, ...]] = {
     "MCP_API_GATEWAY_BASE_URL": ("api_gateway", "base_url"),
     "MCP_TOKEN_URL": ("oauth", "token_url"),
     "MCP_GATEWAY_HOST": ("gateway", "host"),
+    "MCP_GATEWAY_PUBLIC_URL": ("gateway", "public_url"),
     "MCP_GATEWAY_ISSUER": ("gateway", "inbound_jwt", "issuer"),
     "MCP_GATEWAY_JWKS_URL": ("gateway", "inbound_jwt", "jwks_url"),
     "MCP_WORK_ITEM_SERVER_URL": ("scenarios", "work_item_analysis", "server_url"),
     "MCP_CONFIG_CHECK_SERVER_URL": ("scenarios", "config_check", "server_url"),
-    "MCP_SONAR_SERVER_URL": ("scenarios", "sonar_analysis", "server_url"),
-    "MCP_STANDARDS_SERVER_URL": ("scenarios", "coding_standards", "server_url"),
-    "MCP_SKILLS_SERVER_URL": ("scenarios", "skills_catalog", "server_url"),
 }
 
 

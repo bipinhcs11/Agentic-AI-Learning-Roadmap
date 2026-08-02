@@ -3,8 +3,8 @@
 from functools import lru_cache
 
 import httpx
-from mcp.server.fastmcp import FastMCP
 
+from enterprise_mcp.servers.factory import scenario_fast_mcp
 from enterprise_mcp.servers.runtime import run_server
 from enterprise_mcp.shared.config import load_settings
 from enterprise_mcp.shared.factory import build_api_client
@@ -12,7 +12,7 @@ from enterprise_mcp.shared.security import current_trace
 
 from .service import ConfigCheckService
 
-mcp = FastMCP("Config Check", stateless_http=True, json_response=True)
+mcp = scenario_fast_mcp("Config Check", "config_check")
 
 
 @lru_cache

@@ -1,30 +1,42 @@
-"""Single governed MCP endpoint for IDE clients."""
+"""Single governed MCP endpoint for the two-server diagnostic POC."""
 
 from __future__ import annotations
 
+import asyncio
 import contextlib
+import json
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 import uvicorn
-from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 
 from enterprise_mcp.shared.config import Settings, load_settings
+from enterprise_mcp.shared.errors import UpstreamApiError
+from enterprise_mcp.shared.observability import configure_safe_logging
 from enterprise_mcp.shared.security import GatewayJwtMiddleware, InboundJwtVerifier
+from enterprise_mcp.shared.transport import governed_fast_mcp
 
 from .downstream import DownstreamMcpClient
+from .policy import GatewayPolicy
 from .registry import RegistrySnapshot
-
-mcp = FastMCP("Enterprise MCP Gateway", stateless_http=True, json_response=True)
+from .schema_controls import bind_registry_schemas
 
 
 @lru_cache
 def _settings() -> Settings:
     return load_settings()
+
+
+mcp = governed_fast_mcp(
+    "Enterprise MCP Gateway",
+    bind_host=_settings().gateway.host,
+    port=_settings().gateway.port,
+    public_url=_settings().gateway.public_url,
+)
 
 
 @lru_cache
@@ -41,58 +53,66 @@ def _registry() -> RegistrySnapshot:
     )
 
 
+@lru_cache
+def _policy() -> GatewayPolicy:
+    return GatewayPolicy(_settings(), _registry())
+
+
+@lru_cache
+def _bind_registry_controls() -> None:
+    bind_registry_schemas(mcp, _registry())
+
+
+async def _invoke(
+    *,
+    server_id: str,
+    scenario: str,
+    tool: str,
+    arguments: dict[str, Any],
+    resource_name: str,
+) -> Any:
+    registered = _policy().authorize(
+        server_id=server_id,
+        tool_name=tool,
+        resource_name=resource_name,
+        resource_value=str(arguments[resource_name]),
+    )
+    try:
+        async with asyncio.timeout(registered.timeout_ms / 1000):
+            result = await _downstream().call_tool(
+                scenario=scenario,
+                tool=tool,
+                arguments=arguments,
+            )
+    except TimeoutError as exc:
+        raise UpstreamApiError("Approved MCP server call exceeded its registry timeout") from exc
+    encoded = json.dumps(result, separators=(",", ":")).encode("utf-8")
+    if len(encoded) > registered.max_response_bytes:
+        raise UpstreamApiError("Approved MCP server result exceeded its registry limit")
+    return result
+
+
 @mcp.tool()
 async def work_item_analyze(work_item_id: str) -> Any:
-    """Analyze a fictional work item using approved read-only domain APIs."""
-    _registry().require("devassist.work-item-analysis", "work_item_analyze")
-    return await _downstream().call_tool(
+    """Analyze one approved fictional work item using read-only domain APIs."""
+    return await _invoke(
+        server_id="devassist.work-item-analysis",
         scenario="work_item_analysis",
         tool="work_item_analyze",
         arguments={"work_item_id": work_item_id},
+        resource_name="work_item_id",
     )
 
 
 @mcp.tool()
 async def config_check(participant_id: str) -> Any:
-    """Check approved configuration values when work-item evidence is missing."""
-    _registry().require("devassist.config-check", "config_check")
-    return await _downstream().call_tool(
+    """Check approved configuration when fictional work-item evidence is missing."""
+    return await _invoke(
+        server_id="devassist.config-check",
         scenario="config_check",
         tool="config_check",
         arguments={"participant_id": participant_id},
-    )
-
-
-@mcp.tool()
-async def sonar_get_issues(project_key: str, severity: str = "MAJOR") -> Any:
-    """Read bounded Sonar issues for an approved project."""
-    _registry().require("devassist.sonar-analysis", "sonar_get_issues")
-    return await _downstream().call_tool(
-        scenario="sonar_analysis",
-        tool="sonar_get_issues",
-        arguments={"project_key": project_key, "severity": severity},
-    )
-
-
-@mcp.tool()
-async def standards_get_rule(rule_id: str) -> Any:
-    """Read one approved and versioned coding standard."""
-    _registry().require("devassist.coding-standards", "standards_get_rule")
-    return await _downstream().call_tool(
-        scenario="coding_standards",
-        tool="standards_get_rule",
-        arguments={"rule_id": rule_id},
-    )
-
-
-@mcp.tool()
-async def skills_list_approved(domain: str) -> Any:
-    """List approved domain skills without creating or modifying a branch."""
-    _registry().require("devassist.skills-catalog", "skills_list_approved")
-    return await _downstream().call_tool(
-        scenario="skills_catalog",
-        tool="skills_list_approved",
-        arguments={"domain": domain},
+        resource_name="participant_id",
     )
 
 
@@ -100,9 +120,27 @@ async def _health(request: Any) -> JSONResponse:
     return JSONResponse({"status": "ok", "service": "enterprise-mcp-gateway"})
 
 
+async def _ready(request: Any) -> JSONResponse:
+    return JSONResponse({"status": "ready", "registryDigest": _registry().digest})
+
+
+async def _protected_resource_metadata(request: Any) -> JSONResponse:
+    settings = _settings()
+    public_url = settings.gateway.public_url.rstrip("/")
+    return JSONResponse(
+        {
+            "resource": f"{public_url}/mcp",
+            "authorization_servers": [settings.gateway.inbound_jwt.issuer],
+            "bearer_methods_supported": ["header"],
+            "resource_name": "Enterprise MCP Gateway",
+        }
+    )
+
+
 def build_app(settings: Settings | None = None) -> Starlette:
     resolved = settings or _settings()
-    _registry()
+    _bind_registry_controls()
+    configure_safe_logging()
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
@@ -110,7 +148,12 @@ def build_app(settings: Settings | None = None) -> Starlette:
             yield
 
     app = Starlette(
-        routes=[Route("/health", _health), Mount("/", app=mcp.streamable_http_app())],
+        routes=[
+            Route("/health", _health),
+            Route("/ready", _ready),
+            Route("/.well-known/oauth-protected-resource", _protected_resource_metadata),
+            Mount("/", app=mcp.streamable_http_app()),
+        ],
         lifespan=lifespan,
     )
     app.add_middleware(
@@ -119,6 +162,8 @@ def build_app(settings: Settings | None = None) -> Starlette:
             resolved.gateway.inbound_jwt,
             resolved.gateway.approved_clients,
         ),
+        public_url=resolved.gateway.public_url,
+        registry_digest=_registry().digest,
     )
     return app
 
@@ -130,6 +175,7 @@ def main() -> None:
         host=settings.gateway.host,
         port=settings.gateway.port,
         log_level=settings.runtime.log_level.lower(),
+        access_log=False,
     )
 
 

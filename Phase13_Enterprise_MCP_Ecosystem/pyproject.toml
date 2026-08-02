@@ -33,9 +33,6 @@ dev = [
 enterprise-mcp-gateway = "enterprise_mcp.gateway.server:main"
 mcp-work-item-analysis = "enterprise_mcp.servers.work_item_analysis.server:main"
 mcp-config-check = "enterprise_mcp.servers.config_check.server:main"
-mcp-sonar-analysis = "enterprise_mcp.servers.sonar_analysis.server:main"
-mcp-coding-standards = "enterprise_mcp.servers.coding_standards.server:main"
-mcp-skills-catalog = "enterprise_mcp.servers.skills_catalog.server:main"
 enterprise-mcp-mock-api = "enterprise_mcp.mock_enterprise.app:main"
 
 [tool.hatch.build.targets.wheel]

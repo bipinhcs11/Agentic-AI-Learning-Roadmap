@@ -1,246 +1,134 @@
 # Reference Architecture
 
-## Architecture principles
+## Scope
 
-1. The registry is the authoritative **control plane**.
-2. The gateway is the mandatory **runtime enforcement plane**.
-3. The gateway uses a validated registry snapshot; the registry is not a hard
-   dependency on every invocation.
-4. Servers are bounded by enterprise capability, not collected into one large
-   MCP server.
-5. Authorization is tool- and resource-scope specific, never only server-wide.
-6. Read-only is enforced by policy, code, and backend credentials. MCP tool
-   annotations are useful metadata, not a security boundary.
-7. The client token terminates at the gateway. Downstream calls use separate,
-   audience-bound workload credentials.
-8. Payloads, prompts, source code, tool results, and bearer tokens are not logged
-   by default.
-9. Backend placement follows data gravity: database-backed servers run near the
-   approved database and remain reachable only through the gateway path.
-10. Agent-to-agent collaboration uses a separate A2A trust plane; agent
-    discovery never grants permission to call a skill.
+This reference architecture covers the runnable POC only: one approved IDE
+client, one MCP gateway, a Git-backed registry snapshot, and two separately
+deployed read-only MCP servers. All records are fictional.
 
-The complete target-state requirements are in the
-[Architecture Requirements Document](architecture-requirements-document.md).
-
-## MVP topology
+## Logical flow
 
 ```mermaid
-flowchart TB
-    subgraph ClientBoundary["Developer workstation"]
-        D["Developer"] --> V["VS Code MCP host"]
-    end
-
-    subgraph Runtime["Runtime plane"]
-        G["MCP Gateway\nprotocol | auth | policy | routing | audit"]
-        S["Build Intelligence MCP Server\n3 read-only tools"]
-    end
-
-    subgraph Control["Control plane"]
-        M["Git-reviewed manifests"] --> X["Schema + policy validation"]
-        X --> R["Versioned registry snapshot"]
-    end
-
-    subgraph Backends["Sandbox backends"]
-        C["Fictional CI API"]
-        A["Audit + metrics sink"]
-        I["Local issuer or enterprise test IdP"]
-    end
-
-    V -->|"Streamable HTTP"| G
-    I -->|"issuer metadata and keys"| G
-    R -->|"startup/reload sync"| G
-    G -->|"internal assertion"| S
-    S -->|"read-only workload identity"| C
-    G --> A
-    S --> A
+flowchart LR
+    IDE["Copilot Chat<br/>VS Code or JetBrains"] -->|"user/client JWT"| GW["MCP Gateway"]
+    REG["Registry manifests"] -. "validated snapshot" .-> GW
+    GW -->|"tool-bound assertion"| WI["Work Item Analysis MCP"]
+    GW -->|"tool-bound assertion"| CC["Config Check MCP"]
+    WI -->|"client credential → API token → GET"| API["Internal API gateway"]
+    CC -->|"client credential → API token → GET"| API
+    SEC["Vault / secret provider"] --> WI
+    SEC --> CC
+    GW --> OBS["Trace and audit"]
+    WI --> OBS
+    CC --> OBS
 ```
 
-## Request path
+The servers do not call each other. The client/orchestrating host receives the
+Work Item result and makes a second approved `config_check` tool call when
+needed. No AI agent is embedded in either server.
+
+## Trust boundaries
+
+| Boundary | Credential | Validation |
+|---|---|---|
+| client → gateway | user/client JWT | signature, issuer, audience, time, approved client |
+| gateway policy | claims + call | required role, registry entry, tool schema, resource allowlist |
+| gateway → server | short-lived per-scenario assertion | issuer, audience, time, scenario, tool, trace |
+| server → secret provider | workload identity | approved runtime/Vault authentication method |
+| server → token service | scenario client credential | fixed scope and audience |
+| server → API gateway | one-operation API token | backend audience, scope, expiry, replay behavior |
+
+The inbound developer token is never forwarded. Work Item and Config Check do
+not share assertion keys or API client credentials.
+
+## Request sequence
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant IDE as VS Code host
-    participant GW as MCP Gateway
-    participant REG as Registry snapshot
-    participant MCP as Build MCP server
-    participant CI as Fictional CI API
+    participant C as IDE client
+    participant G as MCP Gateway
+    participant R as Registry snapshot
+    participant W as Work Item MCP
+    participant V as Vault
+    participant I as Token service
+    participant A as Internal APIs
 
-    User->>IDE: Ask why APP-FICTION-001 failed
-    IDE->>GW: initialize / tools/list
-    GW->>REG: read in-memory approved routes
-    GW-->>IDE: three approved tools only
-    IDE->>GW: tools/call get_test_failures
-    GW->>GW: validate token, client, tool, app, schema, limits
-    GW->>MCP: call + short-lived signed context
-    MCP->>MCP: validate gateway and application scope again
-    MCP->>CI: GET using read-only workload credential
-    CI-->>MCP: bounded fictional failures
-    MCP-->>GW: MCP tool result
-    GW->>GW: size/classification checks + audit metadata
-    GW-->>IDE: result + trace ID
+    C->>G: tools/call + gateway JWT + traceparent
+    G->>G: authenticate client and user
+    G->>R: resolve approved server/tool/schema
+    G->>G: authorize role and WI-DEMO-001
+    G->>W: tool call + one-call assertion
+    W->>V: obtain scenario API client credential
+    W->>I: client_credentials for work-item.read
+    I-->>W: short-lived API token
+    W->>A: fixed read-only GET operations
+    A-->>W: bounded fictional evidence
+    W-->>G: sanitized tool result
+    G-->>C: result + correlated trace
 ```
 
-## Component contracts
+Config Check follows the same sequence with a separate assertion key,
+credential path, API scope, and allowed resource `P-DEMO-001`.
 
-### Enterprise registry
+## Runtime placement
 
-The MVP registry is Git-backed configuration, not a portal. A pull request is
-the approval workflow for the week. Each manifest defines:
+Only the gateway is exposed to the MCP client. Scenario-server ports are private
+inside the runtime network. Their health endpoints may be visible to the
+platform health system but not to developer clients.
 
-- immutable server ID and semantic version;
-- owner and support contact;
-- internal deployment URL;
-- allowed clients and environments;
-- tools, input schemas, operation type, data classification, timeout, and output
-  limit;
-- lifecycle status and approval state; and
-- a short expiry date to force re-review.
-
-The internal schema borrows the public registry's server identity and transport
-concepts, then adds enterprise extensions. Do not publish internal endpoints or
-metadata to the public registry.
-
-Snapshot behavior:
-
-- validate JSON Schema and cross-field policy in CI;
-- compute a digest for the approved manifest set;
-- load the snapshot at gateway startup and on controlled reload;
-- reject a snapshot older than the configured maximum age;
-- retain one last-known-good snapshot for rollback;
-- support an emergency denylist that overrides the snapshot.
-
-### MCP gateway
-
-The MVP gateway supports the minimum interoperable methods for the use case:
-
-- `initialize` and lifecycle notifications;
-- `tools/list` with only approved tools;
-- `tools/call` for approved read-only tools; and
-- `ping` if needed by the selected client.
-
-It rejects resources, prompts, sampling, elicitation, tasks, unknown methods,
-unknown parameters, and tools not in the snapshot.
-
-The protocol adapter, authorization decision, route lookup, audit emitter, and
-downstream MCP client are separate modules. This allows the protocol layer to
-change without rewriting enterprise policy.
-
-### Build Intelligence MCP server
-
-The server exposes exactly three tools:
-
-| Tool | Input | Output boundary |
+| Component | Local POC | Azure target |
 |---|---|---|
-| `get_build_status` | allowlisted application ID | latest build ID, state, time, branch alias |
-| `get_test_failures` | allowlisted application ID, optional build ID | at most 20 sanitized failure summaries |
-| `get_application_owner` | allowlisted application ID | fictional team and support alias |
+| client | protocol/demo client or approved IDE | Copilot Chat in approved IDE |
+| registry | Git JSON manifests | Git approval plus Azure API Center publication |
+| gateway policy edge | Python gateway on `127.0.0.1:8080` | Azure API Management |
+| MCP runtime | Docker Compose private services | private Azure Container Apps |
+| secrets | fictional environment values | approved Vault adapter or Azure Key Vault decision |
+| APIs | fictional fixture | existing internal API gateway |
+| telemetry | JSON metadata events | Application Insights / Log Analytics |
 
-The server does not receive a CI API credential from the model, user, or IDE. It
-uses a server-specific read-only credential. The server repeats application
-scope authorization to prevent the gateway from becoming the only security
-boundary.
+Azure Foundry is not required. If the MCP runtime is placed in AWS or on
+premises, preserve the same trust boundaries and use private connectivity to
+the relevant APIs. Do not install a server on every developer laptop for the
+shared enterprise model.
 
-### IDE client
+## Registry contract
 
-Week one uses supported VS Code remote MCP configuration. It does not build a
-custom extension. The organization publishes only the gateway URL and disables
-or governs arbitrary MCP server access through existing enterprise controls
-when available.
+Every active manifest defines:
 
-IntelliJ is a post-MVP compatibility track. JetBrains currently supports custom
-MCP tools in AI Assistant, but exact IDE version, licensing, identity flow, and
-enterprise configuration management must be validated before it is committed
-to the pilot.
+- server ID, version, internal hosting, lifecycle, and owner;
+- approved client IDs;
+- tools-only and read-only classification; and
+- tool name, description, timeout, response cap, and JSON input schema.
 
-## Hybrid placement and backend calls
+The gateway validates manifests at startup, advertises the manifest schema to
+the client, and applies that same schema before proxying. Unknown fields fail
+closed. A production publication pipeline should sign snapshots and provide an
+emergency revocation path; that is deferred from the POC.
 
-The gateway is one logical enterprise service but may have instances in Azure,
-AWS, and on-premises zones. Registry and policy contracts are consistent across
-instances. A database-backed MCP server should run in the database's approved
-network zone; the database is not exposed publicly merely to reach a cloud
-gateway.
+## Failure behavior
 
-Only MCP invocations traverse the MCP Gateway. A bounded server calls its
-approved REST API or database directly with server-specific workload identity,
-fixed operations, private networking, and trace propagation. Server-to-server
-MCP tool use returns through the gateway and never uses an ungoverned peer path.
+- Authentication or policy ambiguity: deny before the server call.
+- Invalid manifest or duplicate tool: fail gateway startup.
+- Downstream timeout/oversize/error: return a sanitized MCP error.
+- Secret/token failure: make no API call and emit metadata-only failure audit.
+- Direct server call: require a valid gateway assertion.
+- Invalid Host or Origin: reject through Streamable HTTP transport protection.
 
-## MCP and A2A are separate planes
+## Technology choices
 
-MCP lets an IDE or agent invoke registered tools. A2A lets one independently
-governed agent delegate a bounded task to another. The future A2A Gateway/Broker
-authorizes caller agent, delegated user, target agent, skill, task, data scope,
-environment, depth, and budget. It issues a new audience-bound target credential
-and preserves the trace/delegation chain. A2A is explicitly outside week one.
-
-## Identity and authorization
-
-The gateway decision tuple is:
-
-```text
-(user, client, server, tool, application, environment, registry_version)
-```
-
-The client access token must be short-lived and audience-bound to the gateway.
-For standards-conformant HTTP authorization, the protected endpoint advertises
-OAuth protected-resource metadata and the client uses Authorization Code with
-PKCE where interactive authorization is supported.
-
-The gateway creates a separate short-lived assertion for the target MCP server:
-
-```json
-{
-  "iss": "https://gateway.mcp.example.invalid",
-  "sub": "hashed-user-reference",
-  "aud": "build-intelligence-mcp",
-  "client_id": "vscode-devassist",
-  "tool": "get_test_failures",
-  "application_ids": ["APP-FICTION-001"],
-  "registry_digest": "sha256:example",
-  "trace_id": "mcp-example-001",
-  "exp": 1785521760
-}
-```
-
-The downstream CI API receives a separate workload credential whose permissions
-contain only the required GET operations. Raw user tokens are never forwarded.
-
-## Technology choice for the MVP
-
-| Concern | Week-one choice | Why |
+| Area | POC choice | Reason |
 |---|---|---|
-| Language | Java 21 | aligns with the repository's enterprise Java path |
-| MCP server | Spring Boot + a vetted stable Spring AI MCP starter | native Streamable HTTP support; pin after compatibility spike |
-| Gateway | Spring Boot modular service | reuses security, validation, metrics, and Java skills |
-| Registry | JSON manifests + JSON Schema + Git | reviewable and buildable in a week |
-| Policy | explicit Java policy interface and deny-by-default rules | avoids introducing a production policy dependency during the spike |
-| Identity | local issuer with production-shaped claims; test IdP if ready | preserves identity contract without blocking the week |
-| Telemetry | structured JSON logs + Micrometer/OpenTelemetry interface | metadata-only evidence with a production migration path |
-| Runtime | Docker Compose | deterministic sandbox and no cluster dependency |
+| language | Python 3.11+ | fast, readable vertical slice |
+| MCP | official Python SDK, Streamable HTTP | supported protocol implementation |
+| API client | `httpx` | async streaming and explicit limits |
+| validation | Pydantic + JSON Schema | configuration and registry enforcement |
+| local deployment | Docker Compose | separates gateway and servers simply |
+| dependency control | `uv.lock` and locked container sync | reproducible dependency graph |
 
-Do not pin a Spring AI milestone build for the production pilot. At kickoff,
-select a supported stable line, record the MCP protocol compatibility matrix,
-and lock dependencies. Spring AI 2.x documentation is current but milestone and
-stable release status must be reviewed independently.
+## Deferred capabilities
 
-## Scale-out target after the MVP
-
-The production-pilot design may separate the registry API, gateway, audit sink,
-and policy decision point into independent services. That split should be based
-on measured throughput, ownership, and failure domains—not copied into the
-five-day build before it is needed.
-
-Primary references:
-
-- [MCP authorization](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization)
-- [MCP transports](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
-- [MCP tools](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)
-- [Official MCP Registry](https://github.com/modelcontextprotocol/registry)
-- [VS Code MCP configuration](https://code.visualstudio.com/docs/agent-customization/mcp-servers)
-- [JetBrains AI Assistant agents and MCP tools](https://www.jetbrains.com/help/ai-assistant/agents.html)
-- [Spring AI Streamable HTTP MCP server](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-streamable-http-server-boot-starter-docs.html)
-- [A2A protocol specification](https://github.com/a2aproject/A2A/blob/main/docs/specification.md)
-- [Oracle SQLcl MCP safeguards](https://docs.oracle.com/en/database/oracle/sql-developer-vscode/26.1/sqdnx/using-oracle-sqlcl-mcp-server.html)
-- [SonarQube MCP tools](https://docs.sonarsource.com/sonarqube-mcp-server/tools)
+Sonar remediation, coding/skill lifecycle, database MCPs, arbitrary API tools,
+agents, A2A, dynamic registry routing, high availability, production identity,
+and production observability are not part of this architecture increment. Each
+future server must receive its own manifest, credential, API scope, policy,
+tests, data review, and deployment approval.

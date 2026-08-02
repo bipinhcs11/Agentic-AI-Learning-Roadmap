@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 
 import httpx
@@ -11,7 +12,11 @@ from enterprise_mcp.shared.api_client import GatewayApiClient
 from enterprise_mcp.shared.config import load_settings
 from enterprise_mcp.shared.errors import UpstreamApiError
 from enterprise_mcp.shared.oauth import ClientCredentialsTokenProvider
-from enterprise_mcp.shared.observability import NullAuditSink, TraceContext
+from enterprise_mcp.shared.observability import (
+    NullAuditSink,
+    TraceContext,
+    configure_safe_logging,
+)
 from enterprise_mcp.shared.secrets import ApiCredential
 
 CONFIG_DIR = Path(__file__).resolve().parents[1] / "config"
@@ -98,3 +103,45 @@ async def test_api_client_rejects_arbitrary_url() -> None:
             await client.get_json(
                 operation="bad", path="https://attacker.invalid/data", trace=TraceContext.new()
             )
+
+
+@pytest.mark.asyncio
+async def test_api_client_stops_oversized_response_without_logging_identifier(caplog) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/oauth2/token":
+            return httpx.Response(
+                200,
+                json={
+                    "access_token": "header.payload.fictional-signature-value",
+                    "token_type": "Bearer",
+                    "expires_in": 300,
+                },
+            )
+        return httpx.Response(200, json={"payload": "x" * 2_000})
+
+    configure_safe_logging()
+    caplog.set_level(logging.INFO)
+    settings = load_settings("test", CONFIG_DIR)
+    api_config = settings.api_gateway.model_copy(update={"max_response_bytes": 1024})
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http:
+        client = GatewayApiClient(
+            service_name="work_item_analysis",
+            downstream_service="internal-api-gateway",
+            config=api_config,
+            token_provider=ClientCredentialsTokenProvider(
+                settings.oauth,
+                settings.scenarios["work_item_analysis"],
+                StaticSecrets(),
+                http,
+            ),
+            http_client=http,
+            audit_sink=NullAuditSink(),
+        )
+        with pytest.raises(UpstreamApiError, match="exceeded"):
+            await client.get_json(
+                operation="participant.get",
+                path="/participants/P-DEMO-001",
+                trace=TraceContext.new(),
+            )
+
+    assert "P-DEMO-001" not in caplog.text

@@ -11,7 +11,13 @@ from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 
 from enterprise_mcp.shared.config import Settings, load_settings
+from enterprise_mcp.shared.observability import configure_safe_logging
 from enterprise_mcp.shared.security import InternalAssertionMiddleware
+
+SCENARIO_TOOLS = {
+    "work_item_analysis": "work_item_analyze",
+    "config_check": "config_check",
+}
 
 
 async def _health(request: Any) -> JSONResponse:
@@ -20,6 +26,7 @@ async def _health(request: Any) -> JSONResponse:
 
 def protected_mcp_app(mcp: Any, scenario: str, settings: Settings | None = None) -> Starlette:
     resolved = settings or load_settings()
+    configure_safe_logging()
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
@@ -34,6 +41,8 @@ def protected_mcp_app(mcp: Any, scenario: str, settings: Settings | None = None)
         InternalAssertionMiddleware,
         gateway=resolved.gateway,
         scenario=scenario,
+        scenario_config=resolved.scenarios[scenario],
+        expected_tool=SCENARIO_TOOLS[scenario],
     )
     return app
 
@@ -46,4 +55,5 @@ def run_server(mcp: Any, scenario: str) -> None:
         host=settings.runtime.service_host,
         port=scenario_config.port,
         log_level=settings.runtime.log_level.lower(),
+        access_log=False,
     )

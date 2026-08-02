@@ -21,7 +21,7 @@ from enterprise_mcp.shared.security import (
 class DownstreamMcpClient:
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
-        self._assertions = InternalAssertionIssuer(settings.gateway)
+        self._assertions = InternalAssertionIssuer(settings)
 
     async def call_tool(
         self,

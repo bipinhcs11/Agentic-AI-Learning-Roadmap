@@ -24,7 +24,7 @@ def test_dev_overlay_uses_vault_and_tls() -> None:
     assert settings.vault.verify_tls is True
     assert settings.api_gateway.base_url.startswith("https://")
     assert all(item.server_url.startswith("https://") for item in settings.scenarios.values())
-    assert settings.scenarios["sonar_analysis"].secret_path.startswith("mcp/dev/")
+    assert settings.scenarios["config_check"].secret_path.startswith("mcp/dev/")
 
 
 def test_unknown_environment_fails_closed() -> None:
@@ -45,3 +45,9 @@ def test_container_endpoint_overrides_are_applied(monkeypatch) -> None:
     assert (
         settings.scenarios["work_item_analysis"].server_url == "http://work-item-analysis:8101/mcp"
     )
+
+
+def test_shared_environment_rejects_http_override(monkeypatch) -> None:
+    monkeypatch.setenv("MCP_API_GATEWAY_BASE_URL", "http://unsafe.example.invalid")
+    with pytest.raises(ConfigurationError):
+        load_settings("dev", CONFIG_DIR)

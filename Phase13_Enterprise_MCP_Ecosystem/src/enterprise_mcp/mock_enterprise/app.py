@@ -16,20 +16,18 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 from enterprise_mcp.shared.config import load_settings
+from enterprise_mcp.shared.observability import configure_safe_logging
 
 TOKEN_SECRET = "fictional-mock-api-signing-key-change-me"
 TOKEN_ISSUER = "enterprise-mcp-mock-identity"
 TOKEN_AUDIENCE = "internal-api-gateway"
-USED_TOKEN_IDS: set[str] = set()
+USED_TOKEN_IDS: dict[str, int] = {}
 
 
 def _expected_clients() -> dict[str, str]:
     pairs = {
         "MCP_WORK_ITEM": ("work-item-local", "fictional-work-item-secret"),
         "MCP_CONFIG_CHECK": ("config-check-local", "fictional-config-check-secret"),
-        "MCP_SONAR": ("sonar-local", "fictional-sonar-secret"),
-        "MCP_STANDARDS": ("standards-local", "fictional-standards-secret"),
-        "MCP_SKILLS": ("skills-local", "fictional-skills-secret"),
     }
     return {
         os.getenv(f"{prefix}_CLIENT_ID", defaults[0]): os.getenv(
@@ -81,9 +79,13 @@ def _authorize(request: Request) -> bool:
             issuer=TOKEN_ISSUER,
         )
         token_id = str(claims["jti"])
+        now = int(time.time())
+        for used_id, expires_at in list(USED_TOKEN_IDS.items()):
+            if expires_at <= now:
+                USED_TOKEN_IDS.pop(used_id, None)
         if token_id in USED_TOKEN_IDS:
             return False
-        USED_TOKEN_IDS.add(token_id)
+        USED_TOKEN_IDS[token_id] = int(claims["exp"])
         return True
     except Exception:
         return False
@@ -128,50 +130,6 @@ async def configuration(request: Request) -> JSONResponse:
     return _protected({"enrollmentPlanConfigured": False, "rateTableConfigured": True}, request)
 
 
-async def sonar_issues(request: Request) -> JSONResponse:
-    return _protected(
-        {
-            "issues": [
-                {
-                    "key": "SONAR-FICTION-001",
-                    "severity": request.query_params.get("severity", "MAJOR"),
-                    "rule": "python:S1481",
-                    "message": "Remove the fictional unused local variable.",
-                }
-            ]
-        },
-        request,
-    )
-
-
-async def standard(request: Request) -> JSONResponse:
-    return _protected(
-        {
-            "ruleId": request.path_params["rule_id"],
-            "version": "1.0.0",
-            "summary": "Use bounded timeouts for all internal HTTP calls.",
-            "provenance": "fictional-engineering-standards",
-        },
-        request,
-    )
-
-
-async def skills(request: Request) -> JSONResponse:
-    return _protected(
-        {
-            "skills": [
-                {
-                    "name": "fictional-domain-review",
-                    "version": "1.0.0",
-                    "status": "approved",
-                    "domain": request.query_params.get("domain", "engineering"),
-                }
-            ]
-        },
-        request,
-    )
-
-
 async def health(request: Request) -> JSONResponse:
     return JSONResponse({"status": "ok", "service": "fictional-enterprise-api"})
 
@@ -186,20 +144,19 @@ app = Starlette(
         Route("/participants/{participant_id}/rate", rate),
         Route("/participants/{participant_id}/life-events", life_events),
         Route("/configurations/participants/{participant_id}", configuration),
-        Route("/sonar/projects/{project_key}/issues", sonar_issues),
-        Route("/standards/rules/{rule_id}", standard),
-        Route("/skills", skills),
     ]
 )
 
 
 def main() -> None:
     settings = load_settings()
+    configure_safe_logging()
     uvicorn.run(
         app,
         host=settings.runtime.service_host,
         port=9000,
         log_level=settings.runtime.log_level.lower(),
+        access_log=False,
     )
 
 

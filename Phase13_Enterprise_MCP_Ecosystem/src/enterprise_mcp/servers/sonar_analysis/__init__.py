@@ -1,1 +1,0 @@
-"""Sonar Analysis MCP server."""
