@@ -14,6 +14,7 @@ Connect your AI to the real world — Slack, GitHub, email — and ship a produc
 | 04 | Multi-tenant SaaS | Org isolation, per-tenant quotas, plans | Row-level security, JWT |
 | 05 | Billing & Metering | Token-based pricing, invoices, Stripe sim | PricingEngine, StripeSimulator |
 | 06 | AskMyDocs Pro (Capstone) | Full launch-ready AI SaaS product | Everything from Phases 1-8 + Hugging Face |
+| 07 | [Business Document Assistant POC](project_07_business_document_assistant/README.md) | Notes and business context → reviewed BRD, user stories, or change request; Word export and simulated Confluence publication | Copilot handoff, local browser UI, SQLite, python-docx |
 
 > **Planned for Project 06 — Hugging Face Cloud Integration:**
 > Replace the `CLOUD_MODE` stub from Phase 6 Project 03 with the
@@ -59,6 +60,12 @@ docker compose up --build
 ```
 
 ## Accounts Needed for Phase 8
+
+Project 07 runs locally without an account in offline sample mode. Its Copilot-assisted
+mode uses the employee's existing approved Copilot interface through a manual brief
+and response handoff. It requires no Jenkins, GitHub Actions, MCP, or backend model API.
+See its [demo guide](project_07_business_document_assistant/docs/DEMO_GUIDE.md) and
+[rollout plan](project_07_business_document_assistant/docs/ROLLOUT.md).
 
 | Project | Account | Cost |
 |---|---|---|

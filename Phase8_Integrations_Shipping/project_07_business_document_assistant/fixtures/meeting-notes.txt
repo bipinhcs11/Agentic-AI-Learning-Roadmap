@@ -1,0 +1,9 @@
+FICTIONAL EDUCATIONAL EXAMPLE — Northstar Workshop room booking
+
+Employees need a simpler way to find and reserve available meeting rooms.
+Show room capacity and accessibility features before booking.
+The team proposed allowing bookings 30 days in advance.
+Send a clear confirmation and let organizers cancel a booking.
+If two people select the same room, avoid creating duplicate reservations.
+Open question: who owns rollout and support?
+Open question: what measurable target defines a successful pilot?

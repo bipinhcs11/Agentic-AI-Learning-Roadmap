@@ -1,0 +1,26 @@
+[
+  {
+    "id": "booking-policy",
+    "citation": "S1",
+    "title": "Room booking policy",
+    "version": 3,
+    "url": "https://fictional.example/wiki/spaces/DEMO/pages/101",
+    "text": "Employees may reserve a meeting room up to 14 days in advance. A booking must not exceed the published room capacity. The organizer must cancel a reservation when the meeting is cancelled."
+  },
+  {
+    "id": "accessibility-standard",
+    "citation": "S2",
+    "title": "Accessible workplace tools",
+    "version": 2,
+    "url": "https://fictional.example/wiki/spaces/DEMO/pages/102",
+    "text": "The room selection and reservation flow must support keyboard navigation. Availability and error messages must not rely on color alone. Room accessibility features must be visible before confirmation."
+  },
+  {
+    "id": "confirmation-standard",
+    "citation": "S3",
+    "title": "Reservation confirmation standard",
+    "version": 1,
+    "url": "https://fictional.example/wiki/spaces/DEMO/pages/103",
+    "text": "A successful reservation must show the room name, start time, end time, and organizer. If a room becomes unavailable before confirmation, the reservation must fail with an actionable message."
+  }
+]
