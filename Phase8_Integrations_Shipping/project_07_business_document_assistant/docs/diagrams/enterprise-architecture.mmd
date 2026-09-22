@@ -1,0 +1,75 @@
+flowchart TB
+    subgraph Capture[Meeting input]
+        Manual[Manual notes and text upload - current]
+        ZoomFile[Zoom transcript upload - planned]
+        ZoomAPI[Direct Zoom connector - future]
+    end
+    subgraph Entry[User and assistant entry points]
+        Web[Web workspace - current local demo]
+        API[Application API - current local routes]
+        MCP[MCP facade - future and optional]
+        Client[Approved assistant client - future]
+        Web --> API
+        Client --> MCP
+    end
+    Manual --> Web
+    ZoomFile --> Web
+    ZoomAPI --> Intake
+    API --> Core
+    MCP --> Core
+    subgraph Service[Shared application services]
+        Core[Project and workflow service]
+        Intake[Normalize transcript and preserve source - planned]
+        Extract[Extract candidate decisions and actions - planned]
+        Confirm[User confirms meeting understanding - planned]
+        History[Meeting snapshots and explicit progress - current]
+        RAG[Glossary and lexical retrieval - current with fixtures]
+        Evidence[User confirms definitions and evidence - current]
+        Draft[Versioned templates and draft generation - current]
+        Review[Edit and approve revision - current]
+        Publish[Publication adapters and ledger - live version planned]
+        Core --> Intake --> Extract --> Confirm --> History
+        Core --> History
+        History --> RAG --> Evidence --> Draft --> Review --> Publish
+    end
+    subgraph Knowledge[Business context and delivery sources]
+        Fixture[Fictional Confluence index - current]
+        Confluence[Live Confluence REST adapter - future]
+        Jira[Jira issue and status adapter - future]
+        SharePoint[Selected template library - future]
+        Sync[Permission-aware incremental sync - future]
+        Fixture --> RAG
+        Confluence --> Sync
+        Jira --> Sync
+        SharePoint --> Sync
+        Sync --> RAG
+    end
+    subgraph Generation[Generation options]
+        Offline[Deterministic sample - current]
+        Copilot[Manual Copilot brief and JSON import - current]
+        SDK[Approved Copilot SDK integration - future evaluation]
+    end
+    Draft <--> Offline
+    Draft <--> Copilot
+    Draft <--> SDK
+    subgraph Outputs[Reviewed outputs]
+        Word[Word document - current]
+        LocalPage[Confluence simulation - current]
+        LivePage[Create or update Confluence page - future]
+        JiraWrite[Reviewed Jira changes - future]
+        PPT[Existing organizational PPT agent - future adapter]
+        Review --> Word
+        Publish --> LocalPage
+        Publish --> LivePage
+        Publish --> JiraWrite
+        Publish --> PPT
+    end
+    subgraph Shared[Cross-cutting production services - future]
+        Auth[SSO and project membership]
+        Access[Source and destination authorization]
+        Jobs[Durable jobs and bounded retries]
+        Ledger[Artifact versions and source dependencies]
+        Secrets[Credential store and operational audit]
+    end
+    Shared -.-> Service
+    LivePage -. refresh affected evidence .-> Sync

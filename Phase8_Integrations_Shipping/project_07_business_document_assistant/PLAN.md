@@ -1,5 +1,9 @@
 # Plan — business context retrieval before document drafting
 
+Current direction: **Zoom transcript uploads + manual notes**, with **OneNote deferred**. See [architecture and future roadmap](docs/ARCHITECTURE.md) and the [demo diagram](docs/diagrams/architecture-overview.svg). Dedicated transcript parsing and automatic meeting understanding are planned, not yet implemented.
+
+See [enterprise workflow research and Wednesday demo plan](docs/ENTERPRISE_WORKFLOW_RESEARCH.md) for the Teams/OneNote/Jira integration priorities, document-maintenance proposal, verified vendor constraints, and future PowerPoint-agent handoff. Those integration proposals are not yet implemented.
+
 ## Outcome
 
 A product owner pastes meeting notes mentioning **Cobra** and **FHP**, retrieves relevant fictional Confluence sections, confirms the intended definitions and evidence, and generates a draft with citations. The reviewed draft exports to Word or a local Confluence preview.

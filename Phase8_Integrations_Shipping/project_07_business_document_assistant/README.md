@@ -187,3 +187,7 @@ python meeting_demo.py
 ```
 
 Expected output: PILOT-1 OPEN → DONE (reported); RULE-1 OPEN → IN_PROGRESS; REMINDER-1 new OPEN; ACCESS-1 BLOCKED carried forward. Files: `outputs/meeting-brd.docx`, `.html`, `.json`, and `meeting-copilot-brief.txt`. Earlier meeting citations and snapshots survive Copilot response import, document edits, and export. See `PLAN.md` for shared-project rollout requirements.
+
+## Architecture diagrams and future integrations
+
+See [architecture and roadmap](docs/ARCHITECTURE.md), the [demo architecture diagram](docs/diagrams/architecture-overview.svg), and [editable Mermaid source](docs/diagrams/enterprise-architecture.mmd). The design uses Zoom transcript uploads and manual notes as the preferred input paths; dedicated transcript processing and live connectors are future work. OneNote is deferred. Current and proposed capabilities are explicitly labeled.

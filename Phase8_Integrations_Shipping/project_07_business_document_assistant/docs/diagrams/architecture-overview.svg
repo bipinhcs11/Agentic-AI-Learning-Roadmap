@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1440" viewBox="0 0 1440 1440" role="img" aria-labelledby="title desc">
+<title id="title">Business document assistant: current POC and enterprise direction</title>
+<desc id="desc">Zoom transcripts or manual notes enter a shared application service through the web API or an optional future MCP facade. Meeting understanding, history, permission-aware retrieval, drafting and review produce Word, Confluence, Jira and future PowerPoint outputs. Green labels identify current POC capabilities; amber labels identify planned capabilities. All live connectors are future work.</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#68758c" stroke-width="1.4"/></marker></defs>
+<rect width="1440" height="1440" fill="#f5f7fb"/>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#18243c}.title{font-size:30px;font-weight:700}.sub{font-size:17px;fill:#53617b}.band{font-size:14px;font-weight:700;letter-spacing:1.2px;fill:#53617b}.name{font-size:19px;font-weight:700}.body{font-size:16px;fill:#46536c}.badge{font-size:12px;font-weight:700}.line{fill:none;stroke:#68758c;stroke-width:2;marker-end:url(#arrow)}</style>
+<text x="50" y="55" class="title">From meeting input to maintained project documents</text>
+<text x="50" y="87" class="sub">Architecture overview • Fictional local POC today • Shared enterprise service proposed</text>
+<rect x="50" y="107" width="130" height="25" rx="12" fill="#dcefe7"/><text x="64" y="124" class="badge">CURRENT POC</text>
+<rect x="196" y="107" width="167" height="25" rx="12" fill="#fff0cf"/><text x="210" y="124" class="badge">PLANNED / FUTURE</text>
+<text x="386" y="124" class="sub">OneNote deferred • No live integrations implied</text>
+<text x="50" y="165" class="band">1  CAPTURE AND ACCESS</text>
+<rect x="50" y="180" width="420" height="110" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="68" y="209" class="name">Manual notes / text upload</text>
+<text x="68" y="234" class="body">Paste notes or upload .txt / .md</text>
+<rect x="364" y="264" width="94" height="19" rx="8" fill="#dcefe7"/><text x="373" y="278" class="badge">CURRENT</text>
+<rect x="510" y="180" width="420" height="110" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="528" y="209" class="name">Zoom transcript file</text>
+<text x="528" y="234" class="body">Dedicated transcript parser planned</text>
+<rect x="800" y="264" width="118" height="19" rx="8" fill="#fff0cf"/><text x="809" y="278" class="badge">FUTURE</text>
+<rect x="970" y="180" width="420" height="110" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="988" y="209" class="name">Direct Zoom import</text>
+<text x="988" y="234" class="body">Optional connector after approval</text>
+<rect x="1260" y="264" width="118" height="19" rx="8" fill="#fff0cf"/><text x="1269" y="278" class="badge">FUTURE</text>
+<path d="M260,290 L260,325" class="line"/>
+<path d="M1180,290 L1180,325" class="line"/>
+<path d="M720,290 L720,310 L520,310 L520,325" class="line"/>
+<rect x="50" y="325" width="650" height="100" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="68" y="354" class="name">Web workspace + application API</text>
+<text x="68" y="379" class="body">Current local interface; shared SSO portal planned</text>
+<rect x="594" y="399" width="94" height="19" rx="8" fill="#dcefe7"/><text x="603" y="413" class="badge">CURRENT</text>
+<rect x="740" y="325" width="650" height="100" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="758" y="354" class="name">Optional connectors / MCP</text>
+<text x="758" y="379" class="body">Zoom connector or approved assistant access to shared services</text>
+<rect x="1260" y="399" width="118" height="19" rx="8" fill="#fff0cf"/><text x="1269" y="413" class="badge">FUTURE</text>
+<path d="M720,425 L720,472" class="line"/>
+<text x="50" y="470" class="band">2  UNDERSTAND THE MEETING AND CONFIRM CONTEXT</text>
+<rect x="50" y="490" width="420" height="130" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="68" y="519" class="name">Normalize + extract candidates</text>
+<text x="68" y="544" class="body">Keep original text and timestamps</text>
+<text x="68" y="565" class="body">Confirm decisions, actions and questions</text>
+<rect x="340" y="594" width="118" height="19" rx="8" fill="#fff0cf"/><text x="349" y="608" class="badge">FUTURE</text>
+<rect x="510" y="490" width="420" height="130" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="528" y="519" class="name">Meeting history + business retrieval</text>
+<text x="528" y="544" class="body">Explicit progress + glossary / FTS5</text>
+<text x="528" y="565" class="body">Fictional Confluence pages today</text>
+<rect x="824" y="594" width="94" height="19" rx="8" fill="#dcefe7"/><text x="833" y="608" class="badge">CURRENT</text>
+<rect x="970" y="490" width="420" height="130" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="988" y="519" class="name">Live sources and synchronization</text>
+<text x="988" y="544" class="body">Confluence rules; Jira status</text>
+<text x="988" y="565" class="body">Permissions, versions, freshness</text>
+<rect x="1260" y="594" width="118" height="19" rx="8" fill="#fff0cf"/><text x="1269" y="608" class="badge">FUTURE</text>
+<path d="M470,552 L510,552" class="line"/>
+<path d="M970,552 L930,552" class="line"/>
+<path d="M720,620 L720,665" class="line"/>
+<text x="50" y="662" class="band">3  SHARED DOCUMENT AND REVIEW SERVICES</text>
+<rect x="50" y="680" width="420" height="130" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="68" y="709" class="name">Draft from confirmed evidence</text>
+<text x="68" y="734" class="body">Versioned templates + source citations</text>
+<text x="68" y="755" class="body">Offline assembly / manual Copilot</text>
+<rect x="364" y="784" width="94" height="19" rx="8" fill="#dcefe7"/><text x="373" y="798" class="badge">CURRENT</text>
+<rect x="510" y="680" width="420" height="130" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="528" y="709" class="name">Review and approve revision</text>
+<text x="528" y="734" class="body">Edit draft; preserve source snapshots</text>
+<text x="528" y="755" class="body">Editing clears previous approval</text>
+<rect x="824" y="784" width="94" height="19" rx="8" fill="#dcefe7"/><text x="833" y="798" class="badge">CURRENT</text>
+<rect x="970" y="680" width="420" height="130" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="988" y="709" class="name">Propose existing-page changes</text>
+<text x="988" y="734" class="body">Before / after preview; remote version</text>
+<text x="988" y="755" class="body">Publish only the approved change set</text>
+<rect x="1260" y="784" width="118" height="19" rx="8" fill="#fff0cf"/><text x="1269" y="798" class="badge">FUTURE</text>
+<path d="M470,745 L510,745" class="line"/>
+<path d="M970,745 L930,745" class="line"/>
+<path d="M720,810 L720,855" class="line"/>
+<text x="50" y="852" class="band">4  OUTPUT ADAPTERS — ONE REVIEWED INPUT PACKAGE</text>
+<rect x="50" y="870" width="310" height="110" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="68" y="899" class="name">Word export</text>
+<text x="68" y="924" class="body">Real .docx output</text>
+<rect x="254" y="954" width="94" height="19" rx="8" fill="#dcefe7"/><text x="263" y="968" class="badge">CURRENT</text>
+<rect x="393" y="870" width="310" height="110" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="411" y="899" class="name">Confluence</text>
+<text x="411" y="924" class="body">Local page simulation</text>
+<text x="411" y="945" class="body">Live create/update planned</text>
+<rect x="597" y="954" width="94" height="19" rx="8" fill="#dcefe7"/><text x="606" y="968" class="badge">CURRENT</text>
+<rect x="736" y="870" width="310" height="110" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="754" y="899" class="name">Jira changes</text>
+<text x="754" y="924" class="body">Preview stories / updates</text>
+<text x="754" y="945" class="body">Reconcile delivery status</text>
+<rect x="916" y="954" width="118" height="19" rx="8" fill="#fff0cf"/><text x="925" y="968" class="badge">FUTURE</text>
+<rect x="1079" y="870" width="310" height="110" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="1097" y="899" class="name">Existing PPT agent</text>
+<text x="1097" y="924" class="body">Approved content brief</text>
+<text x="1097" y="945" class="body">Agent adapter added later</text>
+<rect x="1259" y="954" width="118" height="19" rx="8" fill="#fff0cf"/><text x="1268" y="968" class="badge">FUTURE</text>
+<text x="50" y="1025" class="band">5  ENTERPRISE FOUNDATION — FUTURE IMPLEMENTATION</text>
+<rect x="50" y="1040" width="420" height="120" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="68" y="1069" class="name">Identity and access</text>
+<text x="68" y="1094" class="body">SSO, project membership</text>
+<text x="68" y="1115" class="body">Source and destination permissions</text>
+<rect x="340" y="1134" width="118" height="19" rx="8" fill="#fff0cf"/><text x="349" y="1148" class="badge">FUTURE</text>
+<rect x="510" y="1040" width="420" height="120" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="528" y="1069" class="name">Reliable processing</text>
+<text x="528" y="1094" class="body">Durable jobs, deduplication, retries</text>
+<text x="528" y="1115" class="body">Reconcile uncertain publish outcomes</text>
+<rect x="800" y="1134" width="118" height="19" rx="8" fill="#fff0cf"/><text x="809" y="1148" class="badge">FUTURE</text>
+<rect x="970" y="1040" width="420" height="120" rx="12" fill="white" stroke="#d4dce9"/>
+<text x="988" y="1069" class="name">Traceability and operations</text>
+<text x="988" y="1094" class="body">Version ledger, source dependencies</text>
+<text x="988" y="1115" class="body">Credential store and monitoring</text>
+<rect x="1260" y="1134" width="118" height="19" rx="8" fill="#fff0cf"/><text x="1269" y="1148" class="badge">FUTURE</text>
+<rect x="50" y="1190" width="1340" height="135" rx="12" fill="#e9edf7"/>
+<text x="70" y="1219" class="name">Generation options and rollout boundaries</text>
+<text x="70" y="1247" class="body">Today: no automatic model call. The user runs Copilot manually; offline mode assembles supplied text.</text>
+<text x="70" y="1273" class="body">Future: evaluate approved Copilot SDK automation, transcript understanding, and hybrid retrieval.</text>
+<text x="70" y="1299" class="body">A meeting statement is not policy approval. A reported DONE item is not independently verified delivery.</text>
+<text x="50" y="1354" class="sub">Detailed design and implementation boundaries: docs/ARCHITECTURE.md • Editable graph: enterprise-architecture.mmd</text></svg>
