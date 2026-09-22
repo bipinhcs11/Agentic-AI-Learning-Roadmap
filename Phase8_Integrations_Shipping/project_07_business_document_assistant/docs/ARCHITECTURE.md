@@ -1,12 +1,41 @@
 # Architecture and integration design
 
+## Retrieval extension
+
+See [the concrete plan](../PLAN.md). The HTTP service builds a separate `knowledge.sqlite3`
+FTS5 index from current, demo-readable fixture pages. Every section retains its source ID,
+heading, citation ID, page URL, space, domain, and version. A schema-free glossary is not
+inferred by a model: definitions and aliases are curated fictional metadata in the fixtures.
+
+`POST /api/retrieve` accepts title, notes, domain, and optional term-to-source choices. It
+returns BM25-ranked excerpts and glossary matches and persists a session-owned retrieval
+run. Resolved definitions are pinned before ordinary results. In All domains, when every
+recognized term is resolved, ranking is limited to the resolved terms' domains; a request
+that intentionally resolves terms from multiple domains may include both. Results are
+capped at eight sections. Scores are ranking values, not confidence percentages.
+
+`GET /api/sources/{page_id}` previews authorized fictional page sections. Restricted and
+superseded fixtures are removed before both indexing and glossary construction. This is
+an access-filter demonstration, not real employee authorization.
+
+Document creation now requires `retrieval_id`, matching title/notes/domain,
+`context_confirmed: true`, and source IDs from that retrieval. Unknown terms additionally
+require `acknowledge_unresolved: true`; ambiguous terms cannot be acknowledged away.
+Server-side validation retains required definition sources and rejects stale index hashes.
+Clients cannot supply their own trusted source text. Selected snapshots, term choices,
+retrieval time, and index/input fingerprints travel through Copilot import and Word/HTML export.
+
+The original `fixtures/context.json` remains for the legacy CLI example and its tests;
+the browser uses only the new indexed corpus. This retrieval layer makes no network calls.
+
 ## Implemented POC
 
 ```mermaid
 flowchart LR
     PO[Product owner in local browser] --> HTTP[Loopback Python HTTP service]
     HTTP --> DATA[SQLite current drafts and publication snapshots]
-    HTTP --> CONTEXT[Fictional versioned source fixtures]
+    HTTP --> CONTEXT[SQLite FTS5 index and glossary]
+    CONTEXT --> REVIEWCONTEXT[Confirm definitions and retrieved sections]
     HTTP --> TEMPLATES[Versioned JSON templates]
     HTTP --> OFFLINE[Offline sample assembler]
     HTTP --> BRIEF[Copilot brief]
@@ -52,7 +81,9 @@ All routes require the local origin. Mutation routes require JSON and a per-sess
 |---|---|---|
 | GET | `/api/config` | Templates, fictional sources, sample notes, CSRF token |
 | GET | `/api/documents` | Latest 50 documents owned by this browser session |
-| POST | `/api/documents` | Validate input; queue offline generation or prepare Copilot handoff |
+| POST | `/api/retrieve` | Retrieve source evidence and persist a session-owned context run |
+| GET | `/api/sources/{page_id}` | Preview a readable/current fictional page |
+| POST | `/api/documents` | Validate confirmed retrieval and input; queue offline generation or prepare Copilot handoff |
 | GET | `/api/documents/{id}` | Fetch current document and state |
 | GET | `/api/documents/{id}/brief` | Download pending Copilot prompt |
 | POST | `/api/documents/{id}/import` | Import `{result: {sections: [...]}}` into a pending Copilot draft |
@@ -113,3 +144,9 @@ Official integration references:
 The POC makes no claim that a Copilot subscription cannot support any automation in the future. It simply does not assume a backend entitlement or permitted invocation method that has not been confirmed for this organization.
 
 References: [Copilot CLI overview](https://docs.github.com/en/copilot/concepts/agents/copilot-cli/about-copilot-cli), [VS Code reusable prompts](https://code.visualstudio.com/docs/agent-customization/prompt-files).
+
+## Meeting continuity
+
+`POST /api/meetings` saves an immutable, session-owned meeting record with project, date, title, and notes. Identical records deduplicate by owner and payload hash. Optional `project` and `meeting_date` on `/api/retrieve` include strictly earlier project meetings in chronological order. There is a 50-record demo bound, enforced without silent truncation. Project names are trimmed and case-folded; production requires stable project IDs and SSO membership.
+
+`meetings.py` compares exact note lines and explicit `[STATE] ITEM-ID | text` entries. It uses the latest prior state per item; missing unresolved items carry forward. No semantic matching, automatic completion, or policy approval occurs. `/api/documents` validates the project/date and history hash against the stored retrieval snapshot to reject stale or tampered context. Earlier records use M citations; current notes use N1; business rules retain S citations. The Copilot brief, offline draft, import validation, and exported provenance preserve this distinction. Saving a draft does not implicitly add a meeting record.

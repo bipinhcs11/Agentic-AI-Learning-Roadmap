@@ -6,7 +6,7 @@ Keep the POC focused on whether product owners get useful documents. Validate th
 
 | Stage | Deliverable | Exit evidence |
 |---|---|---|
-| 1 — Fictional demo | This local workspace, three templates, Word export, simulated publishing | Product owners can complete a reviewed draft and explain its source references |
+| 1 — Fictional demo | This local workspace, indexed fictional context and glossary, three templates, Word export, simulated publishing | Product owners can complete a reviewed draft and explain its source references |
 | 2 — Small approved pilot | Owned templates, approved source scope, defined output styling, per-user Copilot workflow | Measured reduction in drafting effort without more unsupported requirements |
 | 3 — Shared portal | Internal hosting, SSO, user authorization, supported persistence, live Confluence adapter | Access-control, review, recovery, and publication tests pass in a test space |
 | 4 — Seamless generation | Approved service-side AI integration and durable job workers | Quality/cost targets and operating ownership agreed; production controls verified |

@@ -1,6 +1,6 @@
 'use strict';
 const $ = id => document.getElementById(id);
-let config, current, dirty = false, pollToken = 0;
+let config, current, dirty = false, pollToken = 0, retrieval = null, retrievalEpoch = 0;
 function message(text, error = false) {
   $('message').textContent = text; $('message').className = error ? 'error' : '';
   $('message').hidden = false;
@@ -66,9 +66,14 @@ function render(doc) {
   });
   $('evidence').replaceChildren();
   for (const source of doc.sources) {
-    $('evidence').append(element('p', `[${source.citation}] ${source.title} · version ${source.version}\n${source.url}\n${source.text}`));
+    $('evidence').append(element('p', `[${source.citation}] ${source.title} · ${source.heading || 'Page'} · version ${source.version}\n${source.url}\n${source.text}`));
+  }
+  if (doc.retrieval) {
+    $('evidence').append(element('p', `${doc.retrieval.method} · Domain ${doc.retrieval.domain} · Index ${doc.retrieval.index_version}`));
+    for (const term of doc.retrieval.terms) $('evidence').append(element('p', term.selected ? `${term.term}: ${term.selected.definition} [${term.selected.citation}]` : `${term.term}: unresolved`));
   }
   $('evidence').append(element('p', `[N1] Meeting notes snapshot\n${doc.notes}`));
+  for (const meeting of doc.meeting_context?.meetings || []) $('evidence').append(element('p', `[${meeting.citation}] Earlier meeting · ${meeting.meeting_date} · ${meeting.title}\n${meeting.notes}`));
   $('evidence').append(element('p', `Generated ${doc.generated_at}\nInput SHA256: ${doc.input_sha256}\n${doc.model}`));
   $('word').href = endpoint('word'); $('audit').href = endpoint('audit');
   $('reviewed').checked = false;
@@ -93,12 +98,112 @@ async function openDocument(id) {
 async function action(button, task) {
   button.disabled = true;
   try { await task(); } catch (error) { message(error.message, true); }
-  finally { button.disabled = false; if (current?.sections) setDirty(dirty); }
+  finally { button.disabled = false; if (current?.sections) setDirty(dirty); updateGenerate(); }
 }
+function updateGenerate() {
+  const hasAmbiguity = retrieval?.terms.some(t => t.status === 'ambiguous');
+  const hasUnknown = retrieval?.terms.some(t => t.status === 'unknown');
+  $('generate').disabled = !retrieval || !retrieval.sources.length || hasAmbiguity ||
+    (hasUnknown && !$('unknown-ack').checked) || !$('context-confirmed').checked ||
+    !document.querySelector('[name=source]:checked');
+}
+function invalidateRetrieval() {
+  retrieval = null; retrievalEpoch++; $('retrieval-panel').hidden = true;
+  $('sources').replaceChildren(); $('terms').replaceChildren();
+  $('context-confirmed').checked = false; $('unknown-ack').checked = false; updateGenerate();
+}
+for (const id of ['title', 'notes', 'project', 'meeting-date']) $(id).addEventListener('input', invalidateRetrieval);
+$('domain').onchange = invalidateRetrieval;
+$('context-confirmed').onchange = updateGenerate;
+$('unknown-ack').onchange = updateGenerate;
+function renderRetrieval(result) {
+  retrieval = result; $('retrieval-panel').hidden = false;
+  $('context-confirmed').checked = false; $('unknown-ack').checked = false;
+  $('terms').replaceChildren(); $('sources').replaceChildren();
+  renderMeetings(result.meeting_context);
+  const required = new Set(result.terms.filter(t => t.selected).map(t => t.selected.source_id));
+  for (const term of result.terms) {
+    const card = element('div', undefined, 'term-card');
+    card.append(element('strong', term.term));
+    if (term.selected) {
+      card.append(element('p', `${term.selected.definition} [${term.selected.citation}]`));
+      card.append(element('small', `${config.domains[term.selected.domain]} · ${term.selected.page_title} · v${term.selected.version}`));
+    } else if (term.status === 'ambiguous') {
+      card.classList.add('ambiguous'); card.append(element('p', 'Multiple meanings found. Choose one, then click Find business context again.'));
+      const label = element('label', `Meaning of ${term.term}`); const select = element('select');
+      select.id = `meaning-${term.term.toLowerCase()}`; label.htmlFor = select.id;
+      select.className = 'term-choice'; select.dataset.term = term.term.toLowerCase();
+      const empty = element('option', 'Choose a meaning…'); empty.value = ''; select.append(empty);
+      for (const candidate of term.candidates) {
+        const option = element('option', `${candidate.definition} — ${config.domains[candidate.domain]}`);
+        option.value = candidate.source_id; select.append(option);
+      }
+      card.append(label, select);
+    } else card.append(element('p', 'No definition found in this domain. Add context or keep this as an unresolved question.'));
+    $('terms').append(card);
+  }
+  if (!result.terms.length) $('terms').append(element('p', 'No known glossary term or uppercase acronym detected.', 'helper'));
+  $('retrieval-info').textContent = `${result.method} · Index ${result.index_version.slice(0, 10)} · ${result.sources.length} sections found`;
+  if (!result.sources.length) $('sources').append(element('div', 'No relevant context found. Add more specific notes or change the business domain before drafting.', 'warning'));
+  for (const source of result.sources) {
+    const card = element('div', undefined, 'source'); const label = element('label');
+    const input = element('input'); input.type = 'checkbox'; input.name = 'source'; input.value = source.id;
+    input.checked = true; input.disabled = required.has(source.id);
+    input.onchange = () => { $('context-confirmed').checked = false; updateGenerate(); };
+    const info = element('span', `[${source.citation}] ${source.title}`);
+    info.append(element('small', `${source.heading} · ${source.space} · v${source.version}`));
+    label.append(input, info); card.append(label, element('p', source.text, 'source-excerpt'));
+    card.append(element('small', `${source.reason}${required.has(source.id) ? ' · Required definition' : ''}`));
+    const link = element('a', 'View fictional Confluence page ↗', 'text-link');
+    link.href = `/api/sources/${source.page_id}`; link.target = '_blank'; link.rel = 'noopener'; card.append(link);
+    const details = element('details'); details.append(element('summary', 'Original reference'), element('p', source.url)); card.append(details);
+    $('sources').append(card);
+  }
+  $('unknown-label').hidden = !result.terms.some(t => t.status === 'unknown');
+  updateGenerate();
+}
+function meetingFields() { return {project: $('project').value.trim(), meeting_date: $('meeting-date').value}; }
+function renderMeetings(context) {
+  const panel = $('meeting-history'); panel.replaceChildren(); panel.hidden = !context;
+  if (!context) return;
+  panel.append(element('h3', 'Since the previous meeting'), element('p', context.method, 'helper'));
+  panel.append(element('p', `${context.meetings.length} earlier meeting${context.meetings.length === 1 ? '' : 's'} in ${context.project}. Same-day and later meetings are excluded.`));
+  for (const meeting of context.meetings) {
+    const detail = element('details'); detail.append(element('summary', `[${meeting.citation}] ${meeting.meeting_date} · ${meeting.title}`), element('p', meeting.notes, 'source-excerpt'));
+    panel.append(detail);
+  }
+  for (const item of context.changes) panel.append(element('p', `${item.key}: ${item.previous ? item.previous.status + ' → ' : ''}${item.status} (${item.change}) — ${item.text}`, 'term-card'));
+  for (const item of context.carried_forward) panel.append(element('p', `Carry forward ${item.key}: ${item.status} — ${item.text} — Not mentioned this time; still unresolved.`, 'warning'));
+  const diff = element('details'); diff.append(element('summary', 'Text changes since the latest earlier meeting'));
+  diff.append(element('h4', 'New or reworded lines'), element('p', context.new_lines.join('\n'), 'source-excerpt'));
+  diff.append(element('h4', 'Not repeated — does not mean resolved'), element('p', context.not_repeated.join('\n'), 'source-excerpt')); panel.append(diff);
+  panel.append(element('p', 'Statuses are reported in the notes. They do not approve changes to Confluence policy.', 'helper'));
+}
+$('save-meeting').onclick = () => action($('save-meeting'), async () => {
+  await api('/api/meetings', {...meetingFields(), title: $('title').value, notes: $('notes').value});
+  invalidateRetrieval(); message('Meeting saved. Use this project with a later meeting date to compare progress. Find business context again before drafting.');
+});
+$('meeting-sample').onclick = () => action($('meeting-sample'), async () => {
+  await api('/api/meetings', {project: 'Fictional Cobra pilot', meeting_date: '2026-09-01', title: 'Cobra discovery',
+    notes: 'FICTIONAL EDUCATIONAL EXAMPLE\nDiscuss Cobra and FHP room readiness.\n[OPEN] PILOT-1 | Assign a pilot owner.\n[OPEN] RULE-1 | Ask the policy owner about 30 days in advance.\n[BLOCKED] ACCESS-1 | Review room accessibility.'});
+  $('project').value = 'Fictional Cobra pilot'; $('meeting-date').value = '2026-09-08';
+  $('title').value = 'Cobra pilot follow-up'; $('domain').value = 'workplace';
+  $('notes').value = 'FICTIONAL EDUCATIONAL EXAMPLE\nFollow up on Cobra and FHP readiness.\n[DONE] PILOT-1 | Fictional team reports a pilot owner was assigned.\n[IN_PROGRESS] RULE-1 | Policy owner is reviewing 30 days in advance; no approval yet.\n[OPEN] REMINDER-1 | Explore reminders for an incomplete handover checklist.';
+  invalidateRetrieval(); message('Saved a fictional September 1 meeting and loaded September 8 notes. Click Find business context to compare them.');
+});
+$('retrieve').onclick = () => action($('retrieve'), async () => {
+  const choices = Object.fromEntries([...document.querySelectorAll('.term-choice')].filter(e => e.value).map(e => [e.dataset.term, e.value]));
+  for (const term of retrieval?.terms || []) if (term.selected) choices[term.term.toLowerCase()] = term.selected.source_id;
+  const epoch = ++retrievalEpoch;
+  const result = await api('/api/retrieve', {...meetingFields(), title: $('title').value, notes: $('notes').value, domain: $('domain').value, choices});
+  if (epoch !== retrievalEpoch) return;
+  renderRetrieval(result); message('Business context retrieved. Review the definitions and source excerpts before drafting.');
+});
 $('sample').onclick = () => {
-  $('title').value = 'Meeting room booking improvements'; $('notes').value = config.sample_notes;
-  document.querySelectorAll('[name=source]').forEach(e => e.checked = true);
-  message('Fictional sample loaded. Choose Copilot-assisted drafting or offline sample mode.');
+  $('project').value = ''; $('meeting-date').value = '';
+  $('title').value = 'Cobra room readiness improvements'; $('notes').value = config.sample_notes;
+  $('domain').value = 'workplace'; invalidateRetrieval();
+  message('Cobra/FHP sample loaded. Click Find business context. Choose All domains to demonstrate ambiguous FHP terminology.');
 };
 $('mode').onchange = () => $('generate').textContent = $('mode').value === 'copilot' ? 'Prepare Copilot brief →' : 'Generate offline sample →';
 $('upload').onchange = async event => {
@@ -107,15 +212,17 @@ $('upload').onchange = async event => {
     if (!/\.(txt|md)$/i.test(file.name) || file.size > 96000) throw new Error('Choose a .txt or .md file under 96 KB.');
     const text = await file.text();
     if (text.length > config.max_notes) throw new Error('Notes must be at most 24,000 characters.');
-    $('notes').value = text; message(`Loaded ${file.name}.`);
+    $('notes').value = text; invalidateRetrieval(); message(`Loaded ${file.name}.`);
   } catch (error) { message(error.message, true); }
   finally { event.target.value = ''; }
 };
 $('create-form').onsubmit = event => {
   event.preventDefault(); if (!canLeave()) return;
   action($('generate'), async () => {
-    const doc = await api('/api/documents', {title: $('title').value, notes: $('notes').value,
-      kind: $('kind').value, mode: $('mode').value,
+    const doc = await api('/api/documents', {...meetingFields(), title: $('title').value, notes: $('notes').value,
+      kind: $('kind').value, mode: $('mode').value, domain: $('domain').value,
+      retrieval_id: retrieval?.id, context_confirmed: $('context-confirmed').checked,
+      acknowledge_unresolved: $('unknown-ack').checked,
       source_ids: [...document.querySelectorAll('[name=source]:checked')].map(e => e.value)});
     $('message').hidden = true; await openDocument(doc.id); await history();
   });
@@ -156,13 +263,10 @@ async function init() {
   for (const [id, template] of Object.entries(config.templates)) {
     const option = element('option', template.name); option.value = id; $('kind').append(option);
   }
-  for (const source of config.sources) {
-    const card = element('div', undefined, 'source'); const label = element('label');
-    const input = element('input'); input.type = 'checkbox'; input.name = 'source'; input.value = source.id;
-    const info = element('span', source.title); info.append(element('small', `${source.citation} · Version ${source.version} · Fictional context`));
-    label.append(input, info); const details = element('details');
-    details.append(element('summary', 'Read source'), element('p', source.text)); card.append(label, details); $('sources').append(card);
+  for (const [id, name] of Object.entries(config.domains)) {
+    const option = element('option', name); option.value = id; $('domain').append(option);
   }
+  $('index-info').textContent = `${config.knowledge.pages} fictional pages · ${config.knowledge.chunks} indexed sections · local retrieval`;
   await history();
 }
 init().catch(error => message(error.message, true));

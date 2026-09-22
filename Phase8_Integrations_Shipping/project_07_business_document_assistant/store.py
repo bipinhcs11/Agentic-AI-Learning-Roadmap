@@ -15,6 +15,8 @@ class Store:
         self.path = str(path)
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         with self.connect() as db:
+            db.execute('CREATE TABLE IF NOT EXISTS meetings (id TEXT PRIMARY KEY, owner TEXT NOT NULL, project TEXT NOT NULL, day TEXT NOT NULL, body TEXT NOT NULL, UNIQUE(owner, id))')
+            db.execute('CREATE TABLE IF NOT EXISTS retrieval_runs (id TEXT PRIMARY KEY, owner TEXT NOT NULL, body TEXT NOT NULL)')
             db.execute('CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, csrf TEXT NOT NULL)')
             db.execute('CREATE TABLE IF NOT EXISTS documents (id TEXT PRIMARY KEY, owner TEXT NOT NULL, body TEXT NOT NULL)')
             # Queued work is not durable across process restarts in this POC.
@@ -27,8 +29,40 @@ class Store:
     def connect(self):
         return sqlite3.connect(self.path, timeout=10)
 
+    def save_meeting(self, owner, record):
+        import hashlib
+        key = hashlib.sha256((owner + json.dumps(record, sort_keys=True)).encode()).hexdigest()
+        body = dict(record, id=key, saved_at=now())
+        with self.connect() as db:
+            db.execute('INSERT OR IGNORE INTO meetings VALUES (?,?,?,?,?)',
+                       (key, owner, record['project'], record['meeting_date'], json.dumps(body)))
+            row = db.execute('SELECT body FROM meetings WHERE id=? AND owner=?', (key, owner)).fetchone()
+        return json.loads(row[0])
+
+    def meeting_history(self, owner, identity):
+        with self.connect() as db:
+            rows = db.execute('SELECT body FROM meetings WHERE owner=? AND project=? AND day<? ORDER BY day, rowid LIMIT 51',
+                              (owner, identity['project'], identity['meeting_date'])).fetchall()
+        if len(rows) > 50:
+            raise ValueError('This demo supports at most 50 earlier meetings per project. Use a narrower project name.')
+        return [json.loads(row[0]) for row in rows]
+
     def _write(self, db, key, body):
         db.execute('UPDATE documents SET body=? WHERE id=?', (json.dumps(body), key))
+
+    def save_retrieval(self, owner, result):
+        key = uuid.uuid4().hex
+        result = dict(result, id=key, retrieved_at=now())
+        with self.connect() as db:
+            db.execute('INSERT INTO retrieval_runs VALUES (?,?,?)', (key, owner, json.dumps(result)))
+        return result
+
+    def get_retrieval(self, owner, key):
+        with self.connect() as db:
+            row = db.execute('SELECT body FROM retrieval_runs WHERE id=? AND owner=?', (key, owner)).fetchone()
+        if not row:
+            raise KeyError('Retrieval not found in this browser session.')
+        return json.loads(row[0])
 
     def create(self, owner, request):
         key = uuid.uuid4().hex
@@ -72,6 +106,10 @@ class Store:
                 if not isinstance(result, dict) or set(result) != {'sections'} or not isinstance(result['sections'], list):
                     raise ValueError('Paste a JSON object containing only a sections array.')
                 request = {k: body[k] for k in ('title', 'notes', 'kind', 'sources')}
+                if 'retrieval' in body:
+                    request['retrieval'] = body['retrieval']
+                if 'meeting_context' in body:
+                    request['meeting_context'] = body['meeting_context']
                 body.update(generate(request, result['sections']), status='ready', revision=1)
                 body.pop('brief', None)
             elif action == 'generating':
@@ -81,7 +119,7 @@ class Store:
             elif action == 'failed':
                 body.update(status='failed', error=data['error'])
             elif action == 'save':
-                body['sections'] = validate_sections(data.get('sections'), body['kind'], body['sources'])
+                body['sections'] = validate_sections(data.get('sections'), body['kind'], body['sources'], body.get('meeting_context'))
                 body.update(revision=body['revision'] + 1, status='ready', approved_revision=None)
             elif action == 'approve':
                 if data.get('reviewed') is not True:

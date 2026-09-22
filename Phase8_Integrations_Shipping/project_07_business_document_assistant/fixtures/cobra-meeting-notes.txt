@@ -1,0 +1,9 @@
+FICTIONAL EDUCATIONAL EXAMPLE — Cobra discovery meeting
+
+Improve Cobra room booking by showing FHP readiness before confirmation.
+The team proposed allowing bookings 30 days in advance.
+Display room capacity and accessibility features in room search.
+Prevent duplicate reservations if two organizers choose the same room.
+Send a reminder when the handover checklist is incomplete.
+Open question: should a pending FHP block room release or only display a warning?
+Open question: who will own the pilot and define its success measures?

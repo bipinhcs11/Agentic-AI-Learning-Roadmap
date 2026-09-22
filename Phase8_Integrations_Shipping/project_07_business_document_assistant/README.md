@@ -1,8 +1,28 @@
 # Business Document Assistant POC
 
-A local browser workspace for product owners to turn meeting notes and selected business context into a reviewed BRD, user-story document, or change request, then export Word or preview a Confluence page.
+A local browser workspace with indexed retrieval over fictional Confluence pages, for product owners to turn meeting notes and retrieved business context into a reviewed BRD, user-story document, or change request, then export Word or preview a Confluence page.
 
 **All fixtures and outputs are fictional and educational. Do not use real financial, HR, payroll, billing, benefits, or customer data.**
+
+## RAG workflow and implementation plan
+
+Read [PLAN.md](PLAN.md) for the concrete build plan, user experience, acceptance criteria,
+and production integration stages.
+
+The app now indexes **7 readable/current fictional pages and 11 sections** from
+`fixtures/confluence-pages.json`. Two additional fixture pages are excluded because
+one is superseded and one is restricted. The local RAG retriever uses **SQLite FTS5
+BM25 with explicit glossary expansion**, not embeddings or a semantic model. No new
+Python dependency, model download, or external service is needed; Python's SQLite
+build must include FTS5 (available in common Python distributions).
+
+The corpus defines fictional **Cobra = Coordinated Booking and Room Allocation** and
+**FHP = Facility Handover Plan** in Workplace. In Lab Operations, **FHP = Field Hardware
+Protocol**. These are invented demo meanings, not definitions of your organization's terms.
+
+Source cards show the page, section, space, version, excerpt, reason for retrieval, and
+a link to a **local fictional Confluence page preview**. Original `fictional.example`
+URLs are provenance placeholders and are not real Confluence endpoints.
 
 ## The Copilot-only constraint
 
@@ -38,20 +58,47 @@ The only third-party runtime dependency is `python-docx`. The web server, job ex
 
 ### Five-minute demo
 
-1. Click **Load sample**. Select **Offline sample**, then **Generate offline sample**.
-2. Show proposed requirements `[N1]` separately from established policies `[S1]`–`[S3]`.
-3. Highlight the proposal for **30 days** advance booking versus the existing **14-day** rule. The tool flags the difference; it does not approve a policy change.
-4. Edit a section and click **Save changes**. The revision increments.
-5. Click **Download Word** and open the `.docx`.
-6. Confirm the review checkbox, then **Approve revision**.
-7. Click **Publish to demo space**, choose a fictional destination, and confirm. Open the local page preview. **Nothing is sent to Confluence.**
-8. Edit and save again. Approval is invalidated; the existing published snapshot remains unchanged.
+1. Click **Load sample** to load Cobra/FHP notes. Workplace is selected automatically.
+2. Click **Find business context**. Review the resolved definitions and retrieved excerpts.
+3. Optional ambiguity demo: select **All domains**, search, and see two FHP meanings. Choose **Facility Handover Plan**, then search again. Drafting is blocked until ambiguity is resolved.
+4. Confirm **I confirm these definitions and sources apply to this request**.
+5. Choose **Offline sample**, then **Generate offline sample**. Show the source-backed definitions and `[S101]`–`[S108]` references alongside meeting proposals `[N1]`.
+6. Highlight the proposed **30-day** booking window versus the existing **14-day** rule. The tool does not approve a policy change.
+7. Edit, save, and **Download Word**. The source appendix records page sections, versions, and the index hash.
+8. Acknowledge review, approve the revision, and **Publish to demo space**. Open the local preview; nothing is sent to Confluence.
+9. Edit and save again. Approval is invalidated and the published snapshot stays unchanged.
 
-For actual Copilot drafting, choose **Use my Copilot** at step 1. Copy/download the brief, run it in the approved Copilot interface, and paste the returned JSON into **Copilot response**. Click **Import draft**. Copilot's output quality varies; the import validates structure and known citation IDs, not semantic truth.
+Changing notes, title, or business domain invalidates the context review and requires
+retrieval again. Definition evidence cannot be deselected. Unknown uppercase acronyms
+require acknowledgment and remain unresolved questions. If no context matches, drafting
+is blocked. Unknown ordinary words are not reliably detected by the acronym heuristic.
+
+For actual Copilot drafting, choose **Use my Copilot** at step 5. Copy/download the brief, run it in the approved Copilot interface, and paste the returned JSON into **Copilot response**. Click **Import draft**. Copilot's output quality varies; the import validates structure and known citation IDs, not semantic truth.
 
 See [the full presenter script](docs/DEMO_GUIDE.md), [architecture and integration design](docs/ARCHITECTURE.md), and [rollout plan](docs/ROLLOUT.md).
 
-## Generate sample files without the UI
+## Generate RAG demo files without the UI
+
+```bash
+python rag_demo.py
+```
+
+Expected output:
+
+```text
+Indexed 7 fictional pages / 11 sections.
+Cobra = Coordinated Booking and Room Allocation [S101]
+FHP = Facility Handover Plan [S103]
+Retrieved: S101, S103, S106, S104, S108, S105, S107, S102
+Created 16 RAG demo artifacts in .../outputs. No AI call or external publication.
+```
+
+`outputs/rag-retrieval.json` contains the actual ranked retrieval result and term decisions.
+For each template, `rag-<kind>.docx`, `.html`, `.json`, `-copilot-brief.txt`, and
+`-sample-response.json` contain the grounded draft and handoff artifacts. Sample responses
+are deterministic fixtures, not actual Copilot output.
+
+## Original three-page sample files
 
 ```bash
 python demo.py
@@ -76,7 +123,7 @@ Browser downloads go to your browser's download location. `demo.py` writes to `o
 python -m unittest discover -s tests -v
 ```
 
-Checks cover all templates, input validation, source selection, citation validation, Copilot import, HTML escaping, real DOCX structure, browser-session isolation, stale revisions, approval invalidation, immutable publication snapshots, idempotent publication, HTTP lifecycle, CSRF/origin/Host checks, and restart handling. HTTP tests bind ephemeral loopback ports.
+Checks cover acronym/domain resolution, unknown terms, no matches, index refresh, restricted/superseded exclusion, stale or foreign retrieval, source confirmation, and all templates, input validation, source selection, citation validation, Copilot import, HTML escaping, real DOCX structure, browser-session isolation, stale revisions, approval invalidation, immutable publication snapshots, idempotent publication, HTTP lifecycle, CSRF/origin/Host checks, and restart handling. HTTP tests bind ephemeral loopback ports.
 
 For layout QA, render the generated DOCX with LibreOffice and inspect every page. Automated DOCX tests validate content and package structure; they do not prove visual layout.
 
@@ -85,6 +132,9 @@ For layout QA, render the generated DOCX with LibreOffice and inspect every page
 | File | Responsibility |
 |---|---|
 | `app.py` | Loopback HTTP routes, session cookies, CSRF, bounded generation queue |
+| `retrieval.py` | Section index, BM25 search, glossary lookup, source previews |
+| `rag_demo.py` | Reproducible RAG evidence and draft artifacts |
+| `PLAN.md` | Implementation plan and acceptance criteria |
 | `domain.py` | Template validation, deterministic drafting, Copilot brief, Word/HTML renderers |
 | `store.py` | SQLite document state, revisions, approval and publication transitions |
 | `templates.json` | Versioned document headings |
@@ -98,11 +148,12 @@ For layout QA, render the generated DOCX with LibreOffice and inspect every page
 
 - **Local only:** server binds to `127.0.0.1`, rejects other Host values, and is not a production application server. Do not expose it through a public tunnel or change the binding to share it.
 - **No enterprise identity:** the displayed product owner is a demo label. An opaque browser cookie isolates local sessions; this is not SSO, RBAC, or a security boundary against other processes on the same machine.
-- **No live Confluence:** context is bundled JSON. Publishing stores a local HTML-renderable snapshot and a demo parent label. There is no PAT handling or network publishing code.
+- **No live Confluence:** context is retrieved from a bundled, sectioned JSON corpus indexed locally. Publishing stores a local HTML-renderable snapshot and a demo parent label. There is no PAT handling or network publishing code.
 - **No automatic AI:** Copilot-assisted mode is a manual handoff. Offline mode preserves note lines and fills a template, not a substitute for model reasoning.
-- **Limited checks:** citation checks cannot establish whether the cited source supports a claim. The only automatic conflict detector matches the sample advance-booking rule. Review all generated content.
+- **Limited checks:** retrieval is lexical and may miss paraphrases; the eight-result cap is not evidence of completeness. Fixture audience filters are not real Confluence ACL enforcement. Citation checks cannot establish whether the cited source supports a claim. The only automatic conflict detector matches the sample advance-booking rule. Review all generated content.
 - **Input limits:** at most 24,000 characters and 120 non-empty lines of notes; 48,000 characters per draft section.
 - **Simple persistence:** SQLite keeps current drafts, input/source snapshots, events, and published snapshots. Full historical draft bodies are not retained. This is not a tamper-proof audit log.
+- **Index lifecycle:** the corpus is indexed at startup. Restart after changing fixtures; old retrieval runs cannot create drafts against a different index version. Existing draft snapshots remain unchanged. No live synchronization is implemented.
 - **Queue limits:** two generation workers and at most eight active/queued offline jobs. Work interrupted by a server restart is marked failed rather than silently rerun.
 - **No DOCX/PDF input parser:** upload `.txt` or `.md`, or paste notes. Word is an output format.
 - **Plain-text section bodies:** no rich text editor, tables, tracked changes, arbitrary custom Word templates, or document round-trip import yet.
@@ -111,9 +162,28 @@ For layout QA, render the generated DOCX with LibreOffice and inspect every page
 
 - **Port in use:** `python app.py --port 8766` and use the printed URL.
 - **Missing docx module:** activate the project venv and install its requirements; do not install the root roadmap requirements.
+- **No context results:** choose a relevant domain or use the supplied Cobra notes. Lexical search does not understand arbitrary paraphrases.
+- **Ambiguous FHP:** choose a meaning and click Find business context again, or narrow the domain.
+- **FTS5 unavailable:** use a Python distribution compiled with SQLite FTS5; the app intentionally does not fall back to an unindexed hardcoded result.
 - **Import rejected:** ensure JSON contains only `sections`, with every exact heading in order. Section 2 must cite `[N1]`; section 3 must cite every selected source. Remove invented source IDs.
 - **Stale revision:** another tab saved this document. Select the draft again in Recent Documents before making the next change.
 - **Disabled export:** save your draft edits first.
 - **No publication button:** review and approve the current saved revision.
 - **Missing history:** use the same browser session and hostname. Sessions survive a server restart while the browser retains its cookie. Session ownership is local; clearing cookies loses access to that session's documents.
 - **Reset a disposable demo:** stop the server and remove this project's `runtime/` directory, then restart. This deletes local demo documents; export anything you want to keep first.
+
+## Meeting history and progress
+
+Expand **Track meetings for a project** to save notes under a project and meeting date. A later meeting under the same name can retrieve earlier notes when you click **Find business context**. The app displays a timeline, literal changes since the previous meeting, explicit item transitions, and unresolved items carried forward. Notes and timeline stay local to this browser session; project names are case-insensitive.
+
+Use `[OPEN] ITEM-1 | Description` in notes and reuse `ITEM-1` in a later meeting with `IN_PROGRESS`, `BLOCKED`, `DONE`, or `DECIDED`. These are reported states, not verified completion or policy approval. Unmentioned items are never assumed complete. Arbitrary free text is compared literally, without semantic status inference.
+
+**Load two-meeting demo** saves a fictional September 1 meeting and loads September 8 notes. Retrieve context to see a reported completed owner assignment, policy review in progress, a new reminder proposal, and an accessibility blocker carried forward. Save each real demo meeting explicitly; generating a document alone does not save it to the timeline. Same-day and future meetings are excluded from comparisons. Previous drafts are not automatically backfilled.
+
+Generate standalone artifacts with:
+
+```bash
+python meeting_demo.py
+```
+
+Expected output: PILOT-1 OPEN → DONE (reported); RULE-1 OPEN → IN_PROGRESS; REMINDER-1 new OPEN; ACCESS-1 BLOCKED carried forward. Files: `outputs/meeting-brd.docx`, `.html`, `.json`, and `meeting-copilot-brief.txt`. Earlier meeting citations and snapshots survive Copilot response import, document edits, and export. See `PLAN.md` for shared-project rollout requirements.

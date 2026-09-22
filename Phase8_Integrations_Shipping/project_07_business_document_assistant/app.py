@@ -16,6 +16,9 @@ from urllib.parse import urlsplit
 
 from domain import BASE, SAMPLE_NOTES, SOURCES, TEMPLATES, generate, page_html, validate_request, word_bytes
 from store import Conflict, Store
+from domain import clean_text, MAX_NOTES
+from retrieval import KnowledgeIndex, RAG_NOTES, DOMAINS, fingerprint, domain_value
+from meetings import meeting_identity, tracking_items, compare_meetings, history_version
 
 MAX_BODY = 1_000_000
 
@@ -23,6 +26,7 @@ MAX_BODY = 1_000_000
 class Application:
     def __init__(self, data_dir):
         self.store = Store(Path(data_dir) / 'documents.sqlite3')
+        self.index = KnowledgeIndex(Path(data_dir) / 'knowledge.sqlite3')
         self.pool = ThreadPoolExecutor(max_workers=2)
         self.slots = threading.BoundedSemaphore(8)
         self.lock = threading.Lock()
@@ -42,6 +46,66 @@ class Application:
                 key, csrf = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
                 db.execute('INSERT INTO sessions VALUES (?,?)', (key, csrf))
                 return key, csrf, True
+
+    def retrieve(self, owner, data):
+        title = clean_text(data.get('title'), 'Title', 140)
+        notes = clean_text(data.get('notes'), 'Notes', MAX_NOTES)
+        if len([line for line in notes.splitlines() if line.strip()]) > 120:
+            raise ValueError('Use at most 120 non-empty lines of meeting notes.')
+        domain = domain_value(data.get('domain', 'all'))
+        result = self.index.search(title, notes, domain, data.get('choices'))
+        identity = meeting_identity(data)
+        if identity:
+            result['meeting_context'] = compare_meetings(identity, self.store.meeting_history(owner, identity), notes)
+        return self.store.save_retrieval(owner, result)
+
+    def save_meeting(self, owner, data):
+        identity = meeting_identity(data)
+        if not identity:
+            raise ValueError('Enter a project and meeting date to save meeting history.')
+        title = clean_text(data.get('title'), 'Title', 140)
+        notes = clean_text(data.get('notes'), 'Notes', MAX_NOTES)
+        if len([line for line in notes.splitlines() if line.strip()]) > 120:
+            raise ValueError('Use at most 120 non-empty lines of meeting notes.')
+        tracking_items(notes)
+        return self.store.save_meeting(owner, dict(identity, title=title, notes=notes))
+
+    def prepare(self, owner, data):
+        key = data.get('retrieval_id')
+        if not isinstance(key, str):
+            raise ValueError('Find and confirm business context before drafting.')
+        result = self.store.get_retrieval(owner, key)
+        title = clean_text(data.get('title'), 'Title', 140)
+        notes = clean_text(data.get('notes'), 'Notes', MAX_NOTES)
+        domain = domain_value(data.get('domain', 'all'))
+        if fingerprint(title, notes, domain) != result['input_fingerprint']:
+            raise Conflict('Input changed. Find business context again before drafting.')
+        if result['index_version'] != self.index.index_version:
+            raise Conflict('The knowledge index changed. Retrieve fresh context.')
+        identity = meeting_identity(data)
+        context = result.get('meeting_context')
+        if identity != ({k: context[k] for k in ('project', 'meeting_date')} if context else None):
+            raise Conflict('Project or meeting date changed. Find business context again.')
+        if context and history_version(self.store.meeting_history(owner, identity)) != context['history_version']:
+            raise Conflict('Earlier meeting history changed. Find business context again.')
+        if data.get('context_confirmed') is not True:
+            raise ValueError('Confirm the retrieved context before drafting.')
+        if any(t['status'] == 'ambiguous' for t in result['terms']):
+            raise ValueError('Resolve ambiguous terms or narrow the business domain, then search again.')
+        if result['unresolved'] and data.get('acknowledge_unresolved') is not True:
+            raise ValueError('Acknowledge unresolved terminology before drafting.')
+        request = validate_request(data, result['sources'])
+        selected = {s['id'] for s in request['sources']}
+        required = {t['selected']['source_id'] for t in result['terms'] if t['selected']}
+        if required - selected:
+            raise ValueError('Keep definition evidence selected for every resolved term.')
+        request['retrieval'] = {k: result[k] for k in ('id', 'retrieved_at', 'domain', 'terms',
+            'unresolved', 'method', 'index_version', 'input_fingerprint')}
+        request['retrieval']['selected_source_ids'] = sorted(selected)
+        request['retrieval']['unresolved_acknowledged'] = bool(result['unresolved'])
+        if context:
+            request['meeting_context'] = context
+        return request
 
     def submit(self, owner, request, mode='offline'):
         if mode not in ('offline', 'copilot'):
@@ -66,7 +130,7 @@ class Application:
             self.store.mutate(owner, key, 'generated', result)
         except Exception:
             # Do not leak upstream bodies, credentials, or notes into errors/logs.
-            self.store.mutate(owner, key, 'failed', {'error': 'Generation failed. Check the configured provider, model availability, and response format; then create a new draft. No fallback content was substituted.'})
+            self.store.mutate(owner, key, 'failed', {'error': 'Draft assembly failed. Check the input size and template structure, then create a new draft. No fallback content was substituted.'})
         finally:
             self.slots.release()
 
@@ -125,11 +189,19 @@ def make_handler(application):
                 return self.respond(200, file.read_bytes(), kind + '; charset=utf-8')
             if not post and path == '/api/config':
                 return self.respond(200, {'csrf': self.csrf, 'provider': 'offline or Copilot-assisted',
-                    'templates': TEMPLATES, 'sources': SOURCES, 'sample_notes': SAMPLE_NOTES,
+                    'templates': TEMPLATES, 'sources': [], 'sample_notes': RAG_NOTES, 'domains': DOMAINS,
+                    'knowledge': {'pages': len(application.index.pages), 'chunks': len(application.index.chunks), 'version': application.index.index_version},
                     'max_notes': 24000, 'publication': 'local simulation', 'identity': 'local browser session'})
+            if post and path == '/api/retrieve':
+                return self.respond(200, application.retrieve(self.owner, data))
+            if post and path == '/api/meetings':
+                return self.respond(200, application.save_meeting(self.owner, data))
+            source_match = re.fullmatch(r'/api/sources/([a-z0-9-]+)', path)
+            if not post and source_match:
+                return self.respond(200, application.index.page_html(source_match.group(1)), 'text/html; charset=utf-8')
             if path == '/api/documents':
                 if post:
-                    return self.respond(202, application.submit(self.owner, validate_request(data), data.get('mode', 'offline')))
+                    return self.respond(202, application.submit(self.owner, application.prepare(self.owner, data), data.get('mode', 'offline')))
                 return self.respond(200, application.store.listing(self.owner))
             match = re.fullmatch(r'/api/documents/([0-9a-f]{32})(?:/(save|approve|publish|word|page|audit|brief|import))?', path)
             if match:

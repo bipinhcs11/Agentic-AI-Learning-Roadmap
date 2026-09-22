@@ -188,6 +188,12 @@ class HTTPTests(unittest.TestCase):
             self.csrf = json.load(response)['csrf']
 
     def call(self, path, data=None, headers=None):
+        if path == '/api/documents' and isinstance(data, dict) and data.get('notes') and 'retrieval_id' not in data:
+            data = dict(data)
+            with self.call('/api/retrieve', {'title': data['title'], 'notes': data['notes'], 'domain': 'workplace'}, headers) as response:
+                context = json.load(response)
+            data.update(retrieval_id=context['id'], domain='workplace', context_confirmed=True,
+                        source_ids=[s['id'] for s in context['sources']])
         request = Request(self.base + path, data=json.dumps(data).encode() if data is not None else None,
                           headers={'Content-Type': 'application/json', 'X-CSRF-Token': self.csrf, **(headers or {})})
         return self.client.open(request)
@@ -243,13 +249,29 @@ class HTTPTests(unittest.TestCase):
         other = build_opener(HTTPCookieProcessor(CookieJar()))
         with self.assertRaises(HTTPError) as error: other.open(self.base + path)
         self.assertEqual(error.exception.code, 404)
-        with self.call(path + '/import', {'result': {'sections': offline_sections(validate_request(data))}}) as response:
+        with self.call(path + '/import', {'result': {'sections': offline_sections(doc)}}) as response:
             self.assertEqual(json.load(response)['provider'], 'copilot-assisted')
 
     def test_validation_errors_return_400(self):
         for data in ([], {'title': 'Missing notes'}):
             with self.assertRaises(HTTPError) as error: self.call('/api/documents', data)
             self.assertEqual(error.exception.code, 400)
+
+    def test_retrieval_route_and_source_preview(self):
+        from retrieval import RAG_NOTES
+        with self.call('/api/retrieve', {'title': 'Cobra readiness', 'notes': RAG_NOTES, 'domain': 'workplace'}) as response:
+            result = json.load(response)
+        self.assertEqual(len(result['terms']), 2)
+        with self.call('/api/sources/fhp-workplace') as response:
+            self.assertIn(b'Facility Handover Plan', response.read())
+        with self.assertRaises(HTTPError) as error:
+            self.call('/api/sources/restricted-cobra')
+        self.assertEqual(error.exception.code, 404)
+        with self.assertRaises(HTTPError) as error:
+            self.call('/api/documents', {'title': 'Cobra readiness', 'notes': RAG_NOTES + ' Changed.',
+                'domain': 'workplace', 'kind': 'brd', 'retrieval_id': result['id'],
+                'source_ids': [s['id'] for s in result['sources']], 'context_confirmed': True})
+        self.assertEqual(error.exception.code, 409)
 
     def test_static_asset_and_traversal(self):
         with self.call('/static/app.js') as response:
