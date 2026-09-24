@@ -1,5 +1,57 @@
 {
-  "brd": {"name": "Business requirements", "version": "1.0", "headings": ["Purpose and scope", "Proposed requirements", "Established business rules", "Acceptance and success criteria", "Open questions and conflicts"]},
-  "stories": {"name": "User stories", "version": "1.0", "headings": ["Feature overview", "Story candidates", "Business constraints", "Acceptance criteria to refine", "Open questions and conflicts"]},
-  "change": {"name": "Change request", "version": "1.0", "headings": ["Reason for change", "Proposed change", "Current policy baseline", "Impact and validation", "Open questions and conflicts"]}
+  "brd": {
+    "name": "Business requirements",
+    "version": "1.0",
+    "headings": [
+      "Purpose and scope",
+      "Proposed requirements",
+      "Established business rules",
+      "Acceptance and success criteria",
+      "Open questions and conflicts"
+    ]
+  },
+  "stories": {
+    "name": "User stories",
+    "version": "1.0",
+    "headings": [
+      "Feature overview",
+      "Story candidates",
+      "Business constraints",
+      "Acceptance criteria to refine",
+      "Open questions and conflicts"
+    ]
+  },
+  "change": {
+    "name": "Change request",
+    "version": "1.0",
+    "headings": [
+      "Reason for change",
+      "Proposed change",
+      "Current policy baseline",
+      "Impact and validation",
+      "Open questions and conflicts"
+    ]
+  },
+  "mom": {
+    "name": "Minutes of meeting (MOM)",
+    "version": "1.0",
+    "headings": [
+      "Meeting details",
+      "Agenda and discussion",
+      "Relevant business context",
+      "Decisions and action items",
+      "Takeaways and open questions"
+    ]
+  },
+  "architecture": {
+    "name": "Architecture document",
+    "version": "1.0",
+    "headings": [
+      "Purpose and scope",
+      "Architecture and proposed changes",
+      "Business constraints",
+      "Impact and validation",
+      "Open questions and decisions"
+    ]
+  }
 }

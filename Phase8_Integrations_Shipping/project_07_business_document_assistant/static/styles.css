@@ -2,3 +2,8 @@
 
 .term-card{border:1px solid #dfd8ef;background:#faf8ff;border-radius:7px;padding:12px;margin:10px 0;font-size:12px}.term-card p{margin:5px 0;color:#51456e}.term-card small{font-size:10px;color:#817590}.term-card.ambiguous{background:#fff8e9;border-color:#efd9a5}.source-excerpt{font-size:11px;line-height:1.65;color:#53617a;margin:10px 0}.source>small{display:block;font-size:10px;color:#7b8698;margin-bottom:8px}.source>.text-link{display:block;margin-top:8px}.source details p{overflow-wrap:anywhere}.evidence p{white-space:pre-line}
 #sources{max-height:520px;overflow-y:auto;padding-right:5px;overscroll-behavior:contain}
+
+.document-prose { white-space: pre-wrap; line-height: 1.65; color: #293345; padding: 12px 0; overflow-wrap: anywhere; }
+#version-history { flex-wrap: wrap; margin-bottom: 18px; }
+#comparison { margin-bottom: 20px; }
+.section-editor > .text-link { float: right; }

@@ -1,6 +1,6 @@
 'use strict';
 const $ = id => document.getElementById(id);
-let config, current, dirty = false, pollToken = 0, retrieval = null, retrievalEpoch = 0;
+let config, current, dirty = false, pollToken = 0, retrieval = null, retrievalEpoch = 0, documentList = [];
 function message(text, error = false) {
   $('message').textContent = text; $('message').className = error ? 'error' : '';
   $('message').hidden = false;
@@ -29,30 +29,36 @@ function setDirty(value) {
 }
 function canLeave() { return !dirty || window.confirm('Discard unsaved draft edits?'); }
 async function history() {
-  const items = await api('/api/documents'); $('history').replaceChildren();
+  const items = await api('/api/documents'); documentList = items; $('history').replaceChildren();
+  const selected = $('baseline').value; $('baseline').replaceChildren(element('option', 'Choose a previous document…'));
+  $('baseline').firstChild.value = '';
+  for (const item of items.filter(d => ['ready', 'approved', 'published'].includes(d.status))) {
+    const option = element('option', `${item.title} · ${config.templates[item.kind].name} · v${item.document_version}`);
+    option.value = item.id; $('baseline').append(option);
+  }
+  $('baseline').value = selected;
   for (const item of items) {
     const button = element('button', item.title);
-    button.append(element('small', `${item.status.replaceAll('_', ' ')} · r${item.revision}`));
+    button.append(element('small', `${item.status.replaceAll('_', ' ')} · v${item.document_version || '1.0'}`));
     button.onclick = () => { if (canLeave()) openDocument(item.id).catch(e => message(e.message, true)); };
     $('history').append(button);
   }
 }
 function render(doc) {
   current = doc; dirty = false;
-  ['empty', 'busy', 'handoff', 'document'].forEach(id => $(id).hidden = true);
+  ['empty', 'busy', 'document'].forEach(id => $(id).hidden = true);
   $('status').textContent = doc.status.replaceAll('_', ' ');
   if (doc.status === 'failed') {
     $('empty').hidden = false; message(doc.error, true); return;
   }
   if (['queued', 'generating'].includes(doc.status)) {
-    $('busy').hidden = false; $('progress').textContent = doc.status === 'queued' ? 'Your request is queued.' : 'Assembling the offline draft from selected context.'; return;
+    $('busy').hidden = false; $('progress').textContent = doc.status === 'queued' ? 'Your request is queued.' : 'Preparing your document using the selected context and previous version, if any.'; return;
   }
   if (doc.status === 'awaiting_copilot') {
-    $('handoff').hidden = false; $('brief').value = doc.brief; $('copilot-result').value = '';
-    $('download-brief').href = endpoint('brief'); return;
+    $('empty').hidden = false; message('This older draft used the retired manual handoff. Create a new draft using Copilot or the offline demo.'); return;
   }
   $('document').hidden = false; $('doc-title').textContent = doc.title;
-  $('doc-detail').textContent = `${config.templates[doc.kind].name} · Template ${doc.template_version} · Revision ${doc.revision} · ${doc.provider === 'offline' ? 'Offline sample assembly, not AI-generated' : 'Imported from your Copilot session'}`;
+  $('doc-detail').textContent = `${config.templates[doc.kind].name} · Version ${doc.document_version || '1.0'} · Edit ${doc.revision} · ${doc.provider === 'offline' ? 'Offline sample; not AI-generated' : doc.provider === 'copilot-sdk' ? 'Generated with Copilot' : doc.provider === 'imported-original' ? 'Preserved original document' : 'Copilot draft'}`;
   $('warnings').replaceChildren();
   for (const warning of doc.warnings) $('warnings').append(element('div', warning + ' This is a source comparison flag, not a complete validation report.', 'warning'));
   $('sections').replaceChildren();
@@ -62,7 +68,10 @@ function render(doc) {
     const text = element('textarea'); text.id = `section-${index}`; text.value = section.body;
     text.maxLength = 48000; text.rows = Math.min(12, Math.max(4, section.body.split('\n').length + 2));
     text.oninput = () => { $('reviewed').checked = false; setDirty(true); };
-    wrapper.append(label, text); $('sections').append(wrapper);
+    const preview = element('div', section.body, 'document-prose');
+    const edit = element('button', 'Edit section', 'text-link'); edit.type = 'button'; text.hidden = true;
+    edit.onclick = () => { text.hidden = !text.hidden; preview.hidden = !text.hidden; preview.textContent = text.value; edit.textContent = text.hidden ? 'Edit section' : 'Preview section'; };
+    wrapper.append(label, edit, preview, text); $('sections').append(wrapper);
   });
   $('evidence').replaceChildren();
   for (const source of doc.sources) {
@@ -72,10 +81,22 @@ function render(doc) {
     $('evidence').append(element('p', `${doc.retrieval.method} · Domain ${doc.retrieval.domain} · Index ${doc.retrieval.index_version}`));
     for (const term of doc.retrieval.terms) $('evidence').append(element('p', term.selected ? `${term.term}: ${term.selected.definition} [${term.selected.citation}]` : `${term.term}: unresolved`));
   }
+  if (doc.source_reference) $('evidence').append(element('p', `Original page: ${doc.source_reference}`));
+  if (doc.baseline) $('evidence').append(element('p', `[B1] ${doc.baseline.title} · v${doc.baseline.document_version} · ${doc.baseline.source_reference || 'Saved document snapshot'}`));
   $('evidence').append(element('p', `[N1] Meeting notes snapshot\n${doc.notes}`));
   for (const meeting of doc.meeting_context?.meetings || []) $('evidence').append(element('p', `[${meeting.citation}] Earlier meeting · ${meeting.meeting_date} · ${meeting.title}\n${meeting.notes}`));
   $('evidence').append(element('p', `Generated ${doc.generated_at}\nInput SHA256: ${doc.input_sha256}\n${doc.model}`));
-  $('word').href = endpoint('word'); $('audit').href = endpoint('audit');
+  $('word').href = endpoint('word');
+  showVersions(doc).catch(e => message(e.message, true));
+  $('comparison').hidden = !doc.baseline; $('changes').replaceChildren();
+  if (doc.baseline) {
+    $('changes').append(element('p', `Based on ${doc.baseline.title} · version ${doc.baseline.document_version}. The earlier document is retained.`));
+    for (const section of doc.sections) {
+      const previous = doc.baseline.sections.find(s => s.heading === section.heading);
+      const detail = element('details'); detail.append(element('summary', `${section.heading} · ${previous?.body === section.body ? 'Unchanged' : 'Changed / new'}`));
+      detail.append(element('h4', 'Previous'), element('p', previous?.body || 'No matching section in the previous document.', 'document-prose'), element('h4', 'Current'), element('p', section.body, 'document-prose')); $('changes').append(detail);
+    }
+  }
   $('reviewed').checked = false;
   $('publication').replaceChildren();
   if (doc.publications.length) {
@@ -103,7 +124,7 @@ async function action(button, task) {
 function updateGenerate() {
   const hasAmbiguity = retrieval?.terms.some(t => t.status === 'ambiguous');
   const hasUnknown = retrieval?.terms.some(t => t.status === 'unknown');
-  $('generate').disabled = !retrieval || !retrieval.sources.length || hasAmbiguity ||
+  $('generate').disabled = ($('mode').value === 'copilot-sdk' && !config?.copilot.configured) || ($('workflow').value !== 'new' && !$('baseline').value) || !retrieval || !retrieval.sources.length || hasAmbiguity ||
     (hasUnknown && !$('unknown-ack').checked) || !$('context-confirmed').checked ||
     !document.querySelector('[name=source]:checked');
 }
@@ -201,11 +222,11 @@ $('retrieve').onclick = () => action($('retrieve'), async () => {
 });
 $('sample').onclick = () => {
   $('project').value = ''; $('meeting-date').value = '';
-  $('title').value = 'Cobra room readiness improvements'; $('notes').value = config.sample_notes;
+  $('title').value = 'Cobra room readiness improvements'; $('notes').value = $('kind').value === 'mom' ? config.mom_notes : config.sample_notes;
   $('domain').value = 'workplace'; invalidateRetrieval();
   message('Cobra/FHP sample loaded. Click Find business context. Choose All domains to demonstrate ambiguous FHP terminology.');
 };
-$('mode').onchange = () => $('generate').textContent = $('mode').value === 'copilot' ? 'Prepare Copilot brief →' : 'Generate offline sample →';
+$('mode').onchange = updateGenerate;
 $('upload').onchange = async event => {
   const file = event.target.files[0]; if (!file) return;
   try {
@@ -220,6 +241,7 @@ $('create-form').onsubmit = event => {
   event.preventDefault(); if (!canLeave()) return;
   action($('generate'), async () => {
     const doc = await api('/api/documents', {...meetingFields(), title: $('title').value, notes: $('notes').value,
+      workflow: $('workflow').value, base_document_id: $('baseline').value, base_revision: documentList.find(d => d.id === $('baseline').value)?.revision, version_bump: $('version-bump').value,
       kind: $('kind').value, mode: $('mode').value, domain: $('domain').value,
       retrieval_id: retrieval?.id, context_confirmed: $('context-confirmed').checked,
       acknowledge_unresolved: $('unknown-ack').checked,
@@ -227,17 +249,6 @@ $('create-form').onsubmit = event => {
     $('message').hidden = true; await openDocument(doc.id); await history();
   });
 };
-$('copy-brief').onclick = () => action($('copy-brief'), async () => {
-  try { await navigator.clipboard.writeText($('brief').value); message('Brief copied. Paste it into your approved Copilot Chat.'); }
-  catch { $('brief').select(); message('Copy the selected brief, or use Download brief.'); }
-});
-$('import').onclick = () => action($('import'), async () => {
-  let raw = $('copilot-result').value.trim();
-  raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
-  let result; try { result = JSON.parse(raw); } catch { throw new Error('The response is not valid JSON. Ask Copilot to correct it using the exact brief schema.'); }
-  render(await api(endpoint('import'), {result})); await history();
-  message('Draft imported. Citation IDs and section structure passed checks; factual accuracy still requires your review.');
-});
 $('save').onclick = () => action($('save'), async () => {
   const sections = current.sections.map((s, i) => ({heading: s.heading, body: $(`section-${i}`).value}));
   render(await api(endpoint('save'), {revision: current.revision, sections}));
@@ -267,6 +278,46 @@ async function init() {
     const option = element('option', name); option.value = id; $('domain').append(option);
   }
   $('index-info').textContent = `${config.knowledge.pages} fictional pages · ${config.knowledge.chunks} indexed sections · local retrieval`;
+  $('copilot-status').textContent = config.copilot.message;
+  document.querySelector('option[value="copilot-sdk"]').disabled = !config.copilot.configured;
+  if (config.copilot.configured) $('mode').value = 'copilot-sdk';
   await history();
 }
 init().catch(error => message(error.message, true));
+
+async function showVersions(doc) {
+  const versions = await api(`/api/documents/${doc.id}/versions`);
+  if (current?.id !== doc.id) return;
+  $('version-history').replaceChildren(element('span', 'Document versions:'));
+  for (const version of versions) {
+    const button = element('button', `v${version.document_version} · ${version.status}`, 'secondary');
+    button.disabled = version.id === doc.id;
+    button.onclick = () => { if (canLeave()) openDocument(version.id).catch(e => message(e.message, true)); };
+    $('version-history').append(button);
+  }
+}
+function workflowChanged() {
+  $('baseline-fields').hidden = $('workflow').value === 'new';
+  $('version-bump').hidden = $('workflow').value !== 'revise';
+  document.querySelector('label[for="version-bump"]').hidden = $('workflow').value !== 'revise';
+  const base = documentList.find(d => d.id === $('baseline').value);
+  $('kind').disabled = $('workflow').value === 'revise';
+  if (base && $('workflow').value === 'revise') $('kind').value = base.kind;
+  updateGenerate();
+}
+$('workflow').onchange = workflowChanged;
+$('baseline').onchange = workflowChanged;
+$('architecture-sample').onclick = () => {
+  $('original-title').value = 'Cobra room readiness architecture';
+  $('original-type').value = 'architecture';
+  $('original-reference').value = 'FICTIONAL / Workplace / Cobra architecture';
+  $('original-content').value = 'FICTIONAL EDUCATIONAL EXAMPLE\nCobra handles room reservations. Before confirming a reservation, the booking service checks the Facility Handover Plan status. A pending handover blocks confirmation. The current architecture has no reminder service.\nOpen decision: choose an owner for operational alerts.';
+};
+$('import-original').onclick = () => action($('import-original'), async () => {
+  if (!canLeave()) return;
+  const doc = await api('/api/baselines', {title: $('original-title').value, kind: $('original-type').value, content: $('original-content').value, source_reference: $('original-reference').value});
+  await openDocument(doc.id); await history();
+  $('workflow').value = 'revise'; $('baseline').value = doc.id; workflowChanged();
+  $('title').value = doc.title; invalidateRetrieval();
+  message('Original preserved as version 1.0. Add your change notes, find business context, and generate version 1.1.');
+});

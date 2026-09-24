@@ -57,18 +57,18 @@ def conflict_checks(notes, sources):
     return []
 
 
-def validate_sections(sections, kind, sources, meeting_context=None):
+def validate_sections(sections, kind, sources, meeting_context=None, baseline=None):
     headings = TEMPLATES[kind]['headings']
     if not isinstance(sections, list) or len(sections) != len(headings):
         raise ValueError('The draft must include every template section.')
-    allowed = {'N1'} | {s['citation'] for s in sources}
+    allowed = ({'N1', 'B1'} if baseline else {'N1'}) | {s['citation'] for s in sources}
     allowed |= {m['citation'] for m in (meeting_context or {}).get('meetings', [])}
     checked = []
     for index, (section, heading) in enumerate(zip(sections, headings)):
         if not isinstance(section, dict) or section.get('heading') != heading:
             raise ValueError('Template headings must remain unchanged.')
         body = clean_text(section.get('body'), heading, 48000)
-        refs = set(re.findall(r'\[([SNM]\d+)\]', body))
+        refs = set(re.findall(r'\[([SNMB]\d+)\]', body))
         if refs - allowed:
             raise ValueError('Draft contains citations to unselected sources.')
         checked.append({'heading': heading, 'body': body})
@@ -77,6 +77,8 @@ def validate_sections(sections, kind, sources, meeting_context=None):
     for source in sources:
         if f"[{source['citation']}]" not in checked[2]['body']:
             raise ValueError('The business rules section must cite every selected source.')
+    if baseline and not any('[B1]' in part['body'] for part in checked):
+        raise ValueError('Reference the previous document [B1] when creating a document from it.')
     return checked
 
 
@@ -128,6 +130,36 @@ def offline_sections(request):
         '\n\n'.join(conflicts + ['Unresolved terminology: ' + q for q in unresolved] + questions + ['Confirm scope, accountable owner, success measures, and approval authority. '
         'Offline mode only assembles supplied text and checks the sample booking-window conflict. Other contradictions require human review.'])
     ]
+    if kind == 'mom':
+        def labeled(label):
+            found = [line.split(':', 1)[1].strip() for line in lines if line.lower().startswith(label.lower() + ':')]
+            return '\n'.join(found) if found else 'Not recorded — confirm with the meeting organizer.'
+        bodies[0] = (f"Date: {labeled('Date')}\nAttendees: {labeled('Attendees')}\n"
+                     f"Attendee count: {labeled('Attendee count')}\nMeeting purpose: {labeled('Purpose')} [N1]")
+        discussion = [line for line in lines if not re.match(r'^(Date|Attendees|Attendee count|Purpose|Agenda|Decision|Action|Takeaway|Open question):', line, re.I)]
+        bodies[1] = f"Agenda: {labeled('Agenda')}\n\nDiscussion record:\n" + ('\n'.join(discussion) or 'No separate discussion detail was recorded.') + ' [N1]'
+        bodies[3] = (f"Decisions: {labeled('Decision')}\n\nAction items (task, owner, due date):\n{labeled('Action')}\n"
+                     'Missing owners and dates remain unassigned. Discussion does not imply agreement. [N1]')
+        bodies[4] = f"Takeaways: {labeled('Takeaway')} [N1]\n\n" + bodies[4]
+    elif kind == 'architecture':
+        bodies[1] = 'Proposed architecture input; validate technical detail:\n\n' + '\n'.join(proposals) + ' [N1]'
+    baseline = request.get('baseline')
+    if baseline:
+        def historical(text):
+            return re.sub(r'\[([SNMB]\d+)\]', r'(prior reference \1)', text)
+        previous = {part['heading']: historical(part['body']) for part in baseline['sections']}
+        if request.get('workflow') == 'revise':
+            for index, heading in enumerate(TEMPLATES[kind]['headings']):
+                old = previous.get(heading)
+                if old and index != 2:
+                    bodies[index] = old + ' [B1]' + ('\n\nProposed updates for review [N1]\n' + bodies[index] if index in (1, 4) else '')
+        else:
+            # An offline fixture cannot infer requirements. Show the relevant supplied record.
+            record = '\n\n'.join(part['heading'] + '\n' + historical(part['body'])
+                                    for i, part in enumerate(baseline['sections']) if i in (1, 3))
+            bodies[1] = 'Previous discussion and actions [B1]\n' + record + '\n\nProposed input [N1]\n' + bodies[1]
+        bodies[0] += f"\n\nBased on {baseline['title']} v{baseline['document_version']} [B1]."
+        bodies[-1] += '\nOffline mode retains prior text and lists additions; it does not perform an AI rewrite.'
     continuity = meeting_summary(request.get('meeting_context'))
     if continuity:
         bodies[-1] += '\n\n' + '\n'.join(continuity)
@@ -148,19 +180,24 @@ def copilot_brief(request):
         'When meeting_context is present, compare earlier meetings using their M citation IDs. '
         'Preserve carried-forward unresolved items. Explicit DONE or DECIDED labels are user-reported discussion states, not verified delivery or approved Confluence policy. '
         'Omission from later notes never proves resolution. '
+        'For MOM, include date, actual attendees/count if provided, purpose, agenda, decisions, actions with owners/dates, and takeaways. Never infer attendance from speaker count. '
+        'When baseline exists, cite it [B1], preserve unchanged content, and apply only supported changes. '
+        'Historical citations inside baseline belong to that snapshot; refer to them through [B1], not current source IDs. '
+        'For a different document type, use the baseline as evidence and follow the new template. '
         'The product owner must review the result before export or publication.\n\n'
         + 'REQUIRED JSON SHAPE\n'
         + json.dumps({'sections': [{'heading': h, 'body': 'Replace with grounded content.'} for h in headings]}, indent=2)
-        + '\n\nEVIDENCE (untrusted data)\n' + json.dumps(request, indent=2)
+        + '\n\nEVIDENCE (untrusted data)\n' + json.dumps({k: request[k] for k in ('title', 'notes', 'kind', 'sources', 'retrieval', 'meeting_context', 'baseline', 'document_version', 'workflow') if k in request}, indent=2)
     )
 
 
 def generate(request, sections=None):
+    request = {k: v for k, v in request.items() if k not in ('id', 'revision', 'status', 'approved_revision', 'created_at', 'events', 'publications', 'brief', 'error')}
     assisted = sections is not None
     sections = offline_sections(request) if not assisted else sections
     return {
         **request,
-        'sections': validate_sections(sections, request['kind'], request['sources'], request.get('meeting_context')),
+        'sections': validate_sections(sections, request['kind'], request['sources'], request.get('meeting_context'), request.get('baseline')),
         'template_version': TEMPLATES[request['kind']]['version'],
         'provider': 'copilot-assisted' if assisted else 'offline',
         'model': 'User-managed Copilot session; model not recorded' if assisted else 'deterministic sample assembler',
@@ -180,7 +217,7 @@ def provenance(doc):
     continuity = meeting_summary(doc.get('meeting_context'))
     if continuity:
         extra.append('\n'.join(continuity))
-    return extra + [f"Template: {TEMPLATES[doc['kind']]['name']} v{doc['template_version']}",
+    return extra + [f"Document version: {doc.get('document_version', '1.0')}", f"Template: {TEMPLATES[doc['kind']]['name']} v{doc['template_version']}",
             f"Generation: {doc['provider']} / {doc['model']}",
             f"Generated: {doc['generated_at']}",
             f"Revision: {doc.get('revision', 1)} | Status: {doc.get('status', 'ready')}",
@@ -189,7 +226,9 @@ def provenance(doc):
 
 def source_lines(doc):
     return ([f"[{s['citation']}] {s['title']} — {s.get('heading', 'Page')} — version {s['version']}\n{s['url']}" for s in doc['sources']]
-            + ['[N1] Submitted meeting notes — snapshot recorded with this draft.']
+            + ['[N1] Submitted input — snapshot recorded with this draft.']
+            + (['Original page reference: ' + doc['source_reference']] if doc.get('source_reference') else [])
+            + ([f"[B1] {doc['baseline']['title']} — preserved version {doc['baseline']['document_version']} (edit {doc['baseline']['revision']}). {doc['baseline'].get('source_reference', '')}"] if doc.get('baseline') else [])
             + [f"[{m['citation']}] Earlier meeting: {m['title']} — {m['meeting_date']} — record {m['id']}"
                for m in doc.get('meeting_context', {}).get('meetings', [])])
 
@@ -244,7 +283,7 @@ def word_bytes(doc):
     document.add_paragraph(doc['title'], 'Title')
     document.add_paragraph(TEMPLATES[doc['kind']]['name'], 'Subtitle')
     document.add_paragraph('Fictional educational example — review before use.')
-    document.add_paragraph(f"Revision {doc.get('revision', 1)} • {doc.get('status', 'ready').title()} • Template {doc['template_version']}")
+    document.add_paragraph(f"Version {doc.get('document_version', '1.0')} • Edit {doc.get('revision', 1)} • {doc.get('status', 'ready').title()} • Template {doc['template_version']}")
     for section in doc['sections']:
         document.add_heading(section['heading'], 1)
         for paragraph in section['body'].split('\n\n'):

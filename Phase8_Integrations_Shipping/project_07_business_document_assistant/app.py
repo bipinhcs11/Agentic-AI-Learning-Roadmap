@@ -20,6 +20,8 @@ from domain import clean_text, MAX_NOTES
 from retrieval import KnowledgeIndex, RAG_NOTES, DOMAINS, fingerprint, domain_value
 from meetings import meeting_identity, tracking_items, compare_meetings, history_version
 
+import copilot_provider
+
 MAX_BODY = 1_000_000
 
 
@@ -105,32 +107,53 @@ class Application:
         request['retrieval']['unresolved_acknowledged'] = bool(result['unresolved'])
         if context:
             request['meeting_context'] = context
+        request.update({k: data[k] for k in ('workflow', 'base_document_id', 'base_revision', 'version_bump') if k in data})
         return request
 
+    def import_baseline(self, owner, data):
+        # Pasted page text is a snapshot, not a live Confluence connection.
+        title = clean_text(data.get('title'), 'Title', 140)
+        content = clean_text(data.get('content'), 'Existing document', MAX_NOTES)
+        kind = data.get('kind', 'architecture')
+        if not isinstance(kind, str) or kind not in TEMPLATES:
+            raise ValueError('Choose a supported document type.')
+        reference = data.get('source_reference', '')
+        if not isinstance(reference, str) or len(reference) > 1000:
+            raise ValueError('Source reference must be at most 1,000 characters.')
+        request = dict(title=title, notes=content, kind=kind, sources=[], source_reference=reference)
+        sections = [{'heading': h, 'body': content + ' [N1]' if i == 1 else 'Not separately supplied in the original snapshot.'}
+                    for i, h in enumerate(TEMPLATES[kind]['headings'])]
+        result = generate(request, sections)
+        body = self.store.create(owner, request)
+        result.update(provider='imported-original', model='Pasted original; no AI generation')
+        return self.store.mutate(owner, body['id'], 'generated', result)
+
     def submit(self, owner, request, mode='offline'):
-        if mode not in ('offline', 'copilot'):
-            raise ValueError('Select offline or Copilot-assisted mode.')
+        if mode not in ('offline', 'copilot', 'copilot-sdk'):
+            raise ValueError('Select offline or Copilot SDK mode.')
+        if mode == 'copilot-sdk' and not copilot_provider.settings()['configured']:
+            raise copilot_provider.CopilotUnavailable(copilot_provider.settings()['message'])
         if mode == 'copilot':
             body = self.store.create(owner, request)
-            return self.store.mutate(owner, body['id'], 'awaiting_copilot', request)
+            return self.store.mutate(owner, body['id'], 'awaiting_copilot', body)
         if not self.slots.acquire(blocking=False):
             raise Conflict('The demo queue is full. Try again after a job finishes.')
         try:
             body = self.store.create(owner, request)
-            self.pool.submit(self.worker, owner, body['id'], request)
+            self.pool.submit(self.worker, owner, body['id'], body, mode)
             return body
         except Exception:
             self.slots.release()
             raise
 
-    def worker(self, owner, key, request):
+    def worker(self, owner, key, request, mode='offline'):
         try:
             self.store.mutate(owner, key, 'generating', {})
-            result = generate(request)
+            result = copilot_provider.draft(request) if mode == 'copilot-sdk' else generate(request)
             self.store.mutate(owner, key, 'generated', result)
         except Exception:
             # Do not leak upstream bodies, credentials, or notes into errors/logs.
-            self.store.mutate(owner, key, 'failed', {'error': 'Draft assembly failed. Check the input size and template structure, then create a new draft. No fallback content was substituted.'})
+            self.store.mutate(owner, key, 'failed', {'error': 'Draft generation failed. Check Copilot sign-in/configuration when using Copilot, input size, and template structure. Retry with a new draft. No offline fallback was substituted.'})
         finally:
             self.slots.release()
 
@@ -188,8 +211,8 @@ def make_handler(application):
                 kind = mimetypes.guess_type(str(file))[0] or 'text/plain'
                 return self.respond(200, file.read_bytes(), kind + '; charset=utf-8')
             if not post and path == '/api/config':
-                return self.respond(200, {'csrf': self.csrf, 'provider': 'offline or Copilot-assisted',
-                    'templates': TEMPLATES, 'sources': [], 'sample_notes': RAG_NOTES, 'domains': DOMAINS,
+                return self.respond(200, {'csrf': self.csrf, 'provider': 'offline or Copilot SDK', 'copilot': copilot_provider.settings(),
+                    'templates': TEMPLATES, 'sources': [], 'sample_notes': RAG_NOTES, 'mom_notes': (BASE / 'fixtures/mom-notes.txt').read_text(), 'domains': DOMAINS,
                     'knowledge': {'pages': len(application.index.pages), 'chunks': len(application.index.chunks), 'version': application.index.index_version},
                     'max_notes': 24000, 'publication': 'local simulation', 'identity': 'local browser session'})
             if post and path == '/api/retrieve':
@@ -199,11 +222,13 @@ def make_handler(application):
             source_match = re.fullmatch(r'/api/sources/([a-z0-9-]+)', path)
             if not post and source_match:
                 return self.respond(200, application.index.page_html(source_match.group(1)), 'text/html; charset=utf-8')
+            if post and path == '/api/baselines':
+                return self.respond(201, application.import_baseline(self.owner, data))
             if path == '/api/documents':
                 if post:
                     return self.respond(202, application.submit(self.owner, application.prepare(self.owner, data), data.get('mode', 'offline')))
                 return self.respond(200, application.store.listing(self.owner))
-            match = re.fullmatch(r'/api/documents/([0-9a-f]{32})(?:/(save|approve|publish|word|page|audit|brief|import))?', path)
+            match = re.fullmatch(r'/api/documents/([0-9a-f]{32})(?:/(save|approve|publish|word|page|audit|brief|import|versions|edits))?', path)
             if match:
                 key, action = match.groups()
                 if post and action in ('save', 'approve', 'publish', 'import'):
@@ -213,6 +238,10 @@ def make_handler(application):
                 doc = application.store.get(self.owner, key)
                 if action is None:
                     return self.respond(200, doc)
+                if action == 'versions':
+                    return self.respond(200, application.store.versions(self.owner, key))
+                if action == 'edits':
+                    return self.respond(200, application.store.edits(self.owner, key))
                 if action == 'brief':
                     if 'brief' not in doc:
                         raise Conflict('No pending Copilot brief for this draft.')
@@ -260,7 +289,7 @@ def main():
     app = Application(args.data_dir)
     server = ThreadingHTTPServer(('127.0.0.1', args.port), make_handler(app))
     print(f'Business Document Assistant: http://127.0.0.1:{args.port}', flush=True)
-    print('Offline + Copilot-assisted drafting. Fictional data only. Confluence publication is simulated.', flush=True)
+    print('Offline + optional Copilot SDK drafting. Fictional data only. Confluence publication is simulated.', flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

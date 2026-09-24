@@ -1,5 +1,17 @@
 # Plan — business context retrieval before document drafting
 
+## September 23 update — document workflows and direct Copilot
+
+This update supersedes the earlier manual Copilot handoff plan below. The normal UI no longer asks users to copy prompts or paste JSON.
+
+- Implemented: MOM and architecture templates; new-document, different-document and new-version workflows; pasted original page snapshots; business versions separate from saved edits; preserved baselines, history and previous/current comparison; readable draft sections; optional direct Copilot SDK adapter with administrator-selected model.
+- Verified locally: focused offline tests, browser workflow and Word layout. SDK method signatures checked against installed 1.0.14. Live organization Copilot inference remains unverified because this machine has no configured runtime/sign-in.
+- Next org acceptance: provision approved runtime/model, run fictional MOM → BRD → revision, verify no offline substitution, and review generated Word.
+- Next connectors: Confluence API with permissions and remote version checks; optional MCP over the same services. Then SSO/shared projects, durable jobs, Zoom normalization and reviewed Jira handoff. PPT agent later; OneNote deferred.
+
+See [current architecture](docs/ARCHITECTURE.md), [Copilot setup](docs/COPILOT_SETUP.md), and [updated presenter guide](docs/DEMO_GUIDE.md). The remaining sections preserve the original retrieval/meeting-continuity plan for reference.
+
+
 Current direction: **Zoom transcript uploads + manual notes**, with **OneNote deferred**. See [architecture and future roadmap](docs/ARCHITECTURE.md) and the [demo diagram](docs/diagrams/architecture-overview.svg). Dedicated transcript parsing and automatic meeting understanding are planned, not yet implemented.
 
 See [enterprise workflow research and Wednesday demo plan](docs/ENTERPRISE_WORKFLOW_RESEARCH.md) for the Teams/OneNote/Jira integration priorities, document-maintenance proposal, verified vendor constraints, and future PowerPoint-agent handoff. Those integration proposals are not yet implemented.

@@ -273,6 +273,33 @@ class HTTPTests(unittest.TestCase):
                 'source_ids': [s['id'] for s in result['sources']], 'context_confirmed': True})
         self.assertEqual(error.exception.code, 409)
 
+    def test_version_routes_and_readable_ui(self):
+        with self.call('/api/baselines', {'title': 'Existing architecture', 'content': 'Cobra room readiness.', 'kind': 'architecture'}) as response:
+            original = json.load(response)
+        data = request_data(); data.update(kind='architecture', workflow='revise', base_document_id=original['id'], base_revision=1)
+        with self.call('/api/documents', data) as response: version = json.load(response)
+        path = '/api/documents/' + version['id']
+        for _ in range(30):
+            with self.call(path) as response: version = json.load(response)
+            if version['status'] == 'ready': break
+            time.sleep(.05)
+        self.assertEqual(version['status'], 'ready')
+        self.assertEqual(version['document_version'], '1.1')
+        self.assertEqual([e['action'] for e in version['events']], ['queued', 'generating', 'generated'])
+        with self.call(path + '/versions') as response:
+            self.assertEqual([d['document_version'] for d in json.load(response)], ['1.0', '1.1'])
+        with self.call(path + '/edits') as response:
+            self.assertEqual(len(json.load(response)), 1)
+        other = build_opener(HTTPCookieProcessor(CookieJar()))
+        for suffix in ('versions', 'edits'):
+            with self.assertRaises(HTTPError) as error: other.open(self.base + path + '/' + suffix)
+            self.assertEqual(error.exception.code, 404)
+        with self.call('/') as response:
+            markup = response.read().decode()
+            self.assertNotIn('Copilot response (JSON)', markup)
+            self.assertNotIn('Copy brief', markup)
+            self.assertIn('Create a new version', markup)
+
     def test_static_asset_and_traversal(self):
         with self.call('/static/app.js') as response:
             self.assertIn('script-src', response.headers['Content-Security-Policy'])

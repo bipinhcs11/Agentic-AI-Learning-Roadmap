@@ -1,0 +1,3 @@
+# Optional. Install only when enabling the direct Copilot integration.
+-r requirements.txt
+github-copilot-sdk==1.0.14

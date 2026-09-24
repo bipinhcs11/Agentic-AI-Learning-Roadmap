@@ -1,3 +1,13 @@
+# September 23 document workflow validation
+
+- 56 focused offline unit/HTTP tests passed. Coverage includes MOM/architecture templates, BRD version lineage, immutable baseline/edit snapshots, stale and cross-session requests, simultaneous successor creation, provider failures without fallback or error disclosure, and version/history HTTP routes.
+- JavaScript syntax check passed. Browser walkthrough verified readable MOM, MOM → BRD 1.0, BRD 1.1, previous-version navigation/comparison and pasted architecture preservation. No JSON handoff appears in the UI.
+- MOM Word sample rendered and both final pages visually inspected. This validates the sample layout, not every possible input length.
+- Optional SDK 1.0.14 installed in an isolated temporary environment; constructor/session/permission/response signatures checked against the actual package. Controlled adapter tests validate prompt evidence, denied tools, cleanup, null/malformed output rejection.
+- **Not verified:** live Copilot authentication/inference, enterprise SSO, Confluence read/write, or production scale. These require the organization's approved services. Copilot is disabled when unconfigured; Confluence remains a local simulation.
+
+The following records describe earlier milestones and their then-current manual handoff; the current workflow above supersedes that handoff.
+
 # POC validation record
 
 Validated locally on 2026-09-21 (America/Chicago) using the bundled Python 3.12 runtime.

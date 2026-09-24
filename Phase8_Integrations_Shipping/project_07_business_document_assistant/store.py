@@ -18,6 +18,7 @@ class Store:
             db.execute('CREATE TABLE IF NOT EXISTS meetings (id TEXT PRIMARY KEY, owner TEXT NOT NULL, project TEXT NOT NULL, day TEXT NOT NULL, body TEXT NOT NULL, UNIQUE(owner, id))')
             db.execute('CREATE TABLE IF NOT EXISTS retrieval_runs (id TEXT PRIMARY KEY, owner TEXT NOT NULL, body TEXT NOT NULL)')
             db.execute('CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, csrf TEXT NOT NULL)')
+            db.execute('CREATE TABLE IF NOT EXISTS document_edits (document_id TEXT NOT NULL, revision INTEGER NOT NULL, body TEXT NOT NULL, PRIMARY KEY(document_id, revision))')
             db.execute('CREATE TABLE IF NOT EXISTS documents (id TEXT PRIMARY KEY, owner TEXT NOT NULL, body TEXT NOT NULL)')
             # Queued work is not durable across process restarts in this POC.
             for key, raw in db.execute('SELECT id, body FROM documents').fetchall():
@@ -66,11 +67,63 @@ class Store:
 
     def create(self, owner, request):
         key = uuid.uuid4().hex
-        body = dict(request, id=key, revision=0, status='queued', approved_revision=None,
-                    created_at=now(), events=[{'at': now(), 'action': 'queued', 'revision': 0}], publications=[])
+        request = dict(request)
+        workflow = request.pop('workflow', 'new')
+        if workflow not in ('new', 'revise', 'derive'):
+            raise ValueError('Choose a supported document workflow.')
+        base_id = request.pop('base_document_id', None)
+        base_revision = request.pop('base_revision', None)
+        if workflow != 'new' and (not isinstance(base_id, str) or len(base_id) != 32):
+            raise ValueError('Select a previous document.')
+        bump = request.pop('version_bump', 'minor')
+        if bump not in ('minor', 'major'):
+            raise ValueError('Choose a minor or major version.')
+        # Only server-owned records may provide a baseline or lineage.
+        for field in ('baseline', 'family_id', 'document_version'):
+            request.pop(field, None)
         with self.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            family, version = key, '1.0'
+            if workflow != 'new':
+                row = db.execute('SELECT body FROM documents WHERE id=? AND owner=?', (base_id, owner)).fetchone()
+                if not row:
+                    raise KeyError('Previous document not found.')
+                base = json.loads(row[0])
+                if base['status'] not in ('ready', 'approved', 'published') or type(base_revision) is not int or base_revision != base['revision']:
+                    raise Conflict('The previous document changed or is not ready. Select it again.')
+                if workflow == 'revise':
+                    if base['kind'] != request['kind']:
+                        raise ValueError('A new version must keep the document type. Choose a different document workflow to create a BRD from minutes.')
+                    family = base.get('family_id', base['id'])
+                    siblings = [json.loads(r[0]) for r in db.execute('SELECT body FROM documents WHERE owner=?', (owner,))]
+                    if any(d.get('baseline', {}).get('id') == base_id and d.get('family_id') == family and d['status'] != 'failed' for d in siblings):
+                        raise Conflict('A newer version already exists. Continue from the latest version.')
+                    major, minor = map(int, base.get('document_version', '1.0').split('.'))
+                    version = f'{major + 1}.0' if bump == 'major' else f'{major}.{minor + 1}'
+                if sum(len(part['body']) for part in base['sections']) > 180000:
+                    raise ValueError('The previous document is too large for this demo (180,000 characters). Use a smaller original.')
+                request['baseline'] = {k: base[k] for k in ('id', 'title', 'kind', 'revision', 'sections', 'sources', 'notes')}
+                request['baseline']['document_version'] = base.get('document_version', '1.0')
+                # Bound one-generation snapshots; no recursively nested history in prompts.
+                request['baseline']['source_reference'] = base.get('source_reference', '')
+            body = dict(request, workflow=workflow, family_id=family, document_version=version,
+                        id=key, revision=0, status='queued', approved_revision=None,
+                        created_at=now(), events=[{'at': now(), 'action': 'queued', 'revision': 0}], publications=[])
             db.execute('INSERT INTO documents VALUES (?,?,?)', (key, owner, json.dumps(body)))
         return body
+
+    def versions(self, owner, key):
+        selected = self.get(owner, key)
+        family = selected.get('family_id', key)
+        with self.connect() as db:
+            docs = [json.loads(r[0]) for r in db.execute('SELECT body FROM documents WHERE owner=? ORDER BY rowid', (owner,))]
+        return [dict(id=d['id'], title=d['title'], document_version=d.get('document_version', '1.0'),
+                     revision=d['revision'], status=d['status']) for d in docs if d.get('family_id', d['id']) == family]
+
+    def edits(self, owner, key):
+        self.get(owner, key)
+        with self.connect() as db:
+            return [json.loads(r[0]) for r in db.execute('SELECT body FROM document_edits WHERE document_id=? ORDER BY revision', (key,))]
 
     def get(self, owner, key):
         with self.connect() as db:
@@ -82,7 +135,7 @@ class Store:
     def listing(self, owner):
         with self.connect() as db:
             rows = db.execute('SELECT body FROM documents WHERE owner=? ORDER BY rowid DESC LIMIT 50', (owner,)).fetchall()
-        return [{k: b[k] for k in ('id', 'title', 'kind', 'status', 'revision', 'created_at')}
+        return [dict({k: b[k] for k in ('id', 'title', 'kind', 'status', 'revision', 'created_at')}, document_version=b.get('document_version', '1.0'))
                 for b in (json.loads(row[0]) for row in rows)]
 
     def mutate(self, owner, key, action, data):
@@ -97,6 +150,12 @@ class Store:
                     raise Conflict('This draft changed. Reload it before continuing.')
                 if body['status'] not in ('ready', 'approved', 'published'):
                     raise Conflict('Wait for a completed draft.')
+            if action == 'save':
+                others = [json.loads(r[0]) for r in db.execute('SELECT body FROM documents WHERE owner=?', (owner,))]
+                if any(d.get('workflow') == 'revise' and d.get('baseline', {}).get('id') == key and d['status'] != 'failed' for d in others):
+                    raise Conflict('This version is preserved. Edit the latest version instead.')
+            if action in ('save', 'generated', 'import') and 'sections' in body:
+                db.execute('INSERT OR IGNORE INTO document_edits VALUES (?,?,?)', (key, body['revision'], json.dumps(body)))
             if action == 'awaiting_copilot':
                 body.update(status='awaiting_copilot', brief=copilot_brief(data))
             elif action == 'import':
@@ -106,6 +165,9 @@ class Store:
                 if not isinstance(result, dict) or set(result) != {'sections'} or not isinstance(result['sections'], list):
                     raise ValueError('Paste a JSON object containing only a sections array.')
                 request = {k: body[k] for k in ('title', 'notes', 'kind', 'sources')}
+                for field in ('baseline', 'document_version', 'family_id', 'workflow'):
+                    if field in body:
+                        request[field] = body[field]
                 if 'retrieval' in body:
                     request['retrieval'] = body['retrieval']
                 if 'meeting_context' in body:
@@ -119,7 +181,7 @@ class Store:
             elif action == 'failed':
                 body.update(status='failed', error=data['error'])
             elif action == 'save':
-                body['sections'] = validate_sections(data.get('sections'), body['kind'], body['sources'], body.get('meeting_context'))
+                body['sections'] = validate_sections(data.get('sections'), body['kind'], body['sources'], body.get('meeting_context'), body.get('baseline'))
                 body.update(revision=body['revision'] + 1, status='ready', approved_revision=None)
             elif action == 'approve':
                 if data.get('reviewed') is not True:
@@ -144,4 +206,6 @@ class Store:
                 raise ValueError('Unknown document action.')
             body['events'].append({'at': now(), 'action': action, 'revision': body['revision']})
             self._write(db, key, body)
+            if action in ('save', 'generated', 'import') and 'sections' in body:
+                db.execute('INSERT OR IGNORE INTO document_edits VALUES (?,?,?)', (key, body['revision'], json.dumps(body)))
         return body
