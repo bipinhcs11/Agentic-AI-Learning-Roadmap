@@ -1,0 +1,6 @@
+interface:
+  display_name: "Enterprise Grill Me"
+  short_description: "Challenge enterprise designs with focused questions"
+  default_prompt: "Use $grill-me to stress-test this enterprise design, focusing on the highest-impact unresolved decisions."
+policy:
+  allow_implicit_invocation: false

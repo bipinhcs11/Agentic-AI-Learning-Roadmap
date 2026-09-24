@@ -1,0 +1,341 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Fictional Enterprise Agent Engineering Lab",
+    "version": "1.0.0",
+    "description": "Loopback-only educational service. Fixed local identities, no real enterprise data. Tenant comes from authenticated identity. Synchronous two-document batch demo."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8094"
+    }
+  ],
+  "security": [
+    {
+      "localBasic": []
+    }
+  ],
+  "paths": {
+    "/api/runs": {
+      "post": {
+        "operationId": "createRun",
+        "summary": "Run bounded read-only diagnostics or propose a catalog refresh",
+        "x-agent-tool": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRun"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Run created; check status for completion or approval wait",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or unknown request fields"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Reviewer role required or browser Origin rejected"
+          },
+          "429": {
+            "description": "Local run capacity reached"
+          }
+        }
+      }
+    },
+    "/api/runs/{id}": {
+      "get": {
+        "operationId": "getRun",
+        "summary": "Read a nonexpired run in the caller's tenant",
+        "x-agent-tool": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tenant-scoped run",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or unknown request fields"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Reviewer role required or browser Origin rejected"
+          },
+          "404": {
+            "description": "Run absent, expired, or belongs to another tenant"
+          }
+        }
+      }
+    },
+    "/api/runs/{id}/decision": {
+      "post": {
+        "operationId": "decideCatalogRefresh",
+        "summary": "Reviewer-only approve or reject the exact fixed refresh action",
+        "x-agent-tool": false,
+        "description": "Decision expires with the run after 30 minutes. Approval launches a synchronous Spring Batch job. Repeating successful approval returns its original execution ID. Rejected/failed runs require a new proposal.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Decision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Decision recorded; inspect JOB_COMPLETED/JOB_FAILED/REJECTED",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or unknown request fields"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Reviewer role required or browser Origin rejected"
+          },
+          "404": {
+            "description": "Run absent, expired, or belongs to another tenant"
+          },
+          "409": {
+            "description": "Run is not awaiting approval"
+          }
+        }
+      }
+    },
+    "/api/catalog": {
+      "get": {
+        "operationId": "getCatalogCount",
+        "summary": "Read the caller's fictional catalog count",
+        "x-agent-tool": true,
+        "responses": {
+          "200": {
+            "description": "Tenant-scoped catalog count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalog"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Reviewer role required or browser Origin rejected"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "localBasic": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Public local-only credentials from README. This declares authentication, not tenant/role enforcement."
+      }
+    },
+    "schemas": {
+      "CreateRun": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "scenario",
+          "maxSteps"
+        ],
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "REST_API",
+              "OPENAPI",
+              "BATCH"
+            ]
+          },
+          "maxSteps": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          }
+        }
+      },
+      "Decision": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "approved"
+        ],
+        "properties": {
+          "approved": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Evidence": {
+        "type": "object",
+        "required": [
+          "tool",
+          "summary"
+        ],
+        "properties": {
+          "tool": {
+            "type": "string",
+            "enum": [
+              "READ_CONTRACT",
+              "READ_HEALTH",
+              "CHECK_COMPATIBILITY",
+              "READ_CATALOG"
+            ]
+          },
+          "summary": {
+            "type": "string"
+          }
+        }
+      },
+      "Run": {
+        "type": "object",
+        "required": [
+          "id",
+          "tenant",
+          "scenario",
+          "status",
+          "evidence",
+          "recommendation",
+          "attempts",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant": {
+            "type": "string",
+            "enum": [
+              "demo-a",
+              "demo-b"
+            ]
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/CreateRun/properties/scenario"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "COMPLETED",
+              "WAITING_APPROVAL",
+              "STEP_LIMIT",
+              "DEADLINE",
+              "NO_PROGRESS",
+              "TOOL_ERROR",
+              "REJECTED",
+              "JOB_COMPLETED",
+              "JOB_FAILED"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            }
+          },
+          "recommendation": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "jobExecutionId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "reviewer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "Catalog": {
+        "type": "object",
+        "required": [
+          "tenant",
+          "documentCount"
+        ],
+        "properties": {
+          "tenant": {
+            "type": "string"
+          },
+          "documentCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

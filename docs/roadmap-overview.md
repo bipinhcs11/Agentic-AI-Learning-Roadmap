@@ -20,6 +20,15 @@ flowchart LR
     P11 --> P12["Phase 12<br/>Enterprise AI Identity & Security"]
 ```
 
+## Enterprise Spring track
+
+[Phase 14 — Enterprise Agent Engineering](../Phase14_Enterprise_Agent_Engineering/README.md)
+adds a flexible Spring-focused track after the existing phases: harness, context,
+**3. Loop Engineering**, tools, memory, orchestration, guardrails, evals, human
+review, and observability. Run a Spring Boot lab for REST diagnosis, OpenAPI
+compatibility review, and an approved Spring Batch catalog refresh. The overview
+image above illustrates the earlier roadmap; this track extends it.
+
 ## Phases
 
 | Phase | Weeks | Goal | Representative projects |
@@ -36,11 +45,13 @@ flowchart LR
 | 10 | 50+ | Build Google ADK + A2A systems | Contract compliance team with Python, Go, and Java agents |
 | 11 | Flexible | Govern enterprise coding-agent customization | Copilot instructions, prompts, agents, skills, hooks, and MCP |
 | 12 | Flexible | Secure, govern, and deploy enterprise AI agents | Agent IAM, task credentials, delegation, secure MCP, provider mappings, access gateway, optional cloud deployment |
+| 14 | Flexible | Apply enterprise agent engineering in a Spring estate | Bounded Java loop, REST/OpenAPI contracts, reviewed Spring Batch execution, tests and operational recipes |
 
 ## Completion Outcomes
 
 By the end of the full path you will have built:
 
+- A Spring Boot agent-engineering lab with explicit loop termination, contract review, tenant access, approval gates, and a real Spring Batch workflow
 - A local model development environment
 - Multiple RAG systems with retrieval, evaluation, and document analysis
 - Agent services with tools, memory, APIs, and multi-agent coordination
