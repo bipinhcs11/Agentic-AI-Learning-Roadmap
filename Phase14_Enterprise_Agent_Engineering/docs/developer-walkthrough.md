@@ -25,6 +25,12 @@ application. The current Java planner follows deterministic rules. It does not
 call an LLM or automatically read the skill files. A skill is a workflow for an
 assistant; it cannot replace authorization or transaction checks in code.
 
+For an optional open-weight model path, continue with
+[Laya: enterprise adoption and memory sizing](laya-enterprise-adoption.md).
+It covers a separate local inference service, REST/Batch use cases, Copilot tools,
+evaluation gates, and the difference between model size and runtime RAM/VRAM.
+Laya is not installed or wired into this walkthrough's Java application.
+
 ## Your first session
 
 1. Start the application using the setup below.

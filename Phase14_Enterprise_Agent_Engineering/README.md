@@ -21,6 +21,10 @@ assistant prompts, expected results, and guidance for applying them to a work ti
    before replacing fixtures with a model or connecting enterprise systems.
 5. Use the [enterprise skill pack](docs/skill-pack.md) for scenario-specific
    assistant workflows, instructions, example prompts, and optional installation.
+6. Explore [Laya adoption and memory sizing](docs/laya-enterprise-adoption.md)
+   for an optional self-hosted decision service, Spring integration recipes,
+   Copilot MCP setup, and CPU/GPU capacity planning. This is an integration guide;
+   the Java lab still uses its deterministic planner.
 
 The pack includes seven scenario skills, a cross-cutting evaluation skill, and
 an attributed enterprise adaptation of Matt Pocock's `grill-me`/`grilling`.
