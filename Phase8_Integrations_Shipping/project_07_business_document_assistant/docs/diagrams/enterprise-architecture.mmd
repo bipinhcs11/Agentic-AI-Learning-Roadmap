@@ -1,0 +1,17 @@
+flowchart LR
+  Input[Meeting text or manual notes] --> UI[Product owner document studio]
+  Existing[Existing page snapshot] --> Versions[Preserved document versions]
+  UI --> RAG[Retrieve and confirm business context]
+  Fixtures[Fictional pages and glossary] --> RAG
+  RAG --> Draft[Template plus evidence plus previous version]
+  Versions --> Draft
+  Draft --> SDK[GitHub Copilot SDK]
+  SDK --> Runtime[Org approved runtime and model]
+  Draft --> Offline[Explicit offline demo]
+  Runtime --> Review[Readable draft and human review]
+  Offline --> Review
+  Review --> Versions
+  Review --> Word[Word document]
+  Review --> Preview[Local Confluence simulation]
+  Future[Future API connector with optional MCP] -.-> RAG
+  Review -.-> Publish[Future create or version-checked page update]
