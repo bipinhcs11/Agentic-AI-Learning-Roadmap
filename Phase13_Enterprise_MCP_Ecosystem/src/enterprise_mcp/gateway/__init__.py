@@ -1,0 +1,1 @@
+"""Governed MCP aggregation gateway."""

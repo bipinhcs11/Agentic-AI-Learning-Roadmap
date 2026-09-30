@@ -1,0 +1,24 @@
+runtime:
+  environment: test
+  log_level: WARNING
+
+secret_provider: environment
+
+vault:
+  address: http://vault.test.invalid
+  verify_tls: false
+  aws_role: enterprise-mcp-test
+  iam_server_id_header: null
+
+oauth:
+  token_url: http://identity.test.invalid/oauth2/token
+
+api_gateway:
+  base_url: http://api-gateway.test.invalid
+  verify_tls: false
+
+gateway:
+  inbound_jwt:
+    issuer: enterprise-mcp-test
+    algorithm: HS256
+    jwks_url: null
