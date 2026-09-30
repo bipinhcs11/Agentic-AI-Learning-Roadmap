@@ -114,7 +114,9 @@ Expected result, abbreviated:
 The local fixture intentionally issues a new API token for every operation and
 rejects reuse. Shared environments use AWS-IAM authentication to HashiCorp Vault
 through a replaceable secret-provider adapter. Static AWS access keys are not
-stored in configuration.
+stored in configuration. The versioned
+[`shared/secrets.py`](src/enterprise_mcp/shared/secrets.py) module implements the
+providers; it contains code, not credential values.
 
 ## Definition of done
 
