@@ -1,0 +1,33 @@
+[
+  {"id":"cobra-glossary","title":"Cobra product glossary","space":"WORK","domain":"workplace","version":4,"status":"current","audience":"demo","sections":[
+    {"id":"definition","citation":"S101","heading":"What Cobra means","text":"Cobra means Coordinated Booking and Room Allocation. It is the fictional Northstar Workshop service for finding, reserving, and releasing shared meeting rooms. Cobra does not manage lab equipment.","terms":[{"term":"Cobra","aliases":["COBRA"],"definition":"Coordinated Booking and Room Allocation","meaning":"Meeting room reservation service"}]},
+    {"id":"scope","citation":"S102","heading":"Product scope","text":"Cobra supports employees reserving meeting rooms and facilities coordinators preparing rooms for use. Lab instrument checkout and cafeteria services are outside Cobra scope."}
+  ]},
+  {"id":"fhp-workplace","title":"FHP workplace standard","space":"WORK","domain":"workplace","version":3,"status":"current","audience":"demo","sections":[
+    {"id":"definition","citation":"S103","heading":"Facility Handover Plan","text":"FHP means Facility Handover Plan in the Workplace domain. It is the checklist used by the facilities coordinator to confirm that a shared room is ready for the next reservation. The checklist records room layout, accessibility readiness, and completion time.","terms":[{"term":"FHP","aliases":["facility handover"],"definition":"Facility Handover Plan","meaning":"Room readiness checklist"}]},
+    {"id":"release","citation":"S104","heading":"Room release rule","text":"For a Cobra room marked as requiring handover, the Facility Handover Plan checklist must be complete before the room is released for its next reservation. An incomplete checklist must show a pending readiness state; a reminder does not count as completion."}
+  ]},
+  {"id":"cobra-booking","title":"Cobra reservation policy","space":"WORK","domain":"workplace","version":5,"status":"current","audience":"demo","sections":[
+    {"id":"window","citation":"S105","heading":"Advance booking window","text":"Cobra reservations may be created up to 14 days in advance. Proposals to extend the advance booking window require a decision from the Workplace policy owner. A meeting proposal is not a policy approval."},
+    {"id":"concurrency","citation":"S106","heading":"Capacity and duplicate reservations","text":"Cobra must not confirm overlapping reservations for the same room. A booking must not exceed the room capacity. If availability changes before confirmation, show an actionable error and let the organizer choose another room."}
+  ]},
+  {"id":"cobra-accessibility","title":"Accessible room discovery","space":"WORK","domain":"workplace","version":2,"status":"current","audience":"demo","sections":[
+    {"id":"discovery","citation":"S107","heading":"Accessibility requirements","text":"Cobra room search and reservation must support keyboard navigation. Room accessibility features must be shown before confirmation. Readiness and validation errors must not be conveyed using color alone."}
+  ]},
+  {"id":"cobra-confirmations","title":"Cobra confirmations and cancellation","space":"WORK","domain":"workplace","version":1,"status":"current","audience":"demo","sections":[
+    {"id":"notifications","citation":"S108","heading":"Confirmation content","text":"A Cobra reservation confirmation includes room name, organizer, start time, and end time. Organizers must be able to cancel their own reservation. Notifications about FHP readiness must not assert that an incomplete checklist is approved."}
+  ]},
+  {"id":"fhp-lab","title":"FHP lab operations glossary","space":"LAB","domain":"lab","version":2,"status":"current","audience":"demo","sections":[
+    {"id":"definition","citation":"S109","heading":"Field Hardware Protocol","text":"FHP means Field Hardware Protocol in Lab Operations. This fictional protocol defines how test devices record calibration status before an instrument checkout. It is unrelated to meeting room handover.","terms":[{"term":"FHP","aliases":["field hardware"],"definition":"Field Hardware Protocol","meaning":"Test-device calibration protocol"}]},
+    {"id":"calibration","citation":"S110","heading":"Checkout prerequisite","text":"Under the lab FHP, a test device must have a current calibration record before checkout. Missing calibration records block checkout. The instrument steward reviews exceptions."}
+  ]},
+  {"id":"cafeteria","title":"Cafeteria menu publishing","space":"WORK","domain":"workplace","version":1,"status":"current","audience":"demo","sections":[
+    {"id":"menu","citation":"S111","heading":"Weekly menus","text":"The fictional cafeteria team publishes a vegetarian menu every Monday. Menu suggestions are collected in the cafeteria suggestion box."}
+  ]},
+  {"id":"old-cobra-policy","title":"Superseded Cobra booking policy","space":"WORK","domain":"workplace","version":1,"status":"superseded","audience":"demo","sections":[
+    {"id":"old-window","citation":"S112","heading":"Obsolete advance window","text":"SUPERSEDED: Cobra once allowed reservations 60 days in advance. Do not use this obsolete rule."}
+  ]},
+  {"id":"restricted-cobra","title":"Restricted fictional Cobra prototype","space":"RESTRICTED","domain":"workplace","version":1,"status":"current","audience":"restricted","sections":[
+    {"id":"prototype","citation":"S113","heading":"Restricted prototype notes","text":"RESTRICTED_TEST_SENTINEL: A fictional Cobra experiment proposes a 90 day booking window. This test fixture must never be returned to the demo audience."}
+  ]}
+]

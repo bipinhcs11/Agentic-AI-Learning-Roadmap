@@ -1,0 +1,12 @@
+FICTIONAL EDUCATIONAL EXAMPLE
+Date: 2026-09-23
+Attendees: Alex, Sam, Priya, Morgan, Casey, Taylor, Jordan, Jamie, Robin, Drew
+Attendee count: 10
+Purpose: Review Cobra room readiness and FHP
+Agenda: Handover reminders and pilot ownership
+Discussion: The team discussed reminding facilities coordinators about an incomplete handover checklist. A reminder must not release a room before readiness checks finish.
+Decision: Keep the existing booking window while the policy owner reviews proposed changes.
+Action: Review reminder wording | Owner: Sam | Due: not agreed
+Action: Prepare pilot acceptance criteria | Owner: Priya | Due: not agreed
+Takeaway: Explore reminders when the handover checklist is incomplete.
+Open question: Which team will operate the reminder service?

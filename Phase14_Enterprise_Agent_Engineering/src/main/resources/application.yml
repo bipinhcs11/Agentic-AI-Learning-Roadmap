@@ -1,0 +1,27 @@
+server:
+  address: 127.0.0.1
+  port: 8094
+spring:
+  datasource:
+    url: jdbc:h2:mem:engineering;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+  sql:
+    init:
+      mode: always
+  jackson:
+    mapper:
+      allow-coercion-of-scalars: false
+    deserialization:
+      fail-on-unknown-properties: true
+      accept-float-as-int: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics

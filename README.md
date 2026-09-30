@@ -12,7 +12,7 @@ Build production-style Agentic AI systems locally, from your first RAG pipeline
 to MCP-powered enterprise assistants, Google ADK agent teams, and governed AI
 identities with task-scoped access.
 
-- 60+ hands-on projects across 12 phases
+- 60+ hands-on projects across 14 phases
 - Local-first with Ollama and RAM-aware examples
 - RAG, agents, multi-agent systems, MCP, Google ADK, A2A, FastAPI, Docker, AWS, and observability
 - Beginner-to-production path for Python, backend, and Java/Spring developers
@@ -76,8 +76,14 @@ See [Getting Started](docs/getting-started.md) for the detailed version.
 | 10 | Google ADK Series | Build cross-language ADK + A2A agent systems with Python, Go, and Java |
 | 11 | GitHub Copilot Best Practices | Enterprise Copilot blueprint: instructions, prompts, agents, skills, hooks, MCP |
 | 12 | Enterprise AI Identity & Security | Agent identity, task credentials, delegation, secure MCP, policy, audit, and optional live cloud deployment |
+| 14 | Enterprise Agent Engineering | Apply ten engineering practices to Spring Boot REST APIs, OpenAPI contracts, and approved Spring Batch jobs |
 
 Full detail: [Roadmap Overview](docs/roadmap-overview.md).
+
+New: [Phase 14 — Enterprise Agent Engineering for Spring Teams](Phase14_Enterprise_Agent_Engineering/README.md)
+connects harness, context, loop, tools, memory, orchestration, permissions, evals,
+human review, and observability to Spring Boot REST APIs, OpenAPI, and Spring Batch.
+Includes a local Java lab with bounded diagnostics and an approved batch workflow.
 
 ## Choose Your Path
 
@@ -86,7 +92,7 @@ Full detail: [Roadmap Overview](docs/roadmap-overview.md).
 | Python developer new to AI | Phase 1 -> Phase 2 Project 01 | Run local models and build your first RAG system |
 | Backend engineer | Phase 3 -> Phase 6 | Build FastAPI agent services with auth, Docker, and monitoring |
 | RAG engineer | Phase 2 -> Phase 7 | Build GraphRAG, evaluations, document analysis, and retrieval routing |
-| Java/Spring developer | Phase 9 Modules 04-05 | Build MCP + RAG examples with Java and Spring Boot |
+| Java/Spring developer | Phase 9 Modules 04-05 -> [Phase 14](Phase14_Enterprise_Agent_Engineering/README.md) | Build MCP + RAG, then apply agent engineering to REST APIs, OpenAPI, and Spring Batch |
 | Startup builder | Phase 6 -> Phase 8 | Ship SaaS-style AI apps with integrations and metering |
 | Enterprise AI engineer | Phase 9 | Build an MCP gateway with tenant RAG and provider routing |
 | Google ADK learner | Phase 10 | Build a local ADK + A2A contract-compliance agent team |
@@ -159,6 +165,7 @@ Phase9_Dynamic_Agentic_RAG_MCP/  # MCP, enterprise RAG, Java, Spring Boot
 Phase10_Google_ADK_Series/       # Google ADK + A2A cross-language agent systems
 Phase11_GitHub_Copilot_Best_Practices/  # enterprise Copilot blueprint + starter kit + stack overlays
 Phase12_Enterprise_AI_Identity_Security/ # agent IAM, delegation, secure MCP, cloud mappings, capstone
+Phase14_Enterprise_Agent_Engineering/ # Spring Boot, OpenAPI, Spring Batch, bounded loops, review, evals
 docs/                            # shareable guides by path and topic
 scripts/                         # setup helper scripts
 ```

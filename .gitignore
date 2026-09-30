@@ -102,3 +102,6 @@ Phase6_Production_Enterprise/project_06_capstone_product/data/
 
 # Generated post-pack assets (carousel PDFs, teaser videos) — keep local, never commit
 /output/
+
+# Phase 13 secret-provider implementation contains code, not stored credentials.
+!Phase13_Enterprise_MCP_Ecosystem/src/enterprise_mcp/shared/secrets.py
